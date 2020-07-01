@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:synchronized/synchronized.dart';
 import 'package:path/path.dart';
 import 'package:flutter/services.dart';
 
@@ -83,18 +82,26 @@ class DatabaseHelper {
 
   Future<int> deleteCategory(int categoryID) async {
     var db = await _getDatabase();
-    var sonuc = await db.delete("category",where: 'categoryID = ?', whereArgs: [categoryID]);
+    var sonuc = await db
+        .delete("category", where: 'categoryID = ?', whereArgs: [categoryID]);
     return sonuc;
   }
 
-
-
-
   Future<List<Map<String, dynamic>>> getNotes() async {
     var db = await _getDatabase();
-    var sonuc = await db.query("note", orderBy: 'noteID DESC');
+    var sonuc = await db.rawQuery(
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID order by noteID Desc;");
 
     return sonuc;
+  }
+
+  Future<List<Note>> getNoteList() async {
+    var noteMapList = await getNotes();
+    var noteList = List<Note>();
+    for (Map map in noteMapList) {
+      noteList.add(Note.fromMap(map));
+    }
+    return noteList;
   }
 
   Future<int> updateNote(Note note) async {
@@ -106,7 +113,8 @@ class DatabaseHelper {
 
   Future<int> deleteNote(int noteID) async {
     var db = await _getDatabase();
-    var sonuc = await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
+    var sonuc =
+        await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
     return sonuc;
   }
 
@@ -114,5 +122,81 @@ class DatabaseHelper {
     var db = await _getDatabase();
     var sonuc = await db.insert("note", note.toMap());
     return sonuc;
+  }
+
+  String dateFormat(DateTime dt) {
+    DateTime today = new DateTime.now();
+    Duration oneDay = new Duration(days: 1);
+    Duration twoDay = new Duration(days: 2);
+    Duration oneWeek = new Duration(days: 7);
+    String month;
+    switch (dt.month) {
+      case 1:
+        month = "January";
+        break;
+      case 2:
+        month = "February";
+        break;
+      case 3:
+        month = "March";
+        break;
+      case 4:
+        month = "April";
+        break;
+      case 5:
+        month = "May";
+        break;
+      case 6:
+        month = "June";
+        break;
+      case 7:
+        month = "July";
+        break;
+      case 8:
+        month = "August";
+        break;
+      case 9:
+        month = "September";
+        break;
+      case 10:
+        month = "October";
+        break;
+      case 11:
+        month = "November";
+        break;
+      case 12:
+        month = "December";
+        break;
+    }
+
+    Duration difference = today.difference(dt);
+
+    if (difference.compareTo(oneDay) < 1) {
+      return "Today";
+    } else if (difference.compareTo(twoDay) < 1) {
+      return "Yesterday";
+    } else if (difference.compareTo(oneWeek) < 1) {
+      switch (dt.weekday) {
+        case 1:
+          return "Monday";
+        case 2:
+          return "Tuesday";
+        case 3:
+          return "Wednesday";
+        case 4:
+          return "Thursday,";
+        case 5:
+          return "Friday";
+        case 6:
+          return "Saturday";
+        case 7:
+          return "Sunday";
+      }
+    } else if (dt.year == today.year) {
+      return '${dt.day} $month';
+    } else {
+      return '${dt.day} $month ${dt.year}';
+    }
+    return "";
   }
 }

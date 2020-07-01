@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
+import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
@@ -18,7 +19,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class NoteList extends StatelessWidget {
+class NoteList extends StatefulWidget {
+  @override
+  _NoteListState createState() => _NoteListState();
+}
+
+class _NoteListState extends State<NoteList> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   var _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -39,19 +45,24 @@ class NoteList extends StatelessWidget {
               addCategoryDialog(context);
             },
             tooltip: "Add Category",
-            child: Icon(Icons.add_circle),
+            child: Icon(Icons.import_contacts),
             mini: true,
             heroTag: "Add Category",
           ),
           FloatingActionButton(
-            onPressed: () => _goToDetailPage(context),
+            onPressed: () async {
+              var result = await _goToDetailPage(context);
+              if (result != null) {
+                setState(() {});
+              }
+            },
             tooltip: "Add Note",
             child: Icon(Icons.add),
             heroTag: "Add Note",
           ),
         ],
       ),
-      body: Container(),
+      body: Notes(),
     );
   }
 
@@ -98,7 +109,7 @@ class NoteList extends StatelessWidget {
                     },
                     color: Colors.orangeAccent,
                     child: Text(
-                      "Vazgec",
+                      "Cancel",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -121,7 +132,7 @@ class NoteList extends StatelessWidget {
                     },
                     color: Colors.redAccent,
                     child: Text(
-                      "Kaydet",
+                      "Save",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -132,7 +143,120 @@ class NoteList extends StatelessWidget {
         });
   }
 
-  _goToDetailPage(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NoteDetail(title: "New Note",)));
+  Future<String> _goToDetailPage(BuildContext context) async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NoteDetail(
+                  title: "New Note",
+                )));
+    return result;
+  }
+}
+
+class Notes extends StatefulWidget {
+  @override
+  _NotesState createState() => _NotesState();
+}
+
+class _NotesState extends State<Notes> {
+  List<Note> allNotes;
+  DatabaseHelper databaseHelper;
+  Color red = Color(0xFFff0000);
+
+  @override
+  void initState() {
+    super.initState();
+    allNotes = List<Note>();
+    databaseHelper = DatabaseHelper();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: databaseHelper.getNoteList(),
+      builder: (context, AsyncSnapshot<List<Note>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          allNotes = snapshot.data;
+          return ListView.builder(
+              itemCount: allNotes.length,
+              itemBuilder: (context, index) {
+                return ExpansionTile(
+                  title: Text(
+                    allNotes[index].noteTitle,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.all(4),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  "Category: ",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 20),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  allNotes[index].categoryTitle,
+                                  style: TextStyle(color: red, fontSize: 20),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  "Creation Date: ",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 20),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  databaseHelper.dateFormat(
+                                      DateTime.parse(allNotes[index].noteTime)),
+                                  style: TextStyle(color: red, fontSize: 20),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: TextFormField(
+                              maxLines: 5,
+                              decoration: InputDecoration(
+                                labelText: "Content",
+                                border: OutlineInputBorder(),
+                              ),
+                              initialValue: allNotes[index].noteContent,
+                              readOnly: true,
+                            )
+                            //Text(allNotes[index].noteContent, style: TextStyle(fontSize: 20),),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                );
+              });
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
   }
 }
