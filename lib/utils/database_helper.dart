@@ -125,10 +125,6 @@ class DatabaseHelper {
   }
 
   String dateFormat(DateTime dt) {
-    DateTime today = new DateTime.now();
-    Duration oneDay = new Duration(days: 1);
-    Duration twoDay = new Duration(days: 2);
-    Duration oneWeek = new Duration(days: 7);
     String month;
     switch (dt.month) {
       case 1:
@@ -168,35 +164,6 @@ class DatabaseHelper {
         month = "December";
         break;
     }
-
-    Duration difference = today.difference(dt);
-
-    if (difference.compareTo(oneDay) < 1) {
-      return "Today";
-    } else if (difference.compareTo(twoDay) < 1) {
-      return "Yesterday";
-    } else if (difference.compareTo(oneWeek) < 1) {
-      switch (dt.weekday) {
-        case 1:
-          return "Monday";
-        case 2:
-          return "Tuesday";
-        case 3:
-          return "Wednesday";
-        case 4:
-          return "Thursday,";
-        case 5:
-          return "Friday";
-        case 6:
-          return "Saturday";
-        case 7:
-          return "Sunday";
-      }
-    } else if (dt.year == today.year) {
-      return '${dt.day} $month';
-    } else {
-      return '${dt.day} $month ${dt.year}';
-    }
-    return "";
+    return month + " " + dt.day.toString() + ", " + dt.year.toString();
   }
 }

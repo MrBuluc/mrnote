@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
@@ -178,10 +180,12 @@ class _NotesState extends State<Notes> {
       builder: (context, AsyncSnapshot<List<Note>> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           allNotes = snapshot.data;
+          sleep(Duration(milliseconds: 500));
           return ListView.builder(
               itemCount: allNotes.length,
               itemBuilder: (context, index) {
                 return ExpansionTile(
+                  leading: _setPriorityIcon(allNotes[index].notePriority),
                   title: Text(
                     allNotes[index].noteTitle,
                     style: TextStyle(fontSize: 20),
@@ -233,17 +237,53 @@ class _NotesState extends State<Notes> {
                             ],
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: TextFormField(
-                              maxLines: 5,
-                              decoration: InputDecoration(
-                                labelText: "Content",
-                                border: OutlineInputBorder(),
+                              padding: const EdgeInsets.all(8),
+                              child: TextFormField(
+                                maxLines: 5,
+                                decoration: InputDecoration(
+                                  labelText: "Content",
+                                  border: OutlineInputBorder(),
+                                ),
+                                initialValue: allNotes[index].noteContent,
+                                readOnly: true,
+                              )
+                              //Text(allNotes[index].noteContent, style: TextStyle(fontSize: 20),),
                               ),
-                              initialValue: allNotes[index].noteContent,
-                              readOnly: true,
-                            )
-                            //Text(allNotes[index].noteContent, style: TextStyle(fontSize: 20),),
+                          ButtonBar(
+                            alignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              RaisedButton(
+                                onPressed: () async {
+                                  var result = await _goToDetailPage(context, allNotes[index]);
+                                  if (result != null) {
+                                    setState(() {});
+                                  }
+                                },
+                                child: Text(
+                                  "Update",
+                                  style: TextStyle(
+                                      color: allNotes[index].notePriority == 2
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 20),
+                                ),
+                                color: _setBackgroundColor(
+                                    allNotes[index].notePriority),
+                              ),
+                              RaisedButton(
+                                onPressed: () => _delNote(allNotes[index].noteID),
+                                child: Text(
+                                  "Delete",
+                                  style: TextStyle(
+                                      color: _setBackgroundColor(
+                                          allNotes[index].notePriority),
+                                      fontSize: 20),
+                                ),
+                                color: allNotes[index].notePriority == 2
+                                    ? Colors.grey
+                                    : Colors.black,
+                              ),
+                            ],
                           )
                         ],
                       ),
@@ -253,10 +293,76 @@ class _NotesState extends State<Notes> {
               });
         } else {
           return Center(
-            child: CircularProgressIndicator(),
+            child: Text("Loading...", style: TextStyle(fontSize: 28),),
           );
         }
       },
     );
+  }
+
+  Future<String> _goToDetailPage(BuildContext context, Note note) async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NoteDetail(
+              title: "Update Note",
+              updateNote: note,
+            )));
+    return result;
+  }
+
+  _setPriorityIcon(int notePriority) {
+    switch (notePriority) {
+      case 0:
+        return CircleAvatar(
+          child: Text(
+            "Low",
+            style: TextStyle(color: Colors.black),
+          ),
+          backgroundColor: Colors.green,
+        );
+        break;
+      case 1:
+        return CircleAvatar(
+          child: Text(
+            "Medium",
+            style: TextStyle(color: Colors.black, fontSize: 10),
+          ),
+          backgroundColor: Colors.yellow,
+        );
+        break;
+      case 2:
+        return CircleAvatar(
+            child: Text(
+              "High",
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: red);
+        break;
+    }
+  }
+
+  _setBackgroundColor(int notePriority) {
+    switch (notePriority) {
+      case 0:
+        return Colors.green;
+        break;
+      case 1:
+        return Colors.yellow;
+        break;
+      case 2:
+        return red;
+        break;
+    }
+  }
+
+  _delNote(int noteID) {
+    databaseHelper.deleteNote(noteID).then((deletedID) {
+      if(deletedID != 0){
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text("Note Deleted"),));
+
+        setState(() {});
+      }
+    });
   }
 }
