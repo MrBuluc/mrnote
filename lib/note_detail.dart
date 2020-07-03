@@ -37,7 +37,7 @@ class _NoteDetailState extends State<NoteDetail> {
         categoryID = widget.updateNote.categoryID;
         selectedPriority = widget.updateNote.notePriority;
       }else{
-        categoryID = 1;
+        categoryID = allCategories[0].categoryID;
         selectedPriority = 0;
       }
       setState(() {});

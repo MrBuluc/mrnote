@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mrnote/category_operations.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
@@ -15,7 +16,9 @@ class MyApp extends StatelessWidget {
       title: "Flutter Demo",
       debugShowCheckedModeBanner: true,
       theme: ThemeData(
-          primarySwatch: Colors.purple, primaryColor: Color(0xFFff0000)),
+          primarySwatch: Colors.purple,
+          primaryColor: Color(0xFFff0000),
+          accentColor: Colors.orange),
       home: NoteList(),
     );
   }
@@ -38,6 +41,30 @@ class _NoteListState extends State<NoteList> {
         title: Center(
           child: Text("Mr. Note"),
         ),
+        actions: <Widget>[
+          PopupMenuButton(
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                    child: ListTile(
+                  leading: Icon(
+                    Icons.import_contacts,
+                    color: Colors.blue,
+                  ),
+                  title: Text("Categories"),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    var result = await _goToCategoriesPage();
+                    if (result != null) {
+                      setState(() {});
+                    }
+                  },
+                )),
+
+              ];
+            },
+          ),
+        ],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -154,6 +181,12 @@ class _NoteListState extends State<NoteList> {
                 )));
     return result;
   }
+
+  Future<String> _goToCategoriesPage() async {
+    final result = await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => Categories()));
+    return result;
+  }
 }
 
 class Notes extends StatefulWidget {
@@ -181,119 +214,147 @@ class _NotesState extends State<Notes> {
         if (snapshot.connectionState == ConnectionState.done) {
           allNotes = snapshot.data;
           sleep(Duration(milliseconds: 500));
-          return ListView.builder(
-              itemCount: allNotes.length,
-              itemBuilder: (context, index) {
-                return ExpansionTile(
-                  leading: _setPriorityIcon(allNotes[index].notePriority),
-                  title: Text(
-                    allNotes[index].noteTitle,
-                    style: TextStyle(fontSize: 20),
+          return allNotes.length == 0
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Text(
+                      "Before create new note, you have to create new category",
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(4),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  "Category: ",
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 20),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  allNotes[index].categoryTitle,
-                                  style: TextStyle(color: red, fontSize: 20),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  "Creation Date: ",
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 20),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  databaseHelper.dateFormat(
-                                      DateTime.parse(allNotes[index].noteTime)),
-                                  style: TextStyle(color: red, fontSize: 20),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: TextFormField(
-                                maxLines: 5,
-                                decoration: InputDecoration(
-                                  labelText: "Content",
-                                  border: OutlineInputBorder(),
-                                ),
-                                initialValue: allNotes[index].noteContent,
-                                readOnly: true,
-                              )
-                              //Text(allNotes[index].noteContent, style: TextStyle(fontSize: 20),),
-                              ),
-                          ButtonBar(
-                            alignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              RaisedButton(
-                                onPressed: () async {
-                                  var result = await _goToDetailPage(context, allNotes[index]);
-                                  if (result != null) {
-                                    setState(() {});
-                                  }
-                                },
-                                child: Text(
-                                  "Update",
-                                  style: TextStyle(
-                                      color: allNotes[index].notePriority == 2
-                                          ? Colors.white
-                                          : Colors.black,
-                                      fontSize: 20),
-                                ),
-                                color: _setBackgroundColor(
-                                    allNotes[index].notePriority),
-                              ),
-                              RaisedButton(
-                                onPressed: () => _delNote(allNotes[index].noteID),
-                                child: Text(
-                                  "Delete",
-                                  style: TextStyle(
-                                      color: _setBackgroundColor(
-                                          allNotes[index].notePriority),
-                                      fontSize: 20),
-                                ),
-                                color: allNotes[index].notePriority == 2
-                                    ? Colors.grey
-                                    : Colors.black,
-                              ),
-                            ],
-                          )
-                        ],
+                )
+              : ListView.builder(
+                  itemCount: allNotes.length,
+                  itemBuilder: (context, index) {
+                    return ExpansionTile(
+                      leading:
+                          _setPriorityIcon(allNotes[index].notePriority),
+                      title: Text(
+                        allNotes[index].noteTitle,
+                        style: TextStyle(fontSize: 20),
                       ),
-                    )
-                  ],
-                );
-              });
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      "Category: ",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      allNotes[index].categoryTitle,
+                                      style: TextStyle(
+                                          color: red, fontSize: 20),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      "Creation Date: ",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      databaseHelper.dateFormat(
+                                          DateTime.parse(
+                                              allNotes[index].noteTime)),
+                                      style: TextStyle(
+                                          color: red, fontSize: 20),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: TextFormField(
+                                    maxLines: 5,
+                                    decoration: InputDecoration(
+                                      labelText: "Content",
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    initialValue:
+                                        allNotes[index].noteContent,
+                                    readOnly: true,
+                                  )
+                                  //Text(allNotes[index].noteContent, style: TextStyle(fontSize: 20),),
+                                  ),
+                              ButtonBar(
+                                alignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  RaisedButton(
+                                    onPressed: () async {
+                                      var result = await _goToDetailPage(
+                                          context, allNotes[index]);
+                                      if (result != null) {
+                                        setState(() {});
+                                      }
+                                    },
+                                    child: Text(
+                                      "Update",
+                                      style: TextStyle(
+                                          color: allNotes[index]
+                                                      .notePriority ==
+                                                  2
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 20),
+                                    ),
+                                    color: _setBackgroundColor(
+                                        allNotes[index].notePriority),
+                                  ),
+                                  RaisedButton(
+                                    onPressed: () =>
+                                        _delNote(allNotes[index].noteID),
+                                    child: Text(
+                                      "Delete",
+                                      style: TextStyle(
+                                          color: _setBackgroundColor(
+                                              allNotes[index]
+                                                  .notePriority),
+                                          fontSize: 20),
+                                    ),
+                                    color:
+                                        allNotes[index].notePriority == 2
+                                            ? Colors.grey
+                                            : Colors.black,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  });
         } else {
           return Center(
-            child: Text("Loading...", style: TextStyle(fontSize: 28),),
+            child: Text(
+              "Loading...",
+              style: TextStyle(fontSize: 28),
+            ),
           );
         }
       },
@@ -305,9 +366,9 @@ class _NotesState extends State<Notes> {
         context,
         MaterialPageRoute(
             builder: (context) => NoteDetail(
-              title: "Update Note",
-              updateNote: note,
-            )));
+                  title: "Update Note",
+                  updateNote: note,
+                )));
     return result;
   }
 
@@ -358,8 +419,10 @@ class _NotesState extends State<Notes> {
 
   _delNote(int noteID) {
     databaseHelper.deleteNote(noteID).then((deletedID) {
-      if(deletedID != 0){
-        Scaffold.of(context).showSnackBar(SnackBar(content: Text("Note Deleted"),));
+      if (deletedID != 0) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("Note Deleted"),
+        ));
 
         setState(() {});
       }

@@ -67,6 +67,15 @@ class DatabaseHelper {
     return sonuc;
   }
 
+  Future<List<Category>> getCategoryList() async{
+    var categoryMapList = await getCategories();
+    var categoryList = List<Category>();
+    for (Map map in categoryMapList) {
+      categoryList.add(Category.fromMap(map));
+    }
+    return categoryList;
+  }
+
   Future<int> addCategory(Category category) async {
     var db = await _getDatabase();
     var sonuc = await db.insert("category", category.toMap());
