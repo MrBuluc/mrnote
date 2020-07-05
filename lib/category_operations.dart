@@ -75,7 +75,7 @@ class _CategoriesState extends State<Categories> {
     }
   }
 
-  Future<void> _delCategory(BuildContext context, int categoryID) {
+  void _delCategory(BuildContext context, int categoryID) {
     databaseHelper.deleteCategory(categoryID).then((deletedCategory) {
       if (deletedCategory != 0) {
         setState(() {

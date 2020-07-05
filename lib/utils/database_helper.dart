@@ -113,6 +113,24 @@ class DatabaseHelper {
     return noteList;
   }
 
+  Future<List<Map<String, dynamic>>> getFilterNotes(int categoryID) async {
+    var db = await _getDatabase();
+    var sonuc = await db.rawQuery(
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID == $categoryID ORDER by noteID DESC;");
+
+    return sonuc;
+  }
+
+  Future<List<Note>> getFilterNotesList(int categoryID) async {
+    var noteMapList = await getFilterNotes(categoryID);
+    var noteList = List<Note>();
+    for (Map map in noteMapList) {
+      noteList.add(Note.fromMap(map));
+    }
+    print("filterNoteList: $noteList");
+    return noteList;
+  }
+
   Future<int> updateNote(Note note) async {
     var db = await _getDatabase();
     var sonuc = await db.update("note", note.toMap(),
