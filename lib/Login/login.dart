@@ -83,6 +83,7 @@ class _LoginState extends State<Login> {
                           EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         result,
+                        style: TextStyle(fontSize: 20),
                         textAlign: TextAlign.center,
                       ),
                     )
@@ -95,9 +96,10 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> enter() async {
-    List<Note> noteList = await databaseHelper.getNoteTitleNotesList("Password");
+    List<Note> noteList =
+        await databaseHelper.getNoteTitleNotesList("Password");
     truePassword = noteList[0].noteContent;
-    if(truePassword == null){
+    if (truePassword == null) {
       truePassword = "";
     }
     note = noteList[0];
@@ -118,20 +120,24 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> resetThePassword() async {
-    note.noteContent = null;
-    var suan = DateTime.now();
-    await databaseHelper.updateNote(Note.withID(note.noteID, note.categoryID,
-        note.noteTitle, note.noteContent, suan.toString(), note.notePriority)).then((updatedID) {
-      if (updatedID != 0) {
-        setState(() {
-          result = "Password has been reset\n"+
-          "You can enter the Mr. Note";
-        });
-      }
-    });
-  }
-
-  void getPassword(){
-
+    if (note == null) {
+      setState(() {
+        result =
+            "Press the Enter button after that\n" + "press the Reset button";
+      });
+    } else {
+      note.noteContent = null;
+      var suan = DateTime.now();
+      await databaseHelper
+          .updateNote(Note.withID(note.noteID, note.categoryID, note.noteTitle,
+              note.noteContent, suan.toString(), note.notePriority))
+          .then((updatedID) {
+        if (updatedID != 0) {
+          setState(() {
+            result = "Password has been reset\n" + "You can enter the Mr. Note";
+          });
+        }
+      });
+    }
   }
 }
