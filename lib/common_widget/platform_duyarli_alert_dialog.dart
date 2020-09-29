@@ -27,7 +27,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
   Widget buildAndroidWidget(BuildContext context) {
     return AlertDialog(
       title: Text(baslik),
-      content: Text(icerik),
+      content: Text(icerik, style: TextStyle(fontSize: 20),),
       actions: _dialogButonlariniAyarla(context),
     );
   }
@@ -36,7 +36,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
   Widget buildIOSWidget(BuildContext context) {
     return CupertinoAlertDialog(
       title: Text(baslik),
-      content: Text(icerik),
+      content: Text(icerik, style: TextStyle(fontSize: 20),),
       actions: _dialogButonlariniAyarla(context),
     );
   }
@@ -47,12 +47,12 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
     if (Platform.isIOS) {
       if (iptalButonYazisi != null) {
         tumButonlar.add(CupertinoDialogAction(
-          child: Text(iptalButonYazisi),
+          child: Text(iptalButonYazisi, style: TextStyle(fontSize: 20),),
           onPressed: () {Navigator.of(context).pop(false);},
         ));
       }
       tumButonlar.add(CupertinoDialogAction(
-        child: Text(anaButonYazisi),
+        child: Text(anaButonYazisi, style: TextStyle(fontSize: 20),),
         onPressed: () {
           Navigator.of(context).pop(true);
         },
@@ -60,14 +60,14 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
     } else {
       if (iptalButonYazisi != null) {
         tumButonlar.add(FlatButton(
-          child: Text(iptalButonYazisi),
+          child: Text(iptalButonYazisi, style: TextStyle(fontSize: 20),),
           onPressed: () {
             Navigator.of(context).pop(false);
           },
         ));
       }
       tumButonlar.add(FlatButton(
-        child: Text(anaButonYazisi),
+        child: Text(anaButonYazisi, style: TextStyle(fontSize: 20),),
         onPressed: () {
           Navigator.of(context).pop(true);
         },

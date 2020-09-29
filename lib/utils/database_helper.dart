@@ -67,7 +67,7 @@ class DatabaseHelper {
     return sonuc;
   }
 
-  Future<List<Category>> getCategoryList() async{
+  Future<List<Category>> getCategoryList() async {
     var categoryMapList = await getCategories();
     var categoryList = List<Category>();
     for (Map map in categoryMapList) {
@@ -130,10 +130,10 @@ class DatabaseHelper {
     return noteList;
   }
 
-  Future<List<Note>> getNoteTitleNotesList (String noteTitle) async {
+  Future<List<Note>> getNoteTitleNotesList(String noteTitle) async {
     var noteMapList = await getNoteTitleNotes(noteTitle);
     var noteList = List<Note>();
-    for(Map map in noteMapList){
+    for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
@@ -155,10 +155,14 @@ class DatabaseHelper {
   }
 
   Future<int> deleteNote(int noteID) async {
-    var db = await _getDatabase();
-    var sonuc =
-        await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
-    return sonuc;
+    if (noteID == 1) {
+      return 0;
+    } else {
+      var db = await _getDatabase();
+      var sonuc =
+          await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
+      return sonuc;
+    }
   }
 
   Future<int> addNote(Note note) async {

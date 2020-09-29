@@ -5,6 +5,8 @@ import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
+import 'common_widget/platform_duyarli_alert_dialog.dart';
+
 class NoteList extends StatefulWidget {
   @override
   _NoteListState createState() => _NoteListState();
@@ -354,7 +356,9 @@ class _NotesState extends State<Notes> {
                                   allNotes[index].notePriority),
                             ),
                             RaisedButton(
-                              onPressed: () => _delNote(allNotes[index].noteID),
+                              onPressed: () {
+                                _areYouSureforDelete(allNotes[index].noteID);
+                              },
                               child: Text(
                                 "Delete",
                                 style: TextStyle(
@@ -455,7 +459,24 @@ class _NotesState extends State<Notes> {
         ));
 
         setState(() {});
+      } else {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("You can't delete Password Note"),
+        ));
       }
     });
+  }
+
+  Future<void> _areYouSureforDelete(int noteID) async {
+    final sonuc = await PlatformDuyarliAlertDialog(
+      baslik: "Are you Sure?",
+      icerik: "1 Mr. Note will be deleted.",
+      anaButonYazisi: "DELETE",
+      iptalButonYazisi: "CANCEL",
+    ).goster(context);
+
+    if (sonuc) {
+      _delNote(noteID);
+    }
   }
 }
