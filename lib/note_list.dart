@@ -384,7 +384,7 @@ class _NotesState extends State<Notes> {
       });
     } else {
       List<Note> allNotes1 =
-          await databaseHelper.getFilterNotesList(categoryID);
+          await databaseHelper.getCategoryNotesList(categoryID);
       setState(() {
         allNotes = allNotes1;
       });

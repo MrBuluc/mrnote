@@ -1,30 +1,24 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_list.dart';
+import 'package:mrnote/utils/database_helper.dart';
 
-//dosyaya ulaşmak için izin iste
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+  DatabaseHelper databaseHelper = DatabaseHelper();
   final formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String password;
+  String password, truePassword;
   String result = "";
-  bool otomatikKontrol = false;
-  String path =
-      "/storage/emulated/0/Android/data/hakkicanbuluc.mrnote/Passwords/passwords.txt";
-  bool check = false;
 
-  @override
-  void initState() {
-    super.initState();
-    fileCheck().then((value) => check = value);
-  }
+  Note note;
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +38,11 @@ class _LoginState extends State<Login> {
             child: Icon(Icons.arrow_forward),
           ),
           appBar: AppBar(
-            title: Text("Mr. Note Şifre ile Giriş"),
+            title: Text("Mr. Note Enter the Password"),
           ),
           body: Container(
-            child: Center(heightFactor: 100,
+            child: Center(
+              heightFactor: 100,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(10, 200, 10, 10),
                 child: Form(
@@ -60,9 +55,9 @@ class _LoginState extends State<Login> {
                       obscureText: true,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock),
-                        hintText: check ? "Password" : "New Password",
+                        hintText: "Password",
                         hintStyle: TextStyle(fontSize: 12),
-                        labelText: check ? "Your Password" : "New Your Password",
+                        labelText: "Your Password",
                         border: OutlineInputBorder(),
                       ),
                       onSaved: (String value) => password = value,
@@ -72,12 +67,12 @@ class _LoginState extends State<Login> {
                     ),
                     RaisedButton(
                       child: Text(
-                        "Şifemi Unuttum",
+                        "Reset The Password",
                         style: TextStyle(color: Colors.yellow),
                       ),
                       color: Colors.purple,
                       onPressed: () {
-                        showPasswordPath();
+                        resetThePassword();
                       },
                     ),
                     SizedBox(
@@ -100,39 +95,43 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> enter() async {
+    List<Note> noteList = await databaseHelper.getNoteTitleNotesList("Password");
+    truePassword = noteList[0].noteContent;
+    if(truePassword == null){
+      truePassword = "";
+    }
+    note = noteList[0];
+
     formKey.currentState.save();
     setState(() {
       result = "Logging In...";
     });
-    File file = File(path);
-    if (check) {
-      String checkPassword = await file.readAsString();
-      if (checkPassword == password) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => NoteList()));
-      }else{
-        setState(() {
-          result = "Password incorrect";
-        });
-      }
-    }else{
-      await file.create();
-      await file.writeAsString(password);
+
+    if (password == truePassword) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => NoteList()));
+    } else {
+      setState(() {
+        result = "Wrong Password";
+      });
     }
   }
 
-  Future<bool> fileCheck() async {
-    File file = File(path);
-    bool flag = await file.exists();
-    return flag;
+  Future<void> resetThePassword() async {
+    note.noteContent = null;
+    var suan = DateTime.now();
+    await databaseHelper.updateNote(Note.withID(note.noteID, note.categoryID,
+        note.noteTitle, note.noteContent, suan.toString(), note.notePriority)).then((updatedID) {
+      if (updatedID != 0) {
+        setState(() {
+          result = "Password has been reset\n"+
+          "You can enter the Mr. Note";
+        });
+      }
+    });
   }
 
-  void showPasswordPath() {
-    setState(() {
-      result =
-          "Your Password path: Android/data/hakkicanbuluc.mrnote/Passwords/passwords.txt";
-    });
+  void getPassword(){
+
   }
 }
