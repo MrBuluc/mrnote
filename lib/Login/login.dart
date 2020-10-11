@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_list.dart';
@@ -19,6 +17,13 @@ class _LoginState extends State<Login> {
   String result = "";
 
   Note note;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //AdmobHelper.admobInitialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,8 +115,12 @@ class _LoginState extends State<Login> {
     });
 
     if (password == truePassword) {
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => NoteList()));
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (context) => NoteList()));
     } else {
       setState(() {
         result = "Wrong Password";

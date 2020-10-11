@@ -1,8 +1,11 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
+
+import 'utils/admob_helper.dart';
 
 class NoteDetail extends StatefulWidget {
   String title;
@@ -23,6 +26,8 @@ class _NoteDetailState extends State<NoteDetail> {
   int selectedPriority;
   String noteTitle, noteContent;
 
+  InterstitialAd myInterstitialAd;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -33,15 +38,25 @@ class _NoteDetailState extends State<NoteDetail> {
       for (Map readMap in value) {
         allCategories.add(Category.fromMap(readMap));
       }
-      if(widget.updateNote != null){
+      if (widget.updateNote != null) {
         categoryID = widget.updateNote.categoryID;
         selectedPriority = widget.updateNote.notePriority;
-      }else{
+      } else {
         categoryID = allCategories[0].categoryID;
         selectedPriority = 0;
       }
       setState(() {});
     });
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+  }
+
+  @override
+  void dispose() {
+    myInterstitialAd.dispose();
+    super.dispose();
   }
 
   @override

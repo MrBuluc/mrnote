@@ -1,7 +1,10 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/utils/database_helper.dart';
+
+import 'utils/admob_helper.dart';
 
 class Categories extends StatefulWidget {
   @override
@@ -12,10 +15,22 @@ class _CategoriesState extends State<Categories> {
   List<Category> allCategories;
   DatabaseHelper databaseHelper;
 
+  InterstitialAd myInterstitialAd;
+
   @override
   void initState() {
     super.initState();
     databaseHelper = DatabaseHelper();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+  }
+
+  @override
+  void dispose() {
+    myInterstitialAd.dispose();
+    super.dispose();
   }
 
   @override

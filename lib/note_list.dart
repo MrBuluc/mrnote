@@ -1,8 +1,10 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/category_operations.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
+import 'package:mrnote/utils/admob_helper.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'common_widget/platform_duyarli_alert_dialog.dart';
@@ -18,6 +20,24 @@ class _NoteListState extends State<NoteList> {
   List<Category> allCategories;
   int localCategoryID = 0;
 
+  InterstitialAd myInterstitialAd;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+  }
+
+  @override
+  void dispose() {
+    myInterstitialAd.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (allCategories == null) {
@@ -28,7 +48,7 @@ class _NoteListState extends State<NoteList> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Center(
-          child: Text("Mr. Note"),
+          child: Text("         Mr. Note"),
         ),
         actions: <Widget>[
           PopupMenuButton(
@@ -51,6 +71,8 @@ class _NoteListState extends State<NoteList> {
                       setState(() {
                         updateCategoryList();
                       });
+                    } else {
+                      setState(() {});
                     }
                   },
                 )),
