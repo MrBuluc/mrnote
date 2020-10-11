@@ -4,6 +4,7 @@ class AdmobHelper {
   static final String appIDCanli = "ca-app-pub-7911331215388037~3186194719";
   static final String appIDTest = FirebaseAdMob.testAppId;
   static final String gecis1Canli = "ca-app-pub-7911331215388037/3124090310";
+  static final String banner1Canli = "ca-app-pub-7911331215388037/2729338642";
 
   static admobInitialize() {
     FirebaseAdMob.instance.initialize(appId: appIDTest);
@@ -22,6 +23,21 @@ class AdmobHelper {
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("InterstitialAd event is $event");
+      },
+    );
+  }
+
+  static BannerAd myBannerAd;
+
+  static BannerAd buildBannerAd() {
+    return BannerAd(
+      adUnitId: BannerAd.testAdUnitId,
+      size: AdSize.smartBanner,
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        if (event == MobileAdEvent.loaded) {
+          print("Banner yüklendi");
+        }
       },
     );
   }

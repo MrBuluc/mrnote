@@ -25,11 +25,16 @@ class _CategoriesState extends State<Categories> {
     myInterstitialAd
       ..load()
       ..show();
+    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    AdmobHelper.myBannerAd
+      ..load()
+      ..show(anchorOffset: 10);
   }
 
   @override
   void dispose() {
     myInterstitialAd.dispose();
+    AdmobHelper.myBannerAd.dispose();
     super.dispose();
   }
 

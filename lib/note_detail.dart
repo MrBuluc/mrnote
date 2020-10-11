@@ -27,6 +27,7 @@ class _NoteDetailState extends State<NoteDetail> {
   String noteTitle, noteContent;
 
   InterstitialAd myInterstitialAd;
+  //BannerAd myBannerAd;
 
   @override
   void initState() {
@@ -51,11 +52,16 @@ class _NoteDetailState extends State<NoteDetail> {
     myInterstitialAd
       ..load()
       ..show();
+    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    AdmobHelper.myBannerAd
+      ..load()
+      ..show(anchorOffset: 10);
   }
 
   @override
   void dispose() {
     myInterstitialAd.dispose();
+    AdmobHelper.myBannerAd.dispose();
     super.dispose();
   }
 
