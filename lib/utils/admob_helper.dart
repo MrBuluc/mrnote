@@ -37,6 +37,8 @@ class AdmobHelper {
       listener: (MobileAdEvent event) {
         if (event == MobileAdEvent.loaded) {
           print("Banner yüklendi");
+        } else {
+          print("BannedAd event is $event");
         }
       },
     );
