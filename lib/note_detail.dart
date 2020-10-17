@@ -48,6 +48,7 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
+    AdmobHelper.admobInitialize();
     myInterstitialAd = AdmobHelper.buildInterstitialAd();
     myInterstitialAd
       ..load()

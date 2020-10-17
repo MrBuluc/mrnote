@@ -21,6 +21,7 @@ class _CategoriesState extends State<Categories> {
   void initState() {
     super.initState();
     databaseHelper = DatabaseHelper();
+    AdmobHelper.admobInitialize();
     myInterstitialAd = AdmobHelper.buildInterstitialAd();
     myInterstitialAd
       ..load()

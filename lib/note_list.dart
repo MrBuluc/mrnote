@@ -26,6 +26,7 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    AdmobHelper.admobInitialize();
     myInterstitialAd = AdmobHelper.buildInterstitialAd();
     myInterstitialAd
       ..load()

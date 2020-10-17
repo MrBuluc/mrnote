@@ -1,0 +1,41 @@
+{
+  "project_info": {
+    "project_number": "289631139713",
+    "firebase_url": "https://mr-note-d1948.firebaseio.com",
+    "project_id": "mr-note-d1948",
+    "storage_bucket": "mr-note-d1948.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:289631139713:android:96d80dfd263d6ee3b51a80",
+        "android_client_info": {
+          "package_name": "hakkicanbuluc.mrnote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "289631139713-c4d89gvi1qfq506o8r5k2cnrcfl1cpf6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1LIzcyczHW1CbD82jloJo1o5qECVw4fU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "289631139713-c4d89gvi1qfq506o8r5k2cnrcfl1cpf6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-7911331215388037~3186194719"
+    }
+  ],
+  "configuration_version": "1"
+}
