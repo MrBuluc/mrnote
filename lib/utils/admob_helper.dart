@@ -1,12 +1,12 @@
 import 'package:firebase_admob/firebase_admob.dart';
 
 class AdmobHelper {
-  static final String appIDCanli = "ca-app-pub-7911331215388037~3186194719";
+  static final String appIDCanli = "ca-app-pub-2104543393026445~1095002395";
   static final String appIDTest = FirebaseAdMob.testAppId;
-  static final String gecis1Canli = "ca-app-pub-7911331215388037/3124090310";
-  static final String banner1Canli = "ca-app-pub-7911331215388037/2729338642";
+  static final String gecis1Canli = "ca-app-pub-2104543393026445/8249430070";
+  static final String banner1Canli = "ca-app-pub-2104543393026445/3436743639";
 
-  static final bool test = true;
+  static final bool test = false;
 
   static admobInitialize() {
     FirebaseAdMob.instance.initialize(appId: test ? appIDTest : appIDCanli);
