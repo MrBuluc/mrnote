@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "289631139713-ogihrfhit8jk5ikakin18280sosh9oqm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hakkicanbuluc.mrnote",
+            "certificate_hash": "9bf696de36a3cf760ad45884e4a1440545a3679a"
+          }
+        },
+        {
           "client_id": "289631139713-c4d89gvi1qfq506o8r5k2cnrcfl1cpf6.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -34,7 +42,7 @@
           ]
         }
       },
-      "admob_app_id": "ca-app-pub-7911331215388037~3186194719"
+      "admob_app_id": "ca-app-pub-2104543393026445~1095002395"
     }
   ],
   "configuration_version": "1"
