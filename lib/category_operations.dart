@@ -143,7 +143,6 @@ class _CategoriesState extends State<Categories> {
   }
 
   void _delCategory(BuildContext context, int categoryID) {
-
     databaseHelper.deleteCategory(categoryID).then((deletedCategory) {
       if (deletedCategory != 0) {
         setState(() {
@@ -169,9 +168,7 @@ class _CategoriesState extends State<Categories> {
           return SimpleDialog(
             title: Text(
               texts["updateCategoryDialog_title"],
-              style: TextStyle(color: Theme
-                  .of(context)
-                  .primaryColor),
+              style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             children: <Widget>[
               Form(

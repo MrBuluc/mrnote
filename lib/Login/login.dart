@@ -93,9 +93,9 @@ class _LoginState extends State<Login> {
                   child: ListView(children: <Widget>[
                     Center(
                         child: Text(
-                          texts["Text1"],
-                          style: TextStyle(fontSize: 20),
-                        )),
+                      texts["Text1"],
+                      style: TextStyle(fontSize: 20),
+                    )),
                     SizedBox(
                       height: 10,
                     ),

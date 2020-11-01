@@ -109,45 +109,44 @@ class _NoteListState extends State<NoteList> {
               return [
                 PopupMenuItem(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        var result = await _goToPage(Categories(lang: widget
-                            .lang));
-                        if (result != null) {
-                          setState(() {
-                            updateCategoryList();
-                          });
-                        } else {
-                          setState(() {});
-                        }
-                      },
-                    )),
+                  leading: Icon(
+                    Icons.import_contacts,
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    var result = await _goToPage(Categories(lang: widget.lang));
+                    if (result != null) {
+                      setState(() {
+                        updateCategoryList();
+                      });
+                    } else {
+                      setState(() {});
+                    }
+                  },
+                )),
                 PopupMenuItem(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem1"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        setState(() {
-                          localCategoryID = 0;
-                        });
-                        Navigator.pop(context);
-                        setState(() {});
-                      },
-                    )),
+                  leading: Icon(
+                    Icons.import_contacts,
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem1"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    setState(() {
+                      localCategoryID = 0;
+                    });
+                    Navigator.pop(context);
+                    setState(() {});
+                  },
+                )),
                 for (int index = 0; index < allCategories.length; index++)
                   PopupMenuItem(
                     child: ListTile(
@@ -546,7 +545,7 @@ class _NotesState extends State<Notes> {
               title: texts["NoteDetail"],
               updateNote: note,
               lang: widget.lang,
-                )));
+            )));
     return result;
   }
 
