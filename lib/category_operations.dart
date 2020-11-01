@@ -179,7 +179,7 @@ class _CategoriesState extends State<Categories> {
                     initialValue: updateCategory.categoryTitle,
                     decoration: InputDecoration(
                       labelText:
-                      texts["updateCategoryDialog_Padding_labelText"],
+                          texts["updateCategoryDialog_Padding_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {

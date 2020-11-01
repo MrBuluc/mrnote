@@ -169,28 +169,28 @@ class _NoteListState extends State<NoteList> {
                   ),
                 PopupMenuItem(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.settings,
-                        color: Colors.green,
-                        size: 30,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem2"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        var result =
+                  leading: Icon(
+                    Icons.settings,
+                    color: Colors.green,
+                    size: 30,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem2"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    var result =
                         await _goToPage(SettingsPage(lang: widget.lang));
-                        if (result != null) {
-                          setState(() {
-                            widget.lang = int.parse(result);
-                          });
-                        } else {
-                          setState(() {});
-                        }
-                      },
-                    ))
+                    if (result != null) {
+                      setState(() {
+                        widget.lang = int.parse(result);
+                      });
+                    } else {
+                      setState(() {});
+                    }
+                  },
+                ))
               ];
             },
           ),
@@ -541,11 +541,12 @@ class _NotesState extends State<Notes> {
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => NoteDetail(
-              title: texts["NoteDetail"],
-              updateNote: note,
-              lang: widget.lang,
-            )));
+            builder: (context) =>
+                NoteDetail(
+                  title: texts["NoteDetail"],
+                  updateNote: note,
+                  lang: widget.lang,
+                )));
     return result;
   }
 
