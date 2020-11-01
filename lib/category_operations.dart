@@ -37,6 +37,8 @@ class _CategoriesState extends State<Categories> {
     "updateCategoryDialog_RaisedButton1_SnackBar":
         "category successfully updated",
     "updateCategoryDialog_RaisedButton1": "Update",
+    "_delCategory_else":
+        "You can't delete General category because of Password Note",
   };
 
   Map<String, String> turkish = {
@@ -52,23 +54,25 @@ class _CategoriesState extends State<Categories> {
     "updateCategoryDialog_Padding_validator": "Lütfen en az 3 karakter giriniz",
     "updateCategoryDialog_RaisedButton": "İptal",
     "updateCategoryDialog_RaisedButton1_SnackBar":
-        "kategori başarıyla güncellendi 👌",
+    "kategori başarıyla güncellendi 👌",
     "updateCategoryDialog_RaisedButton1": "Güncelle",
+    "_delCategory_else":
+    "Password Notundan dolayı General kategorisini silemezsiniz",
   };
 
   @override
   void initState() {
     super.initState();
     databaseHelper = DatabaseHelper();
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
-    // AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    // AdmobHelper.myBannerAd
-    //   ..load()
-    //   ..show(anchorOffset: 10);
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    AdmobHelper.myBannerAd
+      ..load()
+      ..show(anchorOffset: 10);
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -143,14 +147,20 @@ class _CategoriesState extends State<Categories> {
   }
 
   void _delCategory(BuildContext context, int categoryID) {
-    databaseHelper.deleteCategory(categoryID).then((deletedCategory) {
-      if (deletedCategory != 0) {
-        setState(() {
-          updateCategoryList();
-        });
-        Navigator.pop(context, "deleted");
-      }
-    });
+    if (categoryID != 1) {
+      databaseHelper.deleteCategory(categoryID).then((deletedCategory) {
+        if (deletedCategory != 0) {
+          setState(() {
+            updateCategoryList();
+          });
+          Navigator.pop(context, "deleted");
+        }
+      });
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(texts["_delCategory_else"]),
+      ));
+    }
   }
 
   _updateCategory(Category updateCategory, BuildContext context) {

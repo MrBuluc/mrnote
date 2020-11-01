@@ -53,15 +53,15 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
-    // AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    // AdmobHelper.myBannerAd
-    //   ..load()
-    //   ..show(anchorOffset: 10);
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    AdmobHelper.myBannerAd
+      ..load()
+      ..show(anchorOffset: 10);
     switch (widget.lang) {
       case 0:
         texts = english;
