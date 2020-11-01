@@ -4,12 +4,16 @@ import 'package:mrnote/category_operations.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
-import 'package:mrnote/utils/admob_helper.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
+import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
 
 class NoteList extends StatefulWidget {
+  int lang;
+
+  NoteList(this.lang);
+
   @override
   _NoteListState createState() => _NoteListState();
 }
@@ -22,15 +26,55 @@ class _NoteListState extends State<NoteList> {
 
   InterstitialAd myInterstitialAd;
 
+  Map<String, String> texts;
+
+  Map<String, String> english = {
+    "PopupMenuItem": "Categories =>",
+    "PopupMenuItem1": "All Notes",
+    "PopupMenuItem2": "Settings =>",
+    "FloatingActionButton_tooltip": "Add Category",
+    "FloatingActionButton_heroTag": "Add Category",
+    "FloatingActionButton1_title": "New Note",
+    "FloatingActionButton1_tooltip": "Add Note",
+    "FloatingActionButton1_heroTag": "Add Note",
+    "addCategoryDialog_SimpleDialog_title": "Add Category",
+    "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Category Name",
+    "addCategoryDialog_SimpleDialog_TextFormField_validator":
+        "Please enter least 3 character",
+    "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "Cancel ❌",
+    "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
+        "category successfully added 👌",
+    "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
+  };
+
+  Map<String, String> turkish = {
+    "PopupMenuItem": "Kategoriler =>",
+    "PopupMenuItem1": "Tüm Notlar",
+    "PopupMenuItem2": "Ayarlar =>",
+    "FloatingActionButton_tooltip": "Kategori Ekle",
+    "FloatingActionButton_heroTag": "Kategori Ekle",
+    "FloatingActionButton1_title": "Yeni Not",
+    "FloatingActionButton1_tooltip": "Not Ekle",
+    "FloatingActionButton1_heroTag": "Not Ekle",
+    "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
+    "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
+    "addCategoryDialog_SimpleDialog_TextFormField_validator":
+        "Lütfen en az 3 karakter giriniz",
+    "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
+    "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
+        "Kategori başarıyla eklendi 👌",
+    "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
+  };
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
   }
 
   @override
@@ -41,6 +85,14 @@ class _NoteListState extends State<NoteList> {
 
   @override
   Widget build(BuildContext context) {
+    switch (widget.lang) {
+      case 0:
+        texts = english;
+        break;
+      case 1:
+        texts = turkish;
+        break;
+    }
     if (allCategories == null) {
       allCategories = List<Category>();
       updateCategoryList();
@@ -49,7 +101,7 @@ class _NoteListState extends State<NoteList> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Center(
-          child: Text("         Mr. Note"),
+          child: Text("Mr. Note"),
         ),
         actions: <Widget>[
           PopupMenuButton(
@@ -57,44 +109,45 @@ class _NoteListState extends State<NoteList> {
               return [
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    "Categories =>",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    var result = await _goToCategoriesPage();
-                    if (result != null) {
-                      setState(() {
-                        updateCategoryList();
-                      });
-                    } else {
-                      setState(() {});
-                    }
-                  },
-                )),
+                      leading: Icon(
+                        Icons.import_contacts,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        var result = await _goToPage(Categories(lang: widget
+                            .lang));
+                        if (result != null) {
+                          setState(() {
+                            updateCategoryList();
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    )),
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    "All Notes",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    setState(() {
-                      localCategoryID = 0;
-                    });
-                    Navigator.pop(context);
-                    setState(() {});
-                  },
-                )),
+                      leading: Icon(
+                        Icons.import_contacts,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem1"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        setState(() {
+                          localCategoryID = 0;
+                        });
+                        Navigator.pop(context);
+                        setState(() {});
+                      },
+                    )),
                 for (int index = 0; index < allCategories.length; index++)
                   PopupMenuItem(
                     child: ListTile(
@@ -115,6 +168,30 @@ class _NoteListState extends State<NoteList> {
                       ),
                     ),
                   ),
+                PopupMenuItem(
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.settings,
+                        color: Colors.green,
+                        size: 30,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem2"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        var result =
+                        await _goToPage(SettingsPage(lang: widget.lang));
+                        if (result != null) {
+                          setState(() {
+                            widget.lang = int.parse(result);
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    ))
               ];
             },
           ),
@@ -127,25 +204,28 @@ class _NoteListState extends State<NoteList> {
             onPressed: () {
               addCategoryDialog(context);
             },
-            tooltip: "Add Category",
+            tooltip: texts["FloatingActionButton_tooltip"],
             child: Icon(Icons.import_contacts),
             mini: true,
-            heroTag: "Add Category",
+            heroTag: texts["FloatingActionButton_heroTag"],
           ),
           FloatingActionButton(
             onPressed: () async {
-              var result = await _goToDetailPage(context);
+              var result = await _goToPage(NoteDetail(
+                title: texts["FloatingActionButton1_title"],
+                lang: widget.lang,
+              ));
               if (result != null) {
                 setState(() {});
               }
             },
-            tooltip: "Add Note",
+            tooltip: texts["FloatingActionButton1_tooltip"],
             child: Icon(Icons.add),
-            heroTag: "Add Note",
+            heroTag: texts["FloatingActionButton1_heroTag"],
           ),
         ],
       ),
-      body: Notes(localCategoryID),
+      body: Notes(localCategoryID, widget.lang),
     );
   }
 
@@ -159,8 +239,10 @@ class _NoteListState extends State<NoteList> {
         builder: (context) {
           return SimpleDialog(
             title: Text(
-              "Add Category",
-              style: TextStyle(color: Theme.of(context).primaryColor),
+              texts["addCategoryDialog_SimpleDialog_title"],
+              style: TextStyle(color: Theme
+                  .of(context)
+                  .primaryColor),
             ),
             children: <Widget>[
               Form(
@@ -169,12 +251,14 @@ class _NoteListState extends State<NoteList> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     decoration: InputDecoration(
-                      labelText: "Category Name",
+                      labelText: texts[
+                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value.length < 3) {
-                        return "Please enter least 3 character";
+                        return texts[
+                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                       } else
                         return null;
                     },
@@ -192,7 +276,8 @@ class _NoteListState extends State<NoteList> {
                     },
                     color: Colors.orangeAccent,
                     child: Text(
-                      "Cancel",
+                      texts[
+                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -205,7 +290,8 @@ class _NoteListState extends State<NoteList> {
                             .then((value) {
                           if (value > 0) {
                             _scaffoldKey.currentState.showSnackBar(SnackBar(
-                              content: Text("category successfully added"),
+                              content: Text(texts[
+                              "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
                             Navigator.pop(context);
@@ -218,7 +304,8 @@ class _NoteListState extends State<NoteList> {
                     },
                     color: Colors.redAccent,
                     child: Text(
-                      "Save",
+                      texts[
+                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -229,19 +316,9 @@ class _NoteListState extends State<NoteList> {
         });
   }
 
-  Future<String> _goToDetailPage(BuildContext context) async {
-    final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => NoteDetail(
-                  title: "New Note",
-                )));
-    return result;
-  }
-
-  Future<String> _goToCategoriesPage() async {
+  Future<String> _goToPage(Object page) async {
     final result = await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => Categories()));
+        .push(MaterialPageRoute(builder: (context) => page));
     return result;
   }
 
@@ -256,8 +333,9 @@ class _NoteListState extends State<NoteList> {
 
 class Notes extends StatefulWidget {
   int categoryID;
+  int lang;
 
-  Notes(this.categoryID);
+  Notes(this.categoryID, this.lang);
 
   @override
   _NotesState createState() => _NotesState();
@@ -268,6 +346,42 @@ class _NotesState extends State<Notes> {
   DatabaseHelper databaseHelper;
   Color red = Color(0xFFff0000);
 
+  Map<String, dynamic> texts;
+
+  Map<String, dynamic> english = {
+    "Padding": "Before create new note, you have to create new category",
+    "Column_Row": "Category: ",
+    "Column_Row1": "Creation Date: ",
+    "Column_Padding": "Content",
+    "Column_RaisedButton": "Update",
+    "Column_RaisedButton1": "Delete",
+    "NoteDetail": "Update Note",
+    "Priority": ["Low", "Medium", "High"],
+    "_delNote_if": "1 Mr. Note Deleted",
+    "_delNote_else": "You can't delete Password Note",
+    "_areYouSureforDelete_baslik": "Are you Sure?",
+    "_areYouSureforDelete_icerik": "1 Mr. Note will be deleted.",
+    "_areYouSureforDelete_anaButonYazisi": "DELETE",
+    "_areYouSureforDelete_iptalButonYazisi": "CANCEL",
+  };
+
+  Map<String, dynamic> turkish = {
+    "Padding": "Yeni Not oluşturmadan önce, yeni kategori oluşturmalısınız",
+    "Column_Row": "Kategori: ",
+    "Column_Row1": "Oluşturulma Tarihi: ",
+    "Column_Padding": "İçerik",
+    "Column_RaisedButton": "Güncelle",
+    "Column_RaisedButton1": "Sil",
+    "NoteDetail": "Notu Güncelle",
+    "Priority": ["Düşük", "Orta", "Yüksek"],
+    "_delNote_if": "1 Mr. Not Silindi",
+    "_delNote_else": "Parola Notunu silemezsiniz",
+    "_areYouSureforDelete_baslik": "Emin misiniz?",
+    "_areYouSureforDelete_icerik": "1 Mr. Note silinecek.",
+    "_areYouSureforDelete_anaButonYazisi": "SİL",
+    "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
+  };
+
   @override
   void initState() {
     super.initState();
@@ -277,130 +391,136 @@ class _NotesState extends State<Notes> {
 
   @override
   Widget build(BuildContext context) {
+    switch (widget.lang) {
+      case 0:
+        texts = english;
+        break;
+      case 1:
+        texts = turkish;
+        break;
+    }
     getFilterNotesList(widget.categoryID);
     return allNotes.length == 0
         ? Center(
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "Before create new note, you have to create new category",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          )
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Text(
+          texts["Padding"],
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    )
         : ListView.builder(
-            itemCount: allNotes.length,
-            itemBuilder: (context, index) {
-              return ExpansionTile(
-                leading: _setPriorityIcon(allNotes[index].notePriority),
-                title: Text(
-                  allNotes[index].noteTitle,
-                  style: TextStyle(fontSize: 20),
-                ),
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(4),
-                    child: Column(
+        itemCount: allNotes.length,
+        itemBuilder: (context, index) {
+          return ExpansionTile(
+            leading: _setPriorityIcon(allNotes[index].notePriority),
+            title: Text(
+              allNotes[index].noteTitle,
+              style: TextStyle(fontSize: 20),
+            ),
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(4),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                "Category: ",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 20),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                allNotes[index].categoryTitle,
-                                style: TextStyle(color: red, fontSize: 20),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                "Creation Date: ",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 20),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                databaseHelper.dateFormat(
-                                    DateTime.parse(allNotes[index].noteTime)),
-                                style: TextStyle(color: red, fontSize: 20),
-                              ),
-                            ),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            texts["Column_Row"],
+                            style: TextStyle(
+                                color: Colors.black, fontSize: 20),
+                          ),
                         ),
                         Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: TextFormField(
-                              maxLines: 5,
-                              decoration: InputDecoration(
-                                labelText: "Content",
-                                border: OutlineInputBorder(),
-                              ),
-                              initialValue: allNotes[index].noteContent,
-                              readOnly: true,
-                            )
-                            //Text(allNotes[index].noteContent, style: TextStyle(fontSize: 20),),
-                            ),
-                        ButtonBar(
-                          alignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            RaisedButton(
-                              onPressed: () async {
-                                var result = await _goToDetailPage(
-                                    context, allNotes[index]);
-                                if (result != null) {
-                                  setState(() {});
-                                }
-                              },
-                              child: Text(
-                                "Update",
-                                style: TextStyle(
-                                    color: allNotes[index].notePriority == 2
-                                        ? Colors.white
-                                        : Colors.black,
-                                    fontSize: 20),
-                              ),
-                              color: _setBackgroundColor(
-                                  allNotes[index].notePriority),
-                            ),
-                            RaisedButton(
-                              onPressed: () {
-                                _areYouSureforDelete(allNotes[index].noteID);
-                              },
-                              child: Text(
-                                "Delete",
-                                style: TextStyle(
-                                    color: _setBackgroundColor(
-                                        allNotes[index].notePriority),
-                                    fontSize: 20),
-                              ),
-                              color: allNotes[index].notePriority == 2
-                                  ? Colors.grey
-                                  : Colors.black,
-                            ),
-                          ],
-                        )
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            allNotes[index].categoryTitle,
+                            style: TextStyle(color: red, fontSize: 20),
+                          ),
+                        ),
                       ],
                     ),
-                  )
-                ],
-              );
-            });
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            texts["Column_Row1"],
+                            style: TextStyle(
+                                color: Colors.black, fontSize: 20),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            databaseHelper.dateFormat(
+                                DateTime.parse(allNotes[index].noteTime)),
+                            style: TextStyle(color: red, fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: TextFormField(
+                          maxLines: 5,
+                          decoration: InputDecoration(
+                            labelText: texts["Column_Padding"],
+                            border: OutlineInputBorder(),
+                          ),
+                          initialValue: allNotes[index].noteContent,
+                          readOnly: true,
+                        )),
+                    ButtonBar(
+                      alignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        RaisedButton(
+                          onPressed: () async {
+                            var result = await _goToDetailPage(
+                                context, allNotes[index]);
+                            if (result != null) {
+                              setState(() {});
+                            }
+                          },
+                          child: Text(
+                            texts["Column_RaisedButton"],
+                            style: TextStyle(
+                                color: allNotes[index].notePriority == 2
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 20),
+                          ),
+                          color: _setBackgroundColor(
+                              allNotes[index].notePriority),
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            _areYouSureforDelete(allNotes[index].noteID);
+                          },
+                          child: Text(
+                            texts["Column_RaisedButton1"],
+                            style: TextStyle(
+                                color: _setBackgroundColor(
+                                    allNotes[index].notePriority),
+                                fontSize: 20),
+                          ),
+                          color: allNotes[index].notePriority == 2
+                              ? Colors.grey
+                              : Colors.black,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          );
+        });
   }
 
   Future<void> getFilterNotesList(int categoryID) async {
@@ -423,8 +543,9 @@ class _NotesState extends State<Notes> {
         context,
         MaterialPageRoute(
             builder: (context) => NoteDetail(
-                  title: "Update Note",
-                  updateNote: note,
+              title: texts["NoteDetail"],
+              updateNote: note,
+              lang: widget.lang,
                 )));
     return result;
   }
@@ -434,8 +555,8 @@ class _NotesState extends State<Notes> {
       case 0:
         return CircleAvatar(
           child: Text(
-            "Low",
-            style: TextStyle(color: Colors.black),
+            texts["Priority"][0],
+            style: TextStyle(color: Colors.black, fontSize: 13),
           ),
           backgroundColor: Colors.green,
         );
@@ -443,7 +564,7 @@ class _NotesState extends State<Notes> {
       case 1:
         return CircleAvatar(
           child: Text(
-            "Medium",
+            texts["Priority"][1],
             style: TextStyle(color: Colors.black, fontSize: 10),
           ),
           backgroundColor: Colors.yellow,
@@ -452,8 +573,8 @@ class _NotesState extends State<Notes> {
       case 2:
         return CircleAvatar(
             child: Text(
-              "High",
-              style: TextStyle(color: Colors.white),
+              texts["Priority"][2],
+              style: TextStyle(color: Colors.white, fontSize: 12),
             ),
             backgroundColor: red);
         break;
@@ -478,13 +599,13 @@ class _NotesState extends State<Notes> {
     databaseHelper.deleteNote(noteID).then((deletedID) {
       if (deletedID != 0) {
         Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text("Note Deleted"),
+          content: Text(texts["_delNote_if"]),
         ));
 
         setState(() {});
       } else {
         Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text("You can't delete Password Note"),
+          content: Text(texts["_delNote_else"]),
         ));
       }
     });
@@ -492,10 +613,10 @@ class _NotesState extends State<Notes> {
 
   Future<void> _areYouSureforDelete(int noteID) async {
     final sonuc = await PlatformDuyarliAlertDialog(
-      baslik: "Are you Sure?",
-      icerik: "1 Mr. Note will be deleted.",
-      anaButonYazisi: "DELETE",
-      iptalButonYazisi: "CANCEL",
+      baslik: texts["_areYouSureforDelete_baslik"],
+      icerik: texts["_areYouSureforDelete_icerik"],
+      anaButonYazisi: texts["_areYouSureforDelete_anaButonYazisi"],
+      iptalButonYazisi: texts["_areYouSureforDelete_iptalButonYazisi"],
     ).goster(context);
 
     if (sonuc) {

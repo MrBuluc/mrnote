@@ -7,6 +7,10 @@ import 'package:mrnote/utils/database_helper.dart';
 import 'utils/admob_helper.dart';
 
 class Categories extends StatefulWidget {
+  int lang;
+
+  Categories({this.lang});
+
   @override
   _CategoriesState createState() => _CategoriesState();
 }
@@ -17,19 +21,62 @@ class _CategoriesState extends State<Categories> {
 
   InterstitialAd myInterstitialAd;
 
+  Map<String, String> texts;
+
+  Map<String, String> english = {
+    "AppBar": "Categories",
+    "_sureForDelCategory_baslik": "Are you sure?",
+    "_sureForDelCategory_icerik": "Are you sure for delete the category?\n" +
+        "This action will delete all notes in this category.",
+    "_sureForDelCategory_anaButonYazisi": "Yes",
+    "_sureForDelCategory_iptalButonYazisi": "No",
+    "updateCategoryDialog_title": "Update Category",
+    "updateCategoryDialog_Padding_labelText": "Category Name",
+    "updateCategoryDialog_Padding_validator": "Please enter least 3 character",
+    "updateCategoryDialog_RaisedButton": "Cancel",
+    "updateCategoryDialog_RaisedButton1_SnackBar":
+        "category successfully updated",
+    "updateCategoryDialog_RaisedButton1": "Update",
+  };
+
+  Map<String, String> turkish = {
+    "AppBar": "Kategoriler",
+    "_sureForDelCategory_baslik": "Emin misiniz?",
+    "_sureForDelCategory_icerik":
+        "Kategoriyi silmek istediğinizden emin misiniz?\n" +
+            "Bu işlem, bu kategorideki tüm notları silecek.",
+    "_sureForDelCategory_anaButonYazisi": "Evet",
+    "_sureForDelCategory_iptalButonYazisi": "Hayır",
+    "updateCategoryDialog_title": "Kategori Güncelle",
+    "updateCategoryDialog_Padding_labelText": "Kategori Adı",
+    "updateCategoryDialog_Padding_validator": "Lütfen en az 3 karakter giriniz",
+    "updateCategoryDialog_RaisedButton": "İptal",
+    "updateCategoryDialog_RaisedButton1_SnackBar":
+        "kategori başarıyla güncellendi 👌",
+    "updateCategoryDialog_RaisedButton1": "Güncelle",
+  };
+
   @override
   void initState() {
     super.initState();
     databaseHelper = DatabaseHelper();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    AdmobHelper.myBannerAd
-      ..load()
-      ..show(anchorOffset: 10);
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
+    // AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    // AdmobHelper.myBannerAd
+    //   ..load()
+    //   ..show(anchorOffset: 10);
+    switch (widget.lang) {
+      case 0:
+        texts = english;
+        break;
+      case 1:
+        texts = turkish;
+        break;
+    }
   }
 
   @override
@@ -47,7 +94,7 @@ class _CategoriesState extends State<Categories> {
     }
     return Scaffold(
         appBar: AppBar(
-          title: Text("Categories"),
+          title: Text(texts["AppBar"]),
         ),
         body: ListView.builder(
             itemCount: allCategories.length,
@@ -84,11 +131,10 @@ class _CategoriesState extends State<Categories> {
 
   _sureForDelCategory(BuildContext context, int categoryID) async {
     final result = await PlatformDuyarliAlertDialog(
-      baslik: "Are you sure?",
-      icerik: "Are you sure to delete the category?\n" +
-          "This action will delete all notes in this category.",
-      anaButonYazisi: "Yes",
-      iptalButonYazisi: "No",
+      baslik: texts["_sureForDelCategory_baslik"],
+      icerik: texts["_sureForDelCategory_icerik"],
+      anaButonYazisi: texts["_sureForDelCategory_anaButonYazisi"],
+      iptalButonYazisi: texts["_sureForDelCategory_iptalButonYazisi"],
     ).goster(context);
 
     if (result) {
@@ -97,6 +143,7 @@ class _CategoriesState extends State<Categories> {
   }
 
   void _delCategory(BuildContext context, int categoryID) {
+
     databaseHelper.deleteCategory(categoryID).then((deletedCategory) {
       if (deletedCategory != 0) {
         setState(() {
@@ -121,8 +168,10 @@ class _CategoriesState extends State<Categories> {
         builder: (context) {
           return SimpleDialog(
             title: Text(
-              "Update Category",
-              style: TextStyle(color: Theme.of(context).primaryColor),
+              texts["updateCategoryDialog_title"],
+              style: TextStyle(color: Theme
+                  .of(context)
+                  .primaryColor),
             ),
             children: <Widget>[
               Form(
@@ -132,12 +181,13 @@ class _CategoriesState extends State<Categories> {
                   child: TextFormField(
                     initialValue: updateCategory.categoryTitle,
                     decoration: InputDecoration(
-                      labelText: "Category Name",
+                      labelText:
+                      texts["updateCategoryDialog_Padding_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value.length < 3) {
-                        return "Please enter least 3 character";
+                        return texts["updateCategoryDialog_Padding_validator"];
                       } else
                         return null;
                     },
@@ -155,7 +205,7 @@ class _CategoriesState extends State<Categories> {
                     },
                     color: Colors.orangeAccent,
                     child: Text(
-                      "Cancel",
+                      texts["updateCategoryDialog_RaisedButton"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -169,7 +219,8 @@ class _CategoriesState extends State<Categories> {
                             .then((catID) {
                           if (catID != 0) {
                             Scaffold.of(myContext).showSnackBar(SnackBar(
-                              content: Text("category successfully updated"),
+                              content: Text(texts[
+                              "updateCategoryDialog_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
                             updateCategoryList();
@@ -181,7 +232,7 @@ class _CategoriesState extends State<Categories> {
                     },
                     color: Colors.redAccent,
                     child: Text(
-                      "Update",
+                      texts["updateCategoryDialog_RaisedButton1"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

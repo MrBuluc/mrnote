@@ -4,6 +4,10 @@ import 'package:mrnote/note_list.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 class Login extends StatefulWidget {
+  int lang;
+
+  Login({this.lang});
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -18,11 +22,45 @@ class _LoginState extends State<Login> {
 
   Note note;
 
+  Map<String, String> texts;
+
+  Map<String, String> english = {
+    "Text1": "Enter the Password",
+    "TextFormField_hintText": "Password",
+    "TextFormField_labelText": "Your Password",
+    "RaisedButton_Text": "Reset The Password",
+    "result_enterTrue": "Logging In...",
+    "result_enterFalse": "Wrong Password",
+    "result_resetNull":
+        "Press the Enter button after that\n" + "press the Reset button",
+    "result_resetElse":
+        "Password has been reset\n" + "You can enter the Mr. Note"
+  };
+
+  Map<String, String> turkish = {
+    "Text1": "Parolanızı Giriniz",
+    "TextFormField_hintText": "Parola",
+    "TextFormField_labelText": "Parolanız",
+    "RaisedButton_Text": "Parolayı Sıfırla",
+    "result_enterTrue": "Giriş Yapılıyor...",
+    "result_enterFalse": "Yanlış Parola",
+    "result_resetNull":
+        "Giriş butonuna basın sonra\n" + "Parolayı Sıfırla butonuna basın",
+    "result_resetElse": "Parola sıfırlandı\n" + "Mr. Note a girebilirsiniz"
+  };
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //AdmobHelper.admobInitialize();
+    switch (widget.lang) {
+      case 0:
+        texts = english;
+        break;
+      case 1:
+        texts = turkish;
+        break;
+    }
   }
 
   @override
@@ -43,7 +81,7 @@ class _LoginState extends State<Login> {
             child: Icon(Icons.arrow_forward),
           ),
           appBar: AppBar(
-            title: Text("Mr. Note Enter the Password"),
+            title: Center(child: Text("Mr. Note")),
           ),
           body: Container(
             child: Center(
@@ -53,6 +91,11 @@ class _LoginState extends State<Login> {
                 child: Form(
                   key: formKey,
                   child: ListView(children: <Widget>[
+                    Center(
+                        child: Text(
+                          texts["Text1"],
+                          style: TextStyle(fontSize: 20),
+                        )),
                     SizedBox(
                       height: 10,
                     ),
@@ -60,9 +103,9 @@ class _LoginState extends State<Login> {
                       obscureText: true,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock),
-                        hintText: "Password",
+                        hintText: texts["TextFormField_hintText"],
                         hintStyle: TextStyle(fontSize: 12),
-                        labelText: "Your Password",
+                        labelText: texts["TextFormField_labelText"],
                         border: OutlineInputBorder(),
                       ),
                       onSaved: (String value) => password = value,
@@ -72,7 +115,7 @@ class _LoginState extends State<Login> {
                     ),
                     RaisedButton(
                       child: Text(
-                        "Reset The Password",
+                        texts["RaisedButton_Text"],
                         style: TextStyle(color: Colors.yellow),
                       ),
                       color: Colors.purple,
@@ -111,19 +154,19 @@ class _LoginState extends State<Login> {
 
     formKey.currentState.save();
     setState(() {
-      result = "Logging In...";
+      result = texts["result_enterTrue"];
     });
 
     if (password == truePassword) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => NoteList()));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => NoteList(widget.lang)));
       // Navigator.push(
       //     context,
       //     MaterialPageRoute(
       //         builder: (context) => NoteList()));
     } else {
       setState(() {
-        result = "Wrong Password";
+        result = texts["result_enterFalse"];
       });
     }
   }
@@ -131,8 +174,7 @@ class _LoginState extends State<Login> {
   Future<void> resetThePassword() async {
     if (note == null) {
       setState(() {
-        result =
-            "Press the Enter button after that\n" + "press the Reset button";
+        result = texts["result_resetNull"];
       });
     } else {
       note.noteContent = null;
@@ -143,7 +185,7 @@ class _LoginState extends State<Login> {
           .then((updatedID) {
         if (updatedID != 0) {
           setState(() {
-            result = "Password has been reset\n" + "You can enter the Mr. Note";
+            result = texts["result_resetElse"];
           });
         }
       });

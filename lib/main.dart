@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mrnote/Login/login.dart';
+import 'package:mrnote/app/landing_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.purple,
           primaryColor: Color(0xFFff0000),
           accentColor: Colors.orange),
-      home: Login(),
+      home: LandingPage(),
     );
   }
 }
