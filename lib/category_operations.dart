@@ -217,7 +217,7 @@ class _CategoriesState extends State<Categories> {
                           if (catID != 0) {
                             Scaffold.of(myContext).showSnackBar(SnackBar(
                               content: Text(texts[
-                              "updateCategoryDialog_RaisedButton1_SnackBar"]),
+                                  "updateCategoryDialog_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
                             updateCategoryList();
