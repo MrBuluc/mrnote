@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:flutter/services.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static DatabaseHelper _databaseHelper;
@@ -171,46 +171,88 @@ class DatabaseHelper {
     return sonuc;
   }
 
-  String dateFormat(DateTime dt) {
+  String dateFormat(DateTime dt, int lang) {
     String month;
-    switch (dt.month) {
-      case 1:
-        month = "January";
-        break;
-      case 2:
-        month = "February";
-        break;
-      case 3:
-        month = "March";
-        break;
-      case 4:
-        month = "April";
-        break;
-      case 5:
-        month = "May";
-        break;
-      case 6:
-        month = "June";
-        break;
-      case 7:
-        month = "July";
-        break;
-      case 8:
-        month = "August";
-        break;
-      case 9:
-        month = "September";
-        break;
-      case 10:
-        month = "October";
-        break;
-      case 11:
-        month = "November";
-        break;
-      case 12:
-        month = "December";
-        break;
+    if (lang == 0) {
+      switch (dt.month) {
+        case 1:
+          month = "January";
+          break;
+        case 2:
+          month = "February";
+          break;
+        case 3:
+          month = "March";
+          break;
+        case 4:
+          month = "April";
+          break;
+        case 5:
+          month = "May";
+          break;
+        case 6:
+          month = "June";
+          break;
+        case 7:
+          month = "July";
+          break;
+        case 8:
+          month = "August";
+          break;
+        case 9:
+          month = "September";
+          break;
+        case 10:
+          month = "October";
+          break;
+        case 11:
+          month = "November";
+          break;
+        case 12:
+          month = "December";
+          break;
+      }
+    } else if (lang == 1) {
+      switch (dt.month) {
+        case 1:
+          month = "Ocak";
+          break;
+        case 2:
+          month = "Şubat";
+          break;
+        case 3:
+          month = "Mart";
+          break;
+        case 4:
+          month = "Nisan";
+          break;
+        case 5:
+          month = "Mayıs";
+          break;
+        case 6:
+          month = "Haziran";
+          break;
+        case 7:
+          month = "Temmuz";
+          break;
+        case 8:
+          month = "Ağustos";
+          break;
+        case 9:
+          month = "Eylül";
+          break;
+        case 10:
+          month = "Ekim";
+          break;
+        case 11:
+          month = "Kasım";
+          break;
+        case 12:
+          month = "Aralık";
+          break;
+      }
     }
+
     return month + " " + dt.day.toString() + ", " + dt.year.toString();
   }
 }

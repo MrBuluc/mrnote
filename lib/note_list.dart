@@ -240,9 +240,7 @@ class _NoteListState extends State<NoteList> {
           return SimpleDialog(
             title: Text(
               texts["addCategoryDialog_SimpleDialog_title"],
-              style: TextStyle(color: Theme
-                  .of(context)
-                  .primaryColor),
+              style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             children: <Widget>[
               Form(
@@ -368,7 +366,7 @@ class _NotesState extends State<Notes> {
   Map<String, dynamic> turkish = {
     "Padding": "Yeni Not oluşturmadan önce, yeni kategori oluşturmalısınız",
     "Column_Row": "Kategori: ",
-    "Column_Row1": "Oluşturulma Tarihi: ",
+    "Column_Row1": "Oluşturma Tarihi: ",
     "Column_Padding": "İçerik",
     "Column_RaisedButton": "Güncelle",
     "Column_RaisedButton1": "Sil",
@@ -459,7 +457,8 @@ class _NotesState extends State<Notes> {
                           padding: const EdgeInsets.all(8),
                           child: Text(
                             databaseHelper.dateFormat(
-                                DateTime.parse(allNotes[index].noteTime)),
+                                DateTime.parse(allNotes[index].noteTime),
+                                widget.lang),
                             style: TextStyle(color: red, fontSize: 20),
                           ),
                         ),
