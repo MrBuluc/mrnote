@@ -67,10 +67,10 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Theme(
         data: Theme.of(context).copyWith(
-            accentColor: Colors.green,
-            hintColor: Colors.indigo,
-            errorColor: Colors.red,
-            primaryColor: Colors.teal),
+          accentColor: Colors.green,
+          hintColor: Colors.indigo,
+          errorColor: Colors.red,
+        ),
         child: Scaffold(
           key: _scaffoldKey,
           floatingActionButton: FloatingActionButton(
@@ -160,10 +160,6 @@ class _LoginState extends State<Login> {
     if (password == truePassword) {
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => NoteList(widget.lang)));
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => NoteList()));
     } else {
       setState(() {
         result = texts["result_enterFalse"];

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:mrnote/utils/admob_helper.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,6 +35,9 @@ class _SettingsPageState extends State<SettingsPage> {
     "save_baslik": "Saved Successfully ✔",
     "save_icerik": "✔✔✔✔✔✔✔✔✔✔✔✔✔✔✔",
     "save_anaButonYazisi": "Ok",
+    "Container_Padding1": "Theme Color :",
+    "AlertDialog": 'Select a color',
+    "RaisedButtonText": "Select Color",
   };
 
   Map<String, String> turkish = {
@@ -48,20 +52,25 @@ class _SettingsPageState extends State<SettingsPage> {
     "save_baslik": "Başarılı Bir Şekilde Kaydedildi ✔",
     "save_icerik": "✔✔✔✔✔✔✔✔✔✔✔✔✔✔✔",
     "save_anaButonYazisi": "Tamam",
+    "Container_Padding1": "Tema Rengi :",
+    "AlertDialog": 'Bir Renk Seçin',
+    "RaisedButtonText": "Renk Seç",
   };
+
+  Color currentColor = Colors.limeAccent;
 
   @override
   void initState() {
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    AdmobHelper.myBannerAd
-      ..load()
-      ..show(anchorOffset: 10);
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
+    // AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    // AdmobHelper.myBannerAd
+    //   ..load()
+    //   ..show(anchorOffset: 10);
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -131,6 +140,44 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 )
               ],
+            ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    texts["Container_Padding1"],
+                    style: TextStyle(fontSize: 20, color: Colors.blue),
+                  ),
+                ),
+                RaisedButton(
+                  elevation: 3.0,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(texts["AlertDialog"]),
+                          content: SingleChildScrollView(
+                            child: BlockPicker(
+                              pickerColor: currentColor,
+                              onColorChanged: (Color color) {
+                                Navigator.pop(context);
+                                changeColor(color);
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Text(texts["RaisedButtonText"]),
+                  color: currentColor,
+                  textColor: useWhiteForeground(currentColor)
+                      ? const Color(0xffffffff)
+                      : const Color(0xff000000),
+                ),
+              ],
             )
           ],
         ),
@@ -173,4 +220,6 @@ class _SettingsPageState extends State<SettingsPage> {
       Navigator.pop(context, lang.toString());
     }
   }
+
+  void changeColor(Color color) => setState(() => currentColor = color);
 }

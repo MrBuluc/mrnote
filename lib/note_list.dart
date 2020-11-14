@@ -4,7 +4,6 @@ import 'package:mrnote/category_operations.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
-import 'package:mrnote/utils/admob_helper.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
@@ -71,11 +70,11 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
   }
 
   @override
@@ -250,7 +249,7 @@ class _NoteListState extends State<NoteList> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: texts[
-                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
