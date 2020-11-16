@@ -9,8 +9,9 @@ import 'package:path_provider/path_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   int lang;
+  Color color;
 
-  SettingsPage({this.lang});
+  SettingsPage({this.lang, this.color});
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -57,20 +58,20 @@ class _SettingsPageState extends State<SettingsPage> {
     "RaisedButtonText": "Renk Seç",
   };
 
-  Color currentColor = Colors.limeAccent;
+  Color currentColor;
 
   @override
   void initState() {
     super.initState();
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
-    // AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    // AdmobHelper.myBannerAd
-    //   ..load()
-    //   ..show(anchorOffset: 10);
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    AdmobHelper.myBannerAd
+      ..load()
+      ..show(anchorOffset: 10);
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -79,6 +80,7 @@ class _SettingsPageState extends State<SettingsPage> {
         texts = turkish;
         break;
     }
+    currentColor = widget.color;
   }
 
   @override
@@ -93,6 +95,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(texts["AppBar_title"]),
+        backgroundColor: currentColor,
         actions: [
           FlatButton(
             color: Colors.red.shade600,
@@ -102,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
               style: TextStyle(fontSize: 20),
             ),
             onPressed: () {
-              save(lang);
+              save(lang, currentColor);
             },
           )
         ],
@@ -173,9 +176,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   child: Text(texts["RaisedButtonText"]),
                   color: currentColor,
-                  textColor: useWhiteForeground(currentColor)
-                      ? const Color(0xffffffff)
-                      : const Color(0xff000000),
+                  textColor: const Color(0xffffffff),
                 ),
               ],
             )
@@ -198,12 +199,15 @@ class _SettingsPageState extends State<SettingsPage> {
         .toList();
   }
 
-  Future<void> save(int lang) async {
+  Future<void> save(int lang, Color color) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final path = directory.path;
-      final file = File("$path/settings.txt");
+      final file = File("$path/language.txt");
       file.writeAsString("language: $lang");
+
+      final file1 = File("$path/theme.txt");
+      file1.writeAsString(color.toString());
     } catch (e) {
       PlatformDuyarliAlertDialog(
         baslik: texts["save_catch_baslik"],
@@ -217,9 +221,12 @@ class _SettingsPageState extends State<SettingsPage> {
       anaButonYazisi: texts["save_anaButonYazisi"],
     ).goster(context);
     if (result) {
-      Navigator.pop(context, lang.toString());
+      String result1 = lang.toString() + color.value.toString();
+      Navigator.pop(context, result1);
     }
   }
 
-  void changeColor(Color color) => setState(() => currentColor = color);
+  void changeColor(Color color) {
+    setState(() => currentColor = color);
+  }
 }

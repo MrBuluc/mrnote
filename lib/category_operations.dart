@@ -8,8 +8,9 @@ import 'utils/admob_helper.dart';
 
 class Categories extends StatefulWidget {
   int lang;
+  Color color;
 
-  Categories({this.lang});
+  Categories({this.lang, this.color});
 
   @override
   _CategoriesState createState() => _CategoriesState();
@@ -54,10 +55,10 @@ class _CategoriesState extends State<Categories> {
     "updateCategoryDialog_Padding_validator": "Lütfen en az 3 karakter giriniz",
     "updateCategoryDialog_RaisedButton": "İptal",
     "updateCategoryDialog_RaisedButton1_SnackBar":
-    "kategori başarıyla güncellendi 👌",
+        "kategori başarıyla güncellendi 👌",
     "updateCategoryDialog_RaisedButton1": "Güncelle",
     "_delCategory_else":
-    "Password Notundan dolayı General kategorisini silemezsiniz",
+        "Password Notundan dolayı General kategorisini silemezsiniz",
   };
 
   @override
@@ -99,6 +100,7 @@ class _CategoriesState extends State<Categories> {
     return Scaffold(
         appBar: AppBar(
           title: Text(texts["AppBar"]),
+          backgroundColor: widget.color,
         ),
         body: ListView.builder(
             itemCount: allCategories.length,

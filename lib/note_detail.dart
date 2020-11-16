@@ -11,8 +11,9 @@ class NoteDetail extends StatefulWidget {
   String title;
   Note updateNote;
   int lang;
+  Color color;
 
-  NoteDetail({this.title, this.updateNote, this.lang});
+  NoteDetail({this.title, this.updateNote, this.lang, this.color});
 
   @override
   _NoteDetailState createState() => _NoteDetailState();
@@ -114,6 +115,7 @@ class _NoteDetailState extends State<NoteDetail> {
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: widget.color,
       ),
       body: allCategories.length <= 0
           ? Center(

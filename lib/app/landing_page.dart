@@ -12,13 +12,15 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   int lang;
+  Color currentColor;
 
   @override
   Widget build(BuildContext context) {
     read();
-    if (lang != null) {
+    if (lang != null && currentColor != null) {
       return Login(
         lang: lang,
+        color: currentColor,
       );
     } else {
       return Scaffold(
@@ -53,13 +55,19 @@ class _LandingPageState extends State<LandingPage> {
   Future<void> read() async {
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
-    final file = File("$path/settings.txt");
+    final file = File("$path/language.txt");
+    final file1 = File("$path/theme.txt");
     try {
       String contents = await file.readAsString();
       lang = int.parse(contents[10]);
+
+      String contents1 = await file1.readAsString();
+      int color = int.parse(contents1.substring(35, 45));
+      currentColor = Color(color);
       setState(() {});
     } catch (e) {
       file.writeAsString("language: 0");
+      file1.writeAsString("MaterialColor(primary value: Color(0xFFff0000))");
       setState(() {});
     }
   }

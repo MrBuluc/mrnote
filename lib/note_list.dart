@@ -8,11 +8,13 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
+import 'utils/admob_helper.dart';
 
 class NoteList extends StatefulWidget {
   int lang;
+  Color color;
 
-  NoteList(this.lang);
+  NoteList({this.lang, this.color});
 
   @override
   _NoteListState createState() => _NoteListState();
@@ -70,11 +72,11 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
   }
 
   @override
@@ -100,6 +102,7 @@ class _NoteListState extends State<NoteList> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        backgroundColor: widget.color,
         title: Center(
           child: Text("Mr. Note"),
         ),
@@ -111,42 +114,45 @@ class _NoteListState extends State<NoteList> {
                     child: ListTile(
                   leading: Icon(
                     Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    var result = await _goToPage(Categories(lang: widget.lang));
-                    if (result != null) {
-                      setState(() {
-                        updateCategoryList();
-                      });
-                    } else {
-                      setState(() {});
-                    }
-                  },
-                )),
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        var result = await _goToPage(Categories(
+                          lang: widget.lang,
+                          color: widget.color,
+                        ));
+                        if (result != null) {
+                          setState(() {
+                            updateCategoryList();
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    )),
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem1"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    setState(() {
-                      localCategoryID = 0;
-                    });
-                    Navigator.pop(context);
-                    setState(() {});
-                  },
-                )),
+                      leading: Icon(
+                        Icons.import_contacts,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem1"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        setState(() {
+                          localCategoryID = 0;
+                        });
+                        Navigator.pop(context);
+                        setState(() {});
+                      },
+                    )),
                 for (int index = 0; index < allCategories.length; index++)
                   PopupMenuItem(
                     child: ListTile(
@@ -169,28 +175,32 @@ class _NoteListState extends State<NoteList> {
                   ),
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.settings,
-                    color: Colors.green,
-                    size: 30,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem2"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    var result =
-                        await _goToPage(SettingsPage(lang: widget.lang));
-                    if (result != null) {
-                      setState(() {
-                        widget.lang = int.parse(result);
-                      });
-                    } else {
-                      setState(() {});
-                    }
-                  },
-                ))
+                      leading: Icon(
+                        Icons.settings,
+                        color: Colors.green,
+                        size: 30,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem2"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        var result = await _goToPage(SettingsPage(
+                          lang: widget.lang,
+                          color: widget.color,
+                        ));
+                        if (result != null) {
+                          setState(() {
+                            widget.lang = int.parse(result[0]);
+                            widget.color =
+                                Color(int.parse(result.substring(1)));
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    ))
               ];
             },
           ),
@@ -213,6 +223,7 @@ class _NoteListState extends State<NoteList> {
               var result = await _goToPage(NoteDetail(
                 title: texts["FloatingActionButton1_title"],
                 lang: widget.lang,
+                color: widget.color,
               ));
               if (result != null) {
                 setState(() {});
@@ -224,7 +235,11 @@ class _NoteListState extends State<NoteList> {
           ),
         ],
       ),
-      body: Notes(localCategoryID, widget.lang),
+      body: Notes(
+        categoryID: localCategoryID,
+        lang: widget.lang,
+        color: widget.color,
+      ),
     );
   }
 
@@ -331,8 +346,9 @@ class _NoteListState extends State<NoteList> {
 class Notes extends StatefulWidget {
   int categoryID;
   int lang;
+  Color color;
 
-  Notes(this.categoryID, this.lang);
+  Notes({this.categoryID, this.lang, this.color});
 
   @override
   _NotesState createState() => _NotesState();
@@ -545,6 +561,7 @@ class _NotesState extends State<Notes> {
                   title: texts["NoteDetail"],
                   updateNote: note,
                   lang: widget.lang,
+                  color: widget.color,
                 )));
     return result;
   }

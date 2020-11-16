@@ -5,8 +5,9 @@ import 'package:mrnote/utils/database_helper.dart';
 
 class Login extends StatefulWidget {
   int lang;
+  Color color;
 
-  Login({this.lang});
+  Login({this.lang, this.color});
 
   @override
   _LoginState createState() => _LoginState();
@@ -82,6 +83,7 @@ class _LoginState extends State<Login> {
           ),
           appBar: AppBar(
             title: Center(child: Text("Mr. Note")),
+            backgroundColor: widget.color,
           ),
           body: Container(
             child: Center(
@@ -158,8 +160,13 @@ class _LoginState extends State<Login> {
     });
 
     if (password == truePassword) {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => NoteList(widget.lang)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NoteList(
+                    lang: widget.lang,
+                    color: widget.color,
+                  )));
     } else {
       setState(() {
         result = texts["result_enterFalse"];
