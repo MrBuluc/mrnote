@@ -5,8 +5,6 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
-import 'utils/admob_helper.dart';
-
 class NoteDetail extends StatefulWidget {
   String title;
   Note updateNote;
@@ -40,8 +38,7 @@ class _NoteDetailState extends State<NoteDetail> {
     "Container_Padding1_labelText": "Mr. Note Title",
     "Container_Padding2_hintText": "Enter Mr. Note Content",
     "Container_Padding2_labelText": "Mr. Note Content",
-    "Container_Row": "Priority: ",
-    "Container_RaisedButton": "Cancel",
+    "Container_Row": "Priority :",
     "Container_RaisedButton1": "Save",
   };
 
@@ -54,8 +51,7 @@ class _NoteDetailState extends State<NoteDetail> {
     "Container_Padding1_labelText": "Mr. Not Başlık",
     "Container_Padding2_hintText": "Mr. Notun İçeriğini Girin",
     "Container_Padding2_labelText": "Mr. Not İçeriği",
-    "Container_Row": "Öncelik: ",
-    "Container_RaisedButton": "İptal",
+    "Container_Row": "Öncelik :",
     "Container_RaisedButton1": "Kaydet",
   };
 
@@ -78,15 +74,11 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    AdmobHelper.myBannerAd
-      ..load()
-      ..show(anchorOffset: 10);
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -99,8 +91,7 @@ class _NoteDetailState extends State<NoteDetail> {
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
-    AdmobHelper.myBannerAd.dispose();
+    //myInterstitialAd.dispose();
     super.dispose();
   }
 
@@ -114,190 +105,170 @@ class _NoteDetailState extends State<NoteDetail> {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title), // Mr. Note Title buraya taşınacak
         backgroundColor: widget.color,
+        actions: [
+          FlatButton(
+            color: Colors.red.shade600,
+            textColor: Colors.black,
+            child: Text(
+              texts["Container_RaisedButton1"],
+              style: TextStyle(fontSize: 20),
+            ),
+            onPressed: () {
+              formkey.currentState.save();
+              var suan = DateTime.now();
+              if (widget.updateNote == null) {
+                databaseHelper
+                    .addNote(Note(categoryID, noteTitle, noteContent,
+                        suan.toString(), selectedPriority))
+                    .then((savedNoteID) {
+                  if (savedNoteID != 0) {
+                    Navigator.pop(context, "saved");
+                  }
+                });
+              } else {
+                databaseHelper
+                    .updateNote(Note.withID(
+                        widget.updateNote.noteID,
+                        categoryID,
+                        noteTitle,
+                        noteContent,
+                        suan.toString(),
+                        selectedPriority))
+                    .then((updatedID) {
+                  if (updatedID != 0) {
+                    Navigator.pop(context, "updated");
+                  }
+                });
+              }
+            },
+          )
+        ],
       ),
       body: allCategories.length <= 0
           ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Container(
-              child: Form(
-                key: formkey,
-                child: Column(
+        child: CircularProgressIndicator(),
+      )
+          : SingleChildScrollView(
+        child: Container(
+          child: Form(
+            key: formkey,
+            child: Column(
+              children: <Widget>[
+                Row(
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            texts["Container_Padding"],
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.purple),
-                          ),
-                        ),
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                          margin: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blue, width: 2),
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              items: createCategoryItem(),
-                              value: categoryID,
-                              onChanged: (selectedCategoryID) {
-                                setState(() {
-                                  categoryID = selectedCategoryID;
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
                     Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: TextFormField(
-                        initialValue: widget.updateNote != null
-                            ? widget.updateNote.noteTitle
-                            : "",
-                        decoration: InputDecoration(
-                          hintText: texts["Container_Padding1_hintText"],
-                          labelText: texts["Container_Padding1_labelText"],
-                          border: OutlineInputBorder(),
-                        ),
-                        onSaved: (text) {
-                          noteTitle = text;
-                        },
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        texts["Container_Padding"],
+                        style:
+                        TextStyle(fontSize: 20, color: Colors.purple),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: TextFormField(
-                        initialValue: widget.updateNote != null
-                            ? widget.updateNote.noteContent
-                            : "",
-                        maxLines: 5,
-                        decoration: InputDecoration(
-                          hintText: texts["Container_Padding2_hintText"],
-                          labelText: texts["Container_Padding2_labelText"],
-                          border: OutlineInputBorder(),
-                        ),
-                        onSaved: (text) {
-                          noteContent = text;
-                        },
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 12),
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue, width: 2),
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(10)),
                       ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            texts["Container_Row"],
-                            style: TextStyle(
-                                fontSize: 20, color: Color(0xFFff0000)),
-                          ),
-                        ),
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                          margin: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blue, width: 2),
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<int>(
-                              items: _priority.map((e) {
-                                return DropdownMenuItem<int>(
-                                  child: Text(
-                                    e,
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                  value: _priority.indexOf(e),
-                                );
-                              }).toList(),
-                              value: selectedPriority,
-                              onChanged: (selectedPriorityID) {
-                                setState(() {
-                                  selectedPriority = selectedPriorityID;
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    ButtonBar(
-                      alignment: MainAxisAlignment.spaceEvenly,
-                      //mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        RaisedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          items: createCategoryItem(),
+                          value: categoryID,
+                          onChanged: (selectedCategoryID) {
+                            setState(() {
+                              categoryID = selectedCategoryID;
+                            });
                           },
-                          child: Padding(
-                            child: Text(
-                              texts["Container_RaisedButton"],
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 20),
-                            ),
-                            padding: const EdgeInsets.all(20),
-                          ),
-                          color: Colors.orangeAccent,
                         ),
-                        RaisedButton(
-                          onPressed: () {
-                            formkey.currentState.save();
-                            var suan = DateTime.now();
-                            if (widget.updateNote == null) {
-                              databaseHelper
-                                  .addNote(Note(
-                                      categoryID,
-                                      noteTitle,
-                                      noteContent,
-                                      suan.toString(),
-                                      selectedPriority))
-                                  .then((savedNoteID) {
-                                if (savedNoteID != 0) {
-                                  Navigator.pop(context, "saved");
-                                }
-                              });
-                            } else {
-                              databaseHelper
-                                  .updateNote(Note.withID(
-                                      widget.updateNote.noteID,
-                                      categoryID,
-                                      noteTitle,
-                                      noteContent,
-                                      suan.toString(),
-                                      selectedPriority))
-                                  .then((updatedID) {
-                                if (updatedID != 0) {
-                                  Navigator.pop(context, "updated");
-                                }
-                              });
-                            }
-                          },
-                          child: Padding(
-                            child: Text(
-                              texts["Container_RaisedButton1"],
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                            padding: const EdgeInsets.all(20),
-                          ),
-                          color: Colors.redAccent,
-                        ),
-                      ],
+                      ),
                     )
                   ],
                 ),
-              ),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        texts["Container_Row"],
+                        style: TextStyle(
+                            fontSize: 20, color: Color(0xFFff0000)),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 12),
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue, width: 2),
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(10)),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          items: _priority.map((e) {
+                            return DropdownMenuItem<int>(
+                              child: Text(
+                                e,
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              value: _priority.indexOf(e),
+                            );
+                          }).toList(),
+                          value: selectedPriority,
+                          onChanged: (selectedPriorityID) {
+                            setState(() {
+                              selectedPriority = selectedPriorityID;
+                            });
+                          },
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: TextFormField(
+                    initialValue: widget.updateNote != null
+                        ? widget.updateNote.noteTitle
+                        : "",
+                    decoration: InputDecoration(
+                      hintText: texts["Container_Padding1_hintText"],
+                      labelText: texts["Container_Padding1_labelText"],
+                      border: OutlineInputBorder(),
+                    ),
+                    onSaved: (text) {
+                      noteTitle = text;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: TextFormField(
+                    initialValue: widget.updateNote != null
+                        ? widget.updateNote.noteContent
+                        : "",
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      hintText: texts["Container_Padding2_hintText"],
+                      labelText: texts["Container_Padding2_labelText"],
+                      border: OutlineInputBorder(),
+                    ),
+                    onSaved: (text) {
+                      noteContent = text;
+                      //text.allMatches(string).length
+                    },
+                  ),
+                ),
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 

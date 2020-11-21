@@ -8,7 +8,6 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
-import 'utils/admob_helper.dart';
 
 class NoteList extends StatefulWidget {
   int lang;
@@ -72,16 +71,16 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
   }
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
+    //myInterstitialAd.dispose();
     super.dispose();
   }
 
@@ -114,45 +113,45 @@ class _NoteListState extends State<NoteList> {
                     child: ListTile(
                   leading: Icon(
                     Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        var result = await _goToPage(Categories(
-                          lang: widget.lang,
-                          color: widget.color,
-                        ));
-                        if (result != null) {
-                          setState(() {
-                            updateCategoryList();
-                          });
-                        } else {
-                          setState(() {});
-                        }
-                      },
-                    )),
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    var result = await _goToPage(Categories(
+                      lang: widget.lang,
+                      color: widget.color,
+                    ));
+                    if (result != null) {
+                      setState(() {
+                        updateCategoryList();
+                      });
+                    } else {
+                      setState(() {});
+                    }
+                  },
+                )),
                 PopupMenuItem(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem1"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        setState(() {
-                          localCategoryID = 0;
-                        });
-                        Navigator.pop(context);
-                        setState(() {});
-                      },
-                    )),
+                  leading: Icon(
+                    Icons.import_contacts,
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem1"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    setState(() {
+                      localCategoryID = 0;
+                    });
+                    Navigator.pop(context);
+                    setState(() {});
+                  },
+                )),
                 for (int index = 0; index < allCategories.length; index++)
                   PopupMenuItem(
                     child: ListTile(
@@ -366,7 +365,7 @@ class _NotesState extends State<Notes> {
     "Column_Row": "Category: ",
     "Column_Row1": "Creation Date: ",
     "Column_Padding": "Content",
-    "Column_RaisedButton": "Update",
+    "Column_RaisedButton": "Open",
     "Column_RaisedButton1": "Delete",
     "NoteDetail": "Update Note",
     "Priority": ["Low", "Medium", "High"],
@@ -383,7 +382,7 @@ class _NotesState extends State<Notes> {
     "Column_Row": "Kategori: ",
     "Column_Row1": "Oluşturma Tarihi: ",
     "Column_Padding": "İçerik",
-    "Column_RaisedButton": "Güncelle",
+    "Column_RaisedButton": "Aç",
     "Column_RaisedButton1": "Sil",
     "NoteDetail": "Notu Güncelle",
     "Priority": ["Düşük", "Orta", "Yüksek"],
