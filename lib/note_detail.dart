@@ -55,6 +55,8 @@ class _NoteDetailState extends State<NoteDetail> {
     "Container_RaisedButton1": "Kaydet",
   };
 
+  TextEditingController _controller;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -87,11 +89,15 @@ class _NoteDetailState extends State<NoteDetail> {
         texts = turkish;
         break;
     }
+    _controller = TextEditingController();
+    _controller.text =
+        widget.updateNote != null ? widget.updateNote.noteTitle : "";
   }
 
   @override
   void dispose() {
     //myInterstitialAd.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -105,7 +111,16 @@ class _NoteDetailState extends State<NoteDetail> {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
-        title: Text(widget.title), // Mr. Note Title buraya taşınacak
+        title: TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            hintText: texts["Container_Padding1_hintText"],
+            labelText: widget.updateNote != null
+                ? null
+                : texts["Container_Padding1_labelText"],
+            isCollapsed: true,
+          ),
+        ),
         backgroundColor: widget.color,
         actions: [
           FlatButton(
@@ -117,11 +132,12 @@ class _NoteDetailState extends State<NoteDetail> {
             ),
             onPressed: () {
               formkey.currentState.save();
+              noteTitle = _controller.text;
               var suan = DateTime.now();
               if (widget.updateNote == null) {
                 databaseHelper
                     .addNote(Note(categoryID, noteTitle, noteContent,
-                        suan.toString(), selectedPriority))
+                    suan.toString(), selectedPriority))
                     .then((savedNoteID) {
                   if (savedNoteID != 0) {
                     Navigator.pop(context, "saved");
@@ -234,22 +250,6 @@ class _NoteDetailState extends State<NoteDetail> {
                   padding: const EdgeInsets.all(8),
                   child: TextFormField(
                     initialValue: widget.updateNote != null
-                        ? widget.updateNote.noteTitle
-                        : "",
-                    decoration: InputDecoration(
-                      hintText: texts["Container_Padding1_hintText"],
-                      labelText: texts["Container_Padding1_labelText"],
-                      border: OutlineInputBorder(),
-                    ),
-                    onSaved: (text) {
-                      noteTitle = text;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: TextFormField(
-                    initialValue: widget.updateNote != null
                         ? widget.updateNote.noteContent
                         : "",
                     maxLines: null,
@@ -260,7 +260,6 @@ class _NoteDetailState extends State<NoteDetail> {
                     ),
                     onSaved: (text) {
                       noteContent = text;
-                      //text.allMatches(string).length
                     },
                   ),
                 ),
