@@ -9,6 +9,7 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
+import 'utils/admob_helper.dart';
 
 const double _fabDimension = 56.0;
 
@@ -41,10 +42,10 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_title": "Add Category",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Category Name",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-    "Please enter least 3 character",
+        "Please enter least 3 character",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "Cancel ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-    "category successfully added 👌",
+        "category successfully added 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
   };
 
@@ -70,16 +71,16 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
   }
 
   @override
   void dispose() {
-    //myInterstitialAd.dispose();
+    myInterstitialAd.dispose();
     super.dispose();
   }
 

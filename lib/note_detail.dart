@@ -5,6 +5,8 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
+import 'utils/admob_helper.dart';
+
 class NoteDetail extends StatefulWidget {
   String title;
   Note updateNote;
@@ -76,11 +78,11 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -96,7 +98,7 @@ class _NoteDetailState extends State<NoteDetail> {
 
   @override
   void dispose() {
-    //myInterstitialAd.dispose();
+    myInterstitialAd.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -137,7 +139,7 @@ class _NoteDetailState extends State<NoteDetail> {
               if (widget.updateNote == null) {
                 databaseHelper
                     .addNote(Note(categoryID, noteTitle, noteContent,
-                    suan.toString(), selectedPriority))
+                        suan.toString(), selectedPriority))
                     .then((savedNoteID) {
                   if (savedNoteID != 0) {
                     Navigator.pop(context, "saved");
