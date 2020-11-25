@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/category_operations.dart';
@@ -8,6 +9,8 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
+
+const double _fabDimension = 56.0;
 
 class NoteList extends StatefulWidget {
   int lang;
@@ -34,17 +37,14 @@ class _NoteListState extends State<NoteList> {
     "PopupMenuItem1": "All Notes",
     "PopupMenuItem2": "Settings =>",
     "FloatingActionButton_tooltip": "Add Category",
-    "FloatingActionButton_heroTag": "Add Category",
     "FloatingActionButton1_title": "New Note",
-    "FloatingActionButton1_tooltip": "Add Note",
-    "FloatingActionButton1_heroTag": "Add Note",
     "addCategoryDialog_SimpleDialog_title": "Add Category",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Category Name",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-        "Please enter least 3 character",
+    "Please enter least 3 character",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "Cancel ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-        "category successfully added 👌",
+    "category successfully added 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
   };
 
@@ -53,10 +53,7 @@ class _NoteListState extends State<NoteList> {
     "PopupMenuItem1": "Tüm Notlar",
     "PopupMenuItem2": "Ayarlar =>",
     "FloatingActionButton_tooltip": "Kategori Ekle",
-    "FloatingActionButton_heroTag": "Kategori Ekle",
     "FloatingActionButton1_title": "Yeni Not",
-    "FloatingActionButton1_tooltip": "Not Ekle",
-    "FloatingActionButton1_heroTag": "Not Ekle",
     "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
@@ -66,6 +63,8 @@ class _NoteListState extends State<NoteList> {
         "Kategori başarıyla eklendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
   };
+
+  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
   @override
   void initState() {
@@ -111,47 +110,47 @@ class _NoteListState extends State<NoteList> {
               return [
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    var result = await _goToPage(Categories(
-                      lang: widget.lang,
-                      color: widget.color,
-                    ));
-                    if (result != null) {
-                      setState(() {
-                        updateCategoryList();
-                      });
-                    } else {
-                      setState(() {});
-                    }
-                  },
-                )),
+                      leading: Icon(
+                        Icons.import_contacts,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        var result = await _goToPage(Categories(
+                          lang: widget.lang,
+                          color: widget.color,
+                        ));
+                        if (result != null) {
+                          setState(() {
+                            updateCategoryList();
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    )),
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem1"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    setState(() {
-                      localCategoryID = 0;
-                    });
-                    Navigator.pop(context);
-                    setState(() {});
-                  },
-                )),
+                      leading: Icon(
+                        Icons.import_contacts,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem1"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        setState(() {
+                          localCategoryID = 0;
+                        });
+                        Navigator.pop(context);
+                        setState(() {});
+                      },
+                    )),
                 for (int index = 0; index < allCategories.length; index++)
                   PopupMenuItem(
                     child: ListTile(
@@ -215,22 +214,47 @@ class _NoteListState extends State<NoteList> {
             tooltip: texts["FloatingActionButton_tooltip"],
             child: Icon(Icons.import_contacts),
             mini: true,
-            heroTag: texts["FloatingActionButton_heroTag"],
           ),
-          FloatingActionButton(
-            onPressed: () async {
-              var result = await _goToPage(NoteDetail(
-                title: texts["FloatingActionButton1_title"],
-                lang: widget.lang,
-                color: widget.color,
-              ));
+          OpenContainer(
+            onClosed: (result) {
               if (result != null) {
                 setState(() {});
               }
             },
-            tooltip: texts["FloatingActionButton1_tooltip"],
-            child: Icon(Icons.add),
-            heroTag: texts["FloatingActionButton1_heroTag"],
+            transitionType: _transitionType,
+            openBuilder: (BuildContext context, VoidCallback _) {
+              return NoteDetail(
+                title: texts["FloatingActionButton1_title"],
+                lang: widget.lang,
+                color: widget.color,
+              );
+            },
+            closedElevation: 6.0,
+            closedShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(_fabDimension / 2),
+              ),
+            ),
+            closedColor: Theme
+                .of(context)
+                .colorScheme
+                .secondary,
+            closedBuilder: (BuildContext context, VoidCallback openContainer) {
+              return SizedBox(
+                height: _fabDimension,
+                width: _fabDimension,
+                child: Center(
+                  child: Icon(
+                    Icons.add,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onSecondary,
+                    size: 40,
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -263,7 +287,7 @@ class _NoteListState extends State<NoteList> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: texts[
-                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
@@ -544,7 +568,7 @@ class _NotesState extends State<Notes> {
       });
     } else {
       List<Note> allNotes1 =
-          await databaseHelper.getCategoryNotesList(categoryID);
+      await databaseHelper.getCategoryNotesList(categoryID);
       setState(() {
         allNotes = allNotes1;
       });
