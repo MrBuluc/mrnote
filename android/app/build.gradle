@@ -18,7 +18,7 @@ if (flutterVersionCode == null) {
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = 'admob is on'
+    flutterVersionName = 'language and theme made efficient'
 }
 
 apply plugin: 'com.android.application'
