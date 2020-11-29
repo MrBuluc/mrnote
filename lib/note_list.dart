@@ -9,6 +9,7 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
+import 'utils/admob_helper.dart';
 
 const double _fabDimension = 56.0;
 
@@ -70,16 +71,16 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
   }
 
   @override
   void dispose() {
-    // myInterstitialAd.dispose();
+    myInterstitialAd.dispose();
     super.dispose();
   }
 
@@ -173,32 +174,31 @@ class _NoteListState extends State<NoteList> {
                   ),
                 PopupMenuItem(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.settings,
-                        color: Colors.green,
-                        size: 30,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem2"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        var result = await _goToPage(SettingsPage(
-                          widget.lang,
-                          widget.color,
-                        ));
-                        if (result != null) {
-                          setState(() {
-                            widget.lang = int.parse(result[0]);
-                            widget.color =
-                                Color(int.parse(result.substring(1)));
-                          });
-                        } else {
-                          setState(() {});
-                        }
-                      },
-                    ))
+                  leading: Icon(
+                    Icons.settings,
+                    color: Colors.green,
+                    size: 30,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem2"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    var result = await _goToPage(SettingsPage(
+                      widget.lang,
+                      widget.color,
+                    ));
+                    if (result != null) {
+                      setState(() {
+                        widget.lang = int.parse(result[0]);
+                        widget.color = Color(int.parse(result.substring(1)));
+                      });
+                    } else {
+                      setState(() {});
+                    }
+                  },
+                ))
               ];
             },
           ),
