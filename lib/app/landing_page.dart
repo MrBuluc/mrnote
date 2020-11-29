@@ -78,13 +78,16 @@ class _LandingPageState extends State<LandingPage> {
     try {
       String contents = await file.readAsString();
       lang = int.parse(contents[10]);
-
+    } catch (e) {
+      file.writeAsString("language: 0");
+      setState(() {});
+    }
+    try {
       String contents1 = await file1.readAsString();
       int color = int.parse(contents1.substring(35, 45));
       currentColor = Color(color);
       setState(() {});
     } catch (e) {
-      file.writeAsString("language: 0");
       file1.writeAsString("MaterialColor(primary value: Color(0xFFff0000))");
       setState(() {});
     }
