@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mrnote/Login/login.dart';
 import 'package:mrnote/common_widget/merkez_widget.dart';
+import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/note_list.dart';
+import 'package:mrnote/utils/database_helper.dart';
 import 'package:path_provider/path_provider.dart';
 
 class LandingPage extends StatefulWidget {
@@ -14,14 +17,29 @@ class _LandingPageState extends State<LandingPage> {
   int lang;
   Color currentColor;
 
+  DatabaseHelper databaseHelper = DatabaseHelper();
+
+  bool flag = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    read1().then((value) => flag = value);
+  }
+
   @override
   Widget build(BuildContext context) {
     read();
     if (lang != null && currentColor != null) {
-      return Login(
-        lang: lang,
-        color: currentColor,
-      );
+      if (flag) {
+        return Login(
+          lang,
+          currentColor,
+        );
+      } else {
+        return NoteList(lang, currentColor);
+      }
     } else {
       return Scaffold(
         backgroundColor: Color(0xff84b7f1),
@@ -70,5 +88,12 @@ class _LandingPageState extends State<LandingPage> {
       file1.writeAsString("MaterialColor(primary value: Color(0xFFff0000))");
       setState(() {});
     }
+  }
+
+  Future<bool> read1() async {
+    List<Note> noteList =
+        await databaseHelper.getNoteTitleNotesList("Password");
+    String truePassword = noteList[0].noteContent;
+    return truePassword != null && truePassword.isNotEmpty;
   }
 }

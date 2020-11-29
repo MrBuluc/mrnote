@@ -7,7 +7,7 @@ class Login extends StatefulWidget {
   int lang;
   Color color;
 
-  Login({this.lang, this.color});
+  Login(this.lang, this.color);
 
   @override
   _LoginState createState() => _LoginState();
@@ -164,8 +164,8 @@ class _LoginState extends State<Login> {
           context,
           MaterialPageRoute(
               builder: (context) => NoteList(
-                    lang: widget.lang,
-                    color: widget.color,
+                    widget.lang,
+                    widget.color,
                   )));
     } else {
       setState(() {

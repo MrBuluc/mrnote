@@ -9,7 +9,6 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
-import 'utils/admob_helper.dart';
 
 const double _fabDimension = 56.0;
 
@@ -17,7 +16,7 @@ class NoteList extends StatefulWidget {
   int lang;
   Color color;
 
-  NoteList({this.lang, this.color});
+  NoteList(this.lang, this.color);
 
   @override
   _NoteListState createState() => _NoteListState();
@@ -71,16 +70,16 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
   }
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
+    // myInterstitialAd.dispose();
     super.dispose();
   }
 
@@ -111,47 +110,47 @@ class _NoteListState extends State<NoteList> {
               return [
                 PopupMenuItem(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        var result = await _goToPage(Categories(
-                          lang: widget.lang,
-                          color: widget.color,
-                        ));
-                        if (result != null) {
-                          setState(() {
-                            updateCategoryList();
-                          });
-                        } else {
-                          setState(() {});
-                        }
-                      },
-                    )),
+                  leading: Icon(
+                    Icons.import_contacts,
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    var result = await _goToPage(Categories(
+                      widget.lang,
+                      widget.color,
+                    ));
+                    if (result != null) {
+                      setState(() {
+                        updateCategoryList();
+                      });
+                    } else {
+                      setState(() {});
+                    }
+                  },
+                )),
                 PopupMenuItem(
                     child: ListTile(
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem1"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        setState(() {
-                          localCategoryID = 0;
-                        });
-                        Navigator.pop(context);
-                        setState(() {});
-                      },
-                    )),
+                  leading: Icon(
+                    Icons.import_contacts,
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    texts["PopupMenuItem1"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () async {
+                    setState(() {
+                      localCategoryID = 0;
+                    });
+                    Navigator.pop(context);
+                    setState(() {});
+                  },
+                )),
                 for (int index = 0; index < allCategories.length; index++)
                   PopupMenuItem(
                     child: ListTile(
@@ -186,8 +185,8 @@ class _NoteListState extends State<NoteList> {
                       onTap: () async {
                         Navigator.pop(context);
                         var result = await _goToPage(SettingsPage(
-                          lang: widget.lang,
-                          color: widget.color,
+                          widget.lang,
+                          widget.color,
                         ));
                         if (result != null) {
                           setState(() {
@@ -225,9 +224,9 @@ class _NoteListState extends State<NoteList> {
             transitionType: _transitionType,
             openBuilder: (BuildContext context, VoidCallback _) {
               return NoteDetail(
-                title: texts["FloatingActionButton1_title"],
-                lang: widget.lang,
-                color: widget.color,
+                texts["FloatingActionButton1_title"],
+                widget.lang,
+                widget.color,
               );
             },
             closedElevation: 6.0,
@@ -582,10 +581,10 @@ class _NotesState extends State<Notes> {
         MaterialPageRoute(
             builder: (context) =>
                 NoteDetail(
-                  title: texts["NoteDetail"],
+                  texts["NoteDetail"],
+                  widget.lang,
+                  widget.color,
                   updateNote: note,
-                  lang: widget.lang,
-                  color: widget.color,
                 )));
     return result;
   }

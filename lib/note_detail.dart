@@ -5,15 +5,13 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
-import 'utils/admob_helper.dart';
-
 class NoteDetail extends StatefulWidget {
   String title;
   Note updateNote;
   int lang;
   Color color;
 
-  NoteDetail({this.title, this.updateNote, this.lang, this.color});
+  NoteDetail(this.title, this.lang, this.color, {this.updateNote});
 
   @override
   _NoteDetailState createState() => _NoteDetailState();
@@ -78,11 +76,11 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -98,7 +96,7 @@ class _NoteDetailState extends State<NoteDetail> {
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
+    //myInterstitialAd.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -166,110 +164,110 @@ class _NoteDetailState extends State<NoteDetail> {
       ),
       body: allCategories.length <= 0
           ? Center(
-        child: CircularProgressIndicator(),
-      )
+              child: CircularProgressIndicator(),
+            )
           : SingleChildScrollView(
-        child: Container(
-          child: Form(
-            key: formkey,
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        texts["Container_Padding"],
-                        style:
-                        TextStyle(fontSize: 20, color: Colors.purple),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 4, horizontal: 12),
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blue, width: 2),
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          items: createCategoryItem(),
-                          value: categoryID,
-                          onChanged: (selectedCategoryID) {
-                            setState(() {
-                              categoryID = selectedCategoryID;
-                            });
-                          },
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        texts["Container_Row"],
-                        style: TextStyle(
-                            fontSize: 20, color: Color(0xFFff0000)),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 4, horizontal: 12),
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blue, width: 2),
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<int>(
-                          items: _priority.map((e) {
-                            return DropdownMenuItem<int>(
-                              child: Text(
-                                e,
-                                style: TextStyle(fontSize: 20),
+              child: Container(
+                child: Form(
+                  key: formkey,
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(
+                              texts["Container_Padding"],
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.purple),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 12),
+                            margin: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.blue, width: 2),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                items: createCategoryItem(),
+                                value: categoryID,
+                                onChanged: (selectedCategoryID) {
+                                  setState(() {
+                                    categoryID = selectedCategoryID;
+                                  });
+                                },
                               ),
-                              value: _priority.indexOf(e),
-                            );
-                          }).toList(),
-                          value: selectedPriority,
-                          onChanged: (selectedPriorityID) {
-                            setState(() {
-                              selectedPriority = selectedPriorityID;
-                            });
+                            ),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(
+                              texts["Container_Row"],
+                              style: TextStyle(
+                                  fontSize: 20, color: Color(0xFFff0000)),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 12),
+                            margin: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.blue, width: 2),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<int>(
+                                items: _priority.map((e) {
+                                  return DropdownMenuItem<int>(
+                                    child: Text(
+                                      e,
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    value: _priority.indexOf(e),
+                                  );
+                                }).toList(),
+                                value: selectedPriority,
+                                onChanged: (selectedPriorityID) {
+                                  setState(() {
+                                    selectedPriority = selectedPriorityID;
+                                  });
+                                },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: TextFormField(
+                          initialValue: widget.updateNote != null
+                              ? widget.updateNote.noteContent
+                              : "",
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText: texts["Container_Padding2_hintText"],
+                            labelText: texts["Container_Padding2_labelText"],
+                            border: OutlineInputBorder(),
+                          ),
+                          onSaved: (text) {
+                            noteContent = text;
                           },
                         ),
                       ),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: TextFormField(
-                    initialValue: widget.updateNote != null
-                        ? widget.updateNote.noteContent
-                        : "",
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: texts["Container_Padding2_hintText"],
-                      labelText: texts["Container_Padding2_labelText"],
-                      border: OutlineInputBorder(),
-                    ),
-                    onSaved: (text) {
-                      noteContent = text;
-                    },
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

@@ -11,7 +11,7 @@ class SettingsPage extends StatefulWidget {
   int lang;
   Color color;
 
-  SettingsPage({this.lang, this.color});
+  SettingsPage(this.lang, this.color);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();

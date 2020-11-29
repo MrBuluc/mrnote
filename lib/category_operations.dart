@@ -10,7 +10,7 @@ class Categories extends StatefulWidget {
   int lang;
   Color color;
 
-  Categories({this.lang, this.color});
+  Categories(this.lang, this.color);
 
   @override
   _CategoriesState createState() => _CategoriesState();
