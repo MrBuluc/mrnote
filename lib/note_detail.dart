@@ -107,7 +107,6 @@ class _NoteDetailState extends State<NoteDetail> {
       texts["_priority2"],
     ];
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: TextField(
           controller: _controller,
