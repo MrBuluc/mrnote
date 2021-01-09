@@ -50,6 +50,9 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
         "category successfully added 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
+    "saveCategoryID_catch_baslik": "Save Failed ❌",
+    "save_catch_icerik": "Error: ",
+    "save_catch_anaButonYazisi": "Ok",
   };
 
   Map<String, String> turkish = {
@@ -66,6 +69,9 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
     "Kategori başarıyla eklendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
+    "save_catch_baslik": "Kaydetme Başarısız Oldu ❌",
+    "save_catch_icerik": "Hata: ",
+    "save_catch_anaButonYazisi": "Tamam",
   };
 
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
