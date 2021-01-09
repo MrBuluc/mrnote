@@ -5,8 +5,6 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
-import 'utils/admob_helper.dart';
-
 class NoteDetail extends StatefulWidget {
   String title;
   Note updateNote;
@@ -37,7 +35,6 @@ class _NoteDetailState extends State<NoteDetail> {
     "_priority2": "High",
     "Container_Padding": "Category :",
     "Container_Padding1_hintText": "Enter Mr. Note Title",
-    "Container_Padding1_labelText": "Mr. Note Title",
     "Container_Padding2_hintText": "Enter Mr. Note Content",
     "Container_Padding2_labelText": "Mr. Note Content",
     "Container_Row": "Priority :",
@@ -50,7 +47,6 @@ class _NoteDetailState extends State<NoteDetail> {
     "_priority2": "Yüksek",
     "Container_Padding": "Kategori :",
     "Container_Padding1_hintText": "Mr. Notun Başlığını Girin",
-    "Container_Padding1_labelText": "Mr. Not Başlık",
     "Container_Padding2_hintText": "Mr. Notun İçeriğini Girin",
     "Container_Padding2_labelText": "Mr. Not İçeriği",
     "Container_Row": "Öncelik :",
@@ -78,11 +74,11 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -117,10 +113,6 @@ class _NoteDetailState extends State<NoteDetail> {
           controller: _controller,
           decoration: InputDecoration(
             hintText: texts["Container_Padding1_hintText"],
-            labelText: widget.updateNote != null
-                ? null
-                : texts["Container_Padding1_labelText"],
-            isCollapsed: true,
           ),
         ),
         backgroundColor: widget.color,

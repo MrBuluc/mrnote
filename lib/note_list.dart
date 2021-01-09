@@ -9,7 +9,6 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
-import 'utils/admob_helper.dart';
 
 const double _fabDimension = 56.0;
 
@@ -71,11 +70,11 @@ class _NoteListState extends State<NoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    // AdmobHelper.admobInitialize();
+    //     // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    //     // myInterstitialAd
+    //     //   ..load()
+    //     //   ..show();
   }
 
   @override
@@ -235,10 +234,7 @@ class _NoteListState extends State<NoteList> {
                 Radius.circular(_fabDimension / 2),
               ),
             ),
-            closedColor: Theme
-                .of(context)
-                .colorScheme
-                .secondary,
+            closedColor: Theme.of(context).colorScheme.secondary,
             closedBuilder: (BuildContext context, VoidCallback openContainer) {
               return SizedBox(
                 height: _fabDimension,
@@ -246,10 +242,7 @@ class _NoteListState extends State<NoteList> {
                 child: Center(
                   child: Icon(
                     Icons.add,
-                    color: Theme
-                        .of(context)
-                        .colorScheme
-                        .onSecondary,
+                    color: Theme.of(context).colorScheme.onSecondary,
                     size: 40,
                   ),
                 ),
