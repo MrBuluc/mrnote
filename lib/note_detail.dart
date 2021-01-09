@@ -5,6 +5,8 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
+import 'utils/admob_helper.dart';
+
 class NoteDetail extends StatefulWidget {
   String title;
   Note updateNote;
@@ -74,11 +76,11 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    // AdmobHelper.admobInitialize();
-    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    // myInterstitialAd
-    //   ..load()
-    //   ..show();
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
     switch (widget.lang) {
       case 0:
         texts = english;

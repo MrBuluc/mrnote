@@ -164,7 +164,7 @@ class _LoginState extends State<Login> {
           context,
           MaterialPageRoute(
               builder: (context) => NoteList(
-                widget.lang,
+                    widget.lang,
                     widget.color,
                     widget.categoryID,
                   )));
