@@ -4,7 +4,6 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
-import 'package:mrnote/utils/admob_helper.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -19,8 +18,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   InterstitialAd myInterstitialAd;
-
-  int lang = 0;
 
   Map<String, String> texts;
 
@@ -63,15 +60,15 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    AdmobHelper.myBannerAd
-      ..load()
-      ..show(anchorOffset: 10);
+    // AdmobHelper.admobInitialize();
+    // myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    // myInterstitialAd
+    //   ..load()
+    //   ..show();
+    // AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    // AdmobHelper.myBannerAd
+    //   ..load()
+    //   ..show(anchorOffset: 10);
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -85,8 +82,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
-    AdmobHelper.myBannerAd.dispose();
+    // myInterstitialAd.dispose();
+    // AdmobHelper.myBannerAd.dispose();
     super.dispose();
   }
 
@@ -105,7 +102,7 @@ class _SettingsPageState extends State<SettingsPage> {
               style: TextStyle(fontSize: 20),
             ),
             onPressed: () {
-              save(lang, currentColor);
+              save(widget.lang, widget.color);
             },
           )
         ],
@@ -135,7 +132,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       value: widget.lang,
                       onChanged: (selectedLang) {
                         setState(() {
-                          lang = selectedLang;
                           widget.lang = selectedLang;
                         });
                       },
@@ -227,6 +223,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void changeColor(Color color) {
-    setState(() => currentColor = color);
+    setState(() {
+      currentColor = color;
+      widget.color = color;
+    });
   }
 }
