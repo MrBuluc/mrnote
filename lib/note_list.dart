@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animations/animations.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
 import 'package:mrnote/utils/database_helper.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
@@ -13,10 +16,10 @@ import 'common_widget/platform_duyarli_alert_dialog.dart';
 const double _fabDimension = 56.0;
 
 class NoteList extends StatefulWidget {
-  int lang;
+  int lang, categoryID;
   Color color;
 
-  NoteList(this.lang, this.color);
+  NoteList(this.lang, this.color, this.categoryID);
 
   @override
   _NoteListState createState() => _NoteListState();
@@ -41,10 +44,10 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_title": "Add Category",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Category Name",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-        "Please enter least 3 character",
+    "Please enter least 3 character",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "Cancel ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-        "category successfully added 👌",
+    "category successfully added 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
   };
 
@@ -57,10 +60,10 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-        "Lütfen en az 3 karakter giriniz",
+    "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-        "Kategori başarıyla eklendi 👌",
+    "Kategori başarıyla eklendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
   };
 
@@ -75,6 +78,7 @@ class _NoteListState extends State<NoteList> {
     //     // myInterstitialAd
     //     //   ..load()
     //     //   ..show();
+    localCategoryID = widget.categoryID;
   }
 
   @override
@@ -110,47 +114,47 @@ class _NoteListState extends State<NoteList> {
               return [
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    var result = await _goToPage(Categories(
-                      widget.lang,
-                      widget.color,
-                    ));
-                    if (result != null) {
-                      setState(() {
-                        updateCategoryList();
-                      });
-                    } else {
-                      setState(() {});
-                    }
-                  },
-                )),
+                      leading: Icon(
+                        Icons.import_contacts,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        var result = await _goToPage(Categories(
+                          widget.lang,
+                          widget.color,
+                        ));
+                        if (result != null) {
+                          setState(() {
+                            updateCategoryList();
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    )),
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.import_contacts,
-                    color: Colors.blue,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem1"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    setState(() {
-                      localCategoryID = 0;
-                    });
-                    Navigator.pop(context);
-                    setState(() {});
-                  },
-                )),
+                      leading: Icon(
+                        Icons.import_contacts,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem1"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        setState(() {
+                          localCategoryID = 0;
+                        });
+                        Navigator.pop(context);
+                        setState(() {});
+                      },
+                    )),
                 for (int index = 0; index < allCategories.length; index++)
                   PopupMenuItem(
                     child: ListTile(
@@ -158,6 +162,7 @@ class _NoteListState extends State<NoteList> {
                         setState(() {
                           localCategoryID = allCategories[index].categoryID;
                         });
+                        saveCategoryID(localCategoryID);
                         Navigator.pop(context);
                         setState(() {});
                       },
@@ -173,31 +178,31 @@ class _NoteListState extends State<NoteList> {
                   ),
                 PopupMenuItem(
                     child: ListTile(
-                  leading: Icon(
-                    Icons.settings,
-                    color: Colors.green,
-                    size: 30,
-                  ),
-                  title: Text(
-                    texts["PopupMenuItem2"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    var result = await _goToPage(SettingsPage(
-                      widget.lang,
-                      widget.color,
-                    ));
-                    if (result != null) {
-                      setState(() {
-                        widget.lang = int.parse(result[0]);
-                        widget.color = Color(int.parse(result.substring(1)));
-                      });
-                    } else {
-                      setState(() {});
-                    }
-                  },
-                ))
+                      leading: Icon(
+                        Icons.settings,
+                        color: Colors.green,
+                        size: 30,
+                      ),
+                      title: Text(
+                        texts["PopupMenuItem2"],
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        var result = await _goToPage(SettingsPage(
+                          widget.lang,
+                          widget.color,
+                        ));
+                        if (result != null) {
+                          setState(() {
+                            widget.lang = int.parse(result[0]);
+                            widget.color = Color(int.parse(result.substring(1)));
+                          });
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    ))
               ];
             },
           ),
@@ -280,13 +285,13 @@ class _NoteListState extends State<NoteList> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: texts[
-                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value.length < 3) {
                         return texts[
-                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                       } else
                         return null;
                     },
@@ -356,6 +361,21 @@ class _NoteListState extends State<NoteList> {
         allCategories = categoryList;
       });
     });
+  }
+
+  Future<void> saveCategoryID(int localCategoryID) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final path = directory.path;
+      final file = File("$path/categoryID.txt");
+      file.writeAsString("CategoryID: $localCategoryID");
+    } catch (e) {
+      PlatformDuyarliAlertDialog(
+        baslik: texts["saveCategoryID_catch_baslik"],
+        icerik: texts["saveCategoryID_catch_icerik"] + e.toString(),
+        anaButonYazisi: texts["saveCategoryID_catch_anaButonYazisi"],
+      ).goster(context);
+    }
   }
 }
 

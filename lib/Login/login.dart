@@ -4,10 +4,10 @@ import 'package:mrnote/note_list.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 class Login extends StatefulWidget {
-  int lang;
+  int lang, categoryID;
   Color color;
 
-  Login(this.lang, this.color);
+  Login(this.lang, this.color, this.categoryID);
 
   @override
   _LoginState createState() => _LoginState();
@@ -164,8 +164,9 @@ class _LoginState extends State<Login> {
           context,
           MaterialPageRoute(
               builder: (context) => NoteList(
-                    widget.lang,
+                widget.lang,
                     widget.color,
+                    widget.categoryID,
                   )));
     } else {
       setState(() {

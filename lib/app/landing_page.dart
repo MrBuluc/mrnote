@@ -14,7 +14,7 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  int lang;
+  int lang, categoryID;
   Color currentColor;
 
   DatabaseHelper databaseHelper = DatabaseHelper();
@@ -36,9 +36,10 @@ class _LandingPageState extends State<LandingPage> {
         return Login(
           lang,
           currentColor,
+          categoryID,
         );
       } else {
-        return NoteList(lang, currentColor);
+        return NoteList(lang, currentColor, categoryID);
       }
     } else {
       return Scaffold(
@@ -75,6 +76,7 @@ class _LandingPageState extends State<LandingPage> {
     final path = directory.path;
     final file = File("$path/language.txt");
     final file1 = File("$path/theme.txt");
+    final file2 = File("$path/categoryID.txt");
     try {
       String contents = await file.readAsString();
       lang = int.parse(contents[10]);
@@ -89,6 +91,13 @@ class _LandingPageState extends State<LandingPage> {
       setState(() {});
     } catch (e) {
       file1.writeAsString("MaterialColor(primary value: Color(0xFFff0000))");
+      setState(() {});
+    }
+    try {
+      String contents = await file2.readAsString();
+      categoryID = int.parse(contents[12]);
+    } catch (e) {
+      file2.writeAsString("CategoryID: 0");
       setState(() {});
     }
   }
