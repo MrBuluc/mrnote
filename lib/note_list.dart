@@ -32,7 +32,7 @@ class _NoteListState extends State<NoteList> {
   List<Category> allCategories;
   int localCategoryID = 0;
 
-  InterstitialAd myInterstitialAd;
+  InterstitialAd myInterstitialAd, myInterstitialAdExit;
 
   Map<String, String> texts;
 
@@ -53,6 +53,10 @@ class _NoteListState extends State<NoteList> {
     "saveCategoryID_catch_baslik": "Save Failed ❌",
     "save_catch_icerik": "Error: ",
     "save_catch_anaButonYazisi": "Ok",
+    "_areYouSureforDelete_baslik": "Are you Sure?",
+    "_areYouSureforDelete_icerik": "Are you sure for exit to Mr. Note?.",
+    "_areYouSureforDelete_anaButonYazisi": "EXIT",
+    "_areYouSureforDelete_iptalButonYazisi": "CANCEL",
   };
 
   Map<String, String> turkish = {
@@ -72,6 +76,11 @@ class _NoteListState extends State<NoteList> {
     "save_catch_baslik": "Kaydetme Başarısız Oldu ❌",
     "save_catch_icerik": "Hata: ",
     "save_catch_anaButonYazisi": "Tamam",
+    "_areYouSureforDelete_baslik": "Emin misiniz?",
+    "_areYouSureforDelete_icerik":
+    "Mr. Not dan çıkmak istediğinizden emin misiniz?",
+    "_areYouSureforDelete_anaButonYazisi": "ÇIK",
+    "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
   };
 
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
@@ -85,12 +94,15 @@ class _NoteListState extends State<NoteList> {
     myInterstitialAd
       ..load()
       ..show();
+    myInterstitialAdExit = AdmobHelper.buildInterstitialAd();
+    myInterstitialAdExit..load();
     localCategoryID = widget.categoryID;
   }
 
   @override
   void dispose() {
     myInterstitialAd.dispose();
+    myInterstitialAdExit.dispose();
     super.dispose();
   }
 
@@ -108,166 +120,178 @@ class _NoteListState extends State<NoteList> {
       allCategories = List<Category>();
       updateCategoryList();
     }
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: widget.color,
-        title: Center(
-          child: Text("Mr. Note"),
-        ),
-        actions: <Widget>[
-          PopupMenuButton(
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        var result = await _goToPage(Categories(
-                          widget.lang,
-                          widget.color,
-                        ));
-                        if (result != null) {
-                          setState(() {
-                            updateCategoryList();
-                          });
-                        } else {
-                          setState(() {});
-                        }
-                      },
-                    )),
-                PopupMenuItem(
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem1"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        setState(() {
-                          localCategoryID = 0;
-                        });
-                        Navigator.pop(context);
-                        setState(() {});
-                      },
-                    )),
-                for (int index = 0; index < allCategories.length; index++)
+    return WillPopScope(
+      onWillPop: () {
+        return _areYouSureforExit();
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          backgroundColor: widget.color,
+          title: Center(
+            child: Text("Mr. Note"),
+          ),
+          actions: <Widget>[
+            PopupMenuButton(
+              itemBuilder: (context) {
+                return [
                   PopupMenuItem(
-                    child: ListTile(
-                      onTap: () {
-                        setState(() {
-                          localCategoryID = allCategories[index].categoryID;
-                        });
-                        saveCategoryID(localCategoryID);
-                        Navigator.pop(context);
-                        setState(() {});
-                      },
-                      title: Text(
-                        allCategories[index].categoryTitle,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      leading: Icon(
-                        Icons.import_contacts,
-                        color: Colors.blue,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.import_contacts,
+                          color: Colors.blue,
+                        ),
+                        title: Text(
+                          texts["PopupMenuItem"],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          var result = await _goToPage(Categories(
+                            widget.lang,
+                            widget.color,
+                          ));
+                          if (result != null) {
+                            setState(() {
+                              updateCategoryList();
+                            });
+                          } else {
+                            setState(() {});
+                          }
+                        },
+                      )),
+                  PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.import_contacts,
+                          color: Colors.blue,
+                        ),
+                        title: Text(
+                          texts["PopupMenuItem1"],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        onTap: () async {
+                          setState(() {
+                            localCategoryID = 0;
+                          });
+                          Navigator.pop(context);
+                          setState(() {});
+                        },
+                      )),
+                  for (int index = 0; index < allCategories.length; index++)
+                    PopupMenuItem(
+                      child: ListTile(
+                        onTap: () {
+                          setState(() {
+                            localCategoryID = allCategories[index].categoryID;
+                          });
+                          saveCategoryID(localCategoryID);
+                          Navigator.pop(context);
+                          setState(() {});
+                        },
+                        title: Text(
+                          allCategories[index].categoryTitle,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        leading: Icon(
+                          Icons.import_contacts,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
-                  ),
-                PopupMenuItem(
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.settings,
-                        color: Colors.green,
-                        size: 30,
-                      ),
-                      title: Text(
-                        texts["PopupMenuItem2"],
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        var result = await _goToPage(SettingsPage(
-                          widget.lang,
-                          widget.color,
-                        ));
-                        if (result != null) {
-                          setState(() {
-                            widget.lang = int.parse(result[0]);
-                            widget.color =
-                                Color(int.parse(result.substring(1)));
-                          });
-                        } else {
-                          setState(() {});
-                        }
-                      },
-                    ))
-              ];
-            },
-          ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          FloatingActionButton(
-            onPressed: () {
-              addCategoryDialog(context);
-            },
-            tooltip: texts["FloatingActionButton_tooltip"],
-            child: Icon(Icons.import_contacts),
-            mini: true,
-          ),
-          OpenContainer(
-            onClosed: (result) {
-              if (result != null) {
-                setState(() {});
-              }
-            },
-            transitionType: _transitionType,
-            openBuilder: (BuildContext context, VoidCallback _) {
-              return NoteDetail(
-                texts["FloatingActionButton1_title"],
-                widget.lang,
-                widget.color,
-              );
-            },
-            closedElevation: 6.0,
-            closedShape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(_fabDimension / 2),
-              ),
+                  PopupMenuItem(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.settings,
+                          color: Colors.green,
+                          size: 30,
+                        ),
+                        title: Text(
+                          texts["PopupMenuItem2"],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          var result = await _goToPage(SettingsPage(
+                            widget.lang,
+                            widget.color,
+                          ));
+                          if (result != null) {
+                            setState(() {
+                              widget.lang = int.parse(result[0]);
+                              widget.color =
+                                  Color(int.parse(result.substring(1)));
+                            });
+                          } else {
+                            setState(() {});
+                          }
+                        },
+                      ))
+                ];
+              },
             ),
-            closedColor: Theme.of(context).colorScheme.secondary,
-            closedBuilder: (BuildContext context, VoidCallback openContainer) {
-              return SizedBox(
-                height: _fabDimension,
-                width: _fabDimension,
-                child: Center(
-                  child: Icon(
-                    Icons.add,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    size: 40,
-                  ),
+          ],
+        ),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            FloatingActionButton(
+              onPressed: () async {
+                addCategoryDialog(context);
+              },
+              tooltip: texts["FloatingActionButton_tooltip"],
+              child: Icon(Icons.import_contacts),
+              mini: true,
+            ),
+            OpenContainer(
+              onClosed: (result) {
+                if (result != null) {
+                  setState(() {});
+                }
+              },
+              transitionType: _transitionType,
+              openBuilder: (BuildContext context, VoidCallback _) {
+                return NoteDetail(
+                  texts["FloatingActionButton1_title"],
+                  widget.lang,
+                  widget.color,
+                );
+              },
+              closedElevation: 6.0,
+              closedShape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(_fabDimension / 2),
                 ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Notes(
-        categoryID: localCategoryID,
-        lang: widget.lang,
-        color: widget.color,
+              ),
+              closedColor: Theme
+                  .of(context)
+                  .colorScheme
+                  .secondary,
+              closedBuilder:
+                  (BuildContext context, VoidCallback openContainer) {
+                return SizedBox(
+                  height: _fabDimension,
+                  width: _fabDimension,
+                  child: Center(
+                    child: Icon(
+                      Icons.add,
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .onSecondary,
+                      size: 40,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        body: Notes(
+          categoryID: localCategoryID,
+          lang: widget.lang,
+          color: widget.color,
+        ),
       ),
     );
   }
@@ -384,6 +408,24 @@ class _NoteListState extends State<NoteList> {
         anaButonYazisi: texts["saveCategoryID_catch_anaButonYazisi"],
       ).goster(context);
     }
+  }
+
+  Future<bool> _areYouSureforExit() async {
+    final sonuc = await PlatformDuyarliAlertDialog(
+      baslik: texts["_areYouSureforDelete_baslik"],
+      icerik: texts["_areYouSureforDelete_icerik"],
+      anaButonYazisi: texts["_areYouSureforDelete_anaButonYazisi"],
+      iptalButonYazisi: texts["_areYouSureforDelete_iptalButonYazisi"],
+    ).goster(context);
+
+    if (sonuc) {
+      return showAd();
+    }
+  }
+
+  Future<bool> showAd() async {
+    myInterstitialAdExit..show();
+    return Future.value(true);
   }
 }
 
