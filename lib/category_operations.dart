@@ -9,8 +9,9 @@ import 'utils/admob_helper.dart';
 class Categories extends StatefulWidget {
   int lang;
   Color color;
+  bool adOpen;
 
-  Categories(this.lang, this.color);
+  Categories(this.lang, this.color, this.adOpen);
 
   @override
   _CategoriesState createState() => _CategoriesState();
@@ -65,15 +66,9 @@ class _CategoriesState extends State<Categories> {
   void initState() {
     super.initState();
     databaseHelper = DatabaseHelper();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
-    AdmobHelper.myBannerAd
-      ..load()
-      ..show(anchorOffset: 10);
+    if (widget.adOpen) {
+      adInitialize();
+    }
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -86,8 +81,9 @@ class _CategoriesState extends State<Categories> {
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
-    AdmobHelper.myBannerAd.dispose();
+    if (widget.adOpen) {
+      disposeAd();
+    }
     super.dispose();
   }
 
@@ -125,6 +121,23 @@ class _CategoriesState extends State<Categories> {
                 ),
               );
             }));
+  }
+
+  void adInitialize() {
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+    AdmobHelper.myBannerAd = AdmobHelper.buildBannerAd();
+    AdmobHelper.myBannerAd
+      ..load()
+      ..show(anchorOffset: 10);
+  }
+
+  void disposeAd() {
+    myInterstitialAd.dispose();
+    AdmobHelper.myBannerAd.dispose();
   }
 
   void updateCategoryList() {

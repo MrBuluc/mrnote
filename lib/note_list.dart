@@ -19,8 +19,9 @@ const double _fabDimension = 56.0;
 class NoteList extends StatefulWidget {
   int lang, categoryID;
   Color color;
+  bool adOpen;
 
-  NoteList(this.lang, this.color, this.categoryID);
+  NoteList(this.lang, this.color, this.categoryID, this.adOpen);
 
   @override
   _NoteListState createState() => _NoteListState();
@@ -54,7 +55,7 @@ class _NoteListState extends State<NoteList> {
     "save_catch_icerik": "Error: ",
     "save_catch_anaButonYazisi": "Ok",
     "_areYouSureforDelete_baslik": "Are you Sure?",
-    "_areYouSureforDelete_icerik": "Are you sure for exit to Mr. Note?.",
+    "_areYouSureforDelete_icerik": "Are you sure for exit to Mr. Note?",
     "_areYouSureforDelete_anaButonYazisi": "EXIT",
     "_areYouSureforDelete_iptalButonYazisi": "CANCEL",
   };
@@ -85,24 +86,24 @@ class _NoteListState extends State<NoteList> {
 
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
+  bool adOpen;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-    myInterstitialAdExit = AdmobHelper.buildInterstitialAd();
-    myInterstitialAdExit..load();
+    if (widget.adOpen) {
+      adInitialize();
+    }
     localCategoryID = widget.categoryID;
+    adOpen = widget.adOpen;
   }
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
-    myInterstitialAdExit.dispose();
+    if (widget.adOpen) {
+      disposeAd();
+    }
     super.dispose();
   }
 
@@ -150,6 +151,7 @@ class _NoteListState extends State<NoteList> {
                           var result = await _goToPage(Categories(
                             widget.lang,
                             widget.color,
+                            adOpen,
                           ));
                           if (result != null) {
                             setState(() {
@@ -215,12 +217,28 @@ class _NoteListState extends State<NoteList> {
                           var result = await _goToPage(SettingsPage(
                             widget.lang,
                             widget.color,
+                            adOpen,
                           ));
                           if (result != null) {
+                            List<String> resultList = result.split("/");
+
+                            if (resultList.elementAt(2) == "0") {
+                              setState(() {
+                                adOpen = false;
+                              });
+                            } else {
+                              setState(() {
+                                adOpen = true;
+                              });
+                            }
                             setState(() {
-                              widget.lang = int.parse(result[0]);
+                              widget.lang = int.parse(resultList.elementAt(0));
                               widget.color =
-                                  Color(int.parse(result.substring(1)));
+                                  Color(int.parse(resultList.elementAt(1)));
+                              widget.adOpen = adOpen;
+                              print(
+                                  "widget.adOpen: " + widget.adOpen.toString());
+                              print("adOpen: " + adOpen.toString());
                             });
                           } else {
                             setState(() {});
@@ -251,11 +269,8 @@ class _NoteListState extends State<NoteList> {
               },
               transitionType: _transitionType,
               openBuilder: (BuildContext context, VoidCallback _) {
-                return NoteDetail(
-                  texts["FloatingActionButton1_title"],
-                  widget.lang,
-                  widget.color,
-                );
+                return NoteDetail(texts["FloatingActionButton1_title"],
+                    widget.lang, widget.color, adOpen);
               },
               closedElevation: 6.0,
               closedShape: const RoundedRectangleBorder(
@@ -288,12 +303,28 @@ class _NoteListState extends State<NoteList> {
           ],
         ),
         body: Notes(
+          adOpen,
           categoryID: localCategoryID,
           lang: widget.lang,
           color: widget.color,
         ),
       ),
     );
+  }
+
+  void adInitialize() {
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+    myInterstitialAdExit = AdmobHelper.buildInterstitialAd();
+    myInterstitialAdExit..load();
+  }
+
+  void disposeAd() {
+    myInterstitialAd.dispose();
+    myInterstitialAdExit.dispose();
   }
 
   void addCategoryDialog(BuildContext context) {
@@ -433,8 +464,9 @@ class Notes extends StatefulWidget {
   int categoryID;
   int lang;
   Color color;
+  bool adOpen;
 
-  Notes({this.categoryID, this.lang, this.color});
+  Notes(this.adOpen, {this.categoryID, this.lang, this.color});
 
   @override
   _NotesState createState() => _NotesState();
@@ -647,6 +679,7 @@ class _NotesState extends State<Notes> {
                   texts["NoteDetail"],
                   widget.lang,
                   widget.color,
+                  widget.adOpen,
                   updateNote: note,
                 )));
     return result;

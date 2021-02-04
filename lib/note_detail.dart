@@ -12,8 +12,9 @@ class NoteDetail extends StatefulWidget {
   Note updateNote;
   int lang;
   Color color;
+  bool adOpen;
 
-  NoteDetail(this.title, this.lang, this.color, {this.updateNote});
+  NoteDetail(this.title, this.lang, this.color, this.adOpen, {this.updateNote});
 
   @override
   _NoteDetailState createState() => _NoteDetailState();
@@ -76,11 +77,9 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+    if (widget.adOpen) {
+      adInitialize();
+    }
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -96,8 +95,9 @@ class _NoteDetailState extends State<NoteDetail> {
 
   @override
   void dispose() {
-    myInterstitialAd.dispose();
-    _controller.dispose();
+    if (widget.adOpen) {
+      disposeAd();
+    }
     super.dispose();
   }
 
@@ -264,6 +264,19 @@ class _NoteDetailState extends State<NoteDetail> {
               ),
             ),
     );
+  }
+
+  void adInitialize() {
+    AdmobHelper.admobInitialize();
+    myInterstitialAd = AdmobHelper.buildInterstitialAd();
+    myInterstitialAd
+      ..load()
+      ..show();
+  }
+
+  void disposeAd() {
+    myInterstitialAd.dispose();
+    _controller.dispose();
   }
 
   List<DropdownMenuItem<int>> createCategoryItem() {

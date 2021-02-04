@@ -164,10 +164,7 @@ class _LoginState extends State<Login> {
           context,
           MaterialPageRoute(
               builder: (context) => NoteList(
-                    widget.lang,
-                    widget.color,
-                    widget.categoryID,
-                  )));
+                  widget.lang, widget.color, widget.categoryID, true)));
     } else {
       setState(() {
         result = texts["result_enterFalse"];
