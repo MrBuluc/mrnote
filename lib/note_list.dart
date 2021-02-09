@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
+import 'notification_handler.dart';
 import 'utils/admob_helper.dart';
 
 const double _fabDimension = 56.0;
@@ -69,17 +70,17 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-    "Lütfen en az 3 karakter giriniz",
+        "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-    "Kategori başarıyla eklendi 👌",
+        "Kategori başarıyla eklendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
     "save_catch_baslik": "Kaydetme Başarısız Oldu ❌",
     "save_catch_icerik": "Hata: ",
     "save_catch_anaButonYazisi": "Tamam",
     "_areYouSureforDelete_baslik": "Emin misiniz?",
     "_areYouSureforDelete_icerik":
-    "Mr. Not dan çıkmak istediğinizden emin misiniz?",
+        "Mr. Not dan çıkmak istediğinizden emin misiniz?",
     "_areYouSureforDelete_anaButonYazisi": "ÇIK",
     "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
   };
@@ -97,6 +98,7 @@ class _NoteListState extends State<NoteList> {
     }
     localCategoryID = widget.categoryID;
     adOpen = widget.adOpen;
+    NotificationHandler().initializeFCMNotification(context);
   }
 
   @override
@@ -449,9 +451,10 @@ class _NoteListState extends State<NoteList> {
       iptalButonYazisi: texts["_areYouSureforDelete_iptalButonYazisi"],
     ).goster(context);
 
-    if (sonuc) {
+    if (sonuc && widget.adOpen) {
       return showAd();
     }
+    return Future.value(true);
   }
 
   Future<bool> showAd() async {

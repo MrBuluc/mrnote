@@ -126,33 +126,7 @@ class _NoteDetailState extends State<NoteDetail> {
               style: TextStyle(fontSize: 20),
             ),
             onPressed: () {
-              formkey.currentState.save();
-              noteTitle = _controller.text;
-              var suan = DateTime.now();
-              if (widget.updateNote == null) {
-                databaseHelper
-                    .addNote(Note(categoryID, noteTitle, noteContent,
-                        suan.toString(), selectedPriority))
-                    .then((savedNoteID) {
-                  if (savedNoteID != 0) {
-                    Navigator.pop(context, "saved");
-                  }
-                });
-              } else {
-                databaseHelper
-                    .updateNote(Note.withID(
-                        widget.updateNote.noteID,
-                        categoryID,
-                        noteTitle,
-                        noteContent,
-                        suan.toString(),
-                        selectedPriority))
-                    .then((updatedID) {
-                  if (updatedID != 0) {
-                    Navigator.pop(context, "updated");
-                  }
-                });
-              }
+              save(context);
             },
           )
         ],
@@ -289,5 +263,30 @@ class _NoteDetailState extends State<NoteDetail> {
               ),
             ))
         .toList();
+  }
+
+  void save(BuildContext context) {
+    formkey.currentState.save();
+    noteTitle = _controller.text;
+    var suan = DateTime.now();
+    if (widget.updateNote == null) {
+      databaseHelper
+          .addNote(Note(categoryID, noteTitle, noteContent, suan.toString(),
+              selectedPriority))
+          .then((savedNoteID) {
+        if (savedNoteID != 0) {
+          Navigator.pop(context, "saved");
+        }
+      });
+    } else {
+      databaseHelper
+          .updateNote(Note.withID(widget.updateNote.noteID, categoryID,
+              noteTitle, noteContent, suan.toString(), selectedPriority))
+          .then((updatedID) {
+        if (updatedID != 0) {
+          Navigator.pop(context, "updated");
+        }
+      });
+    }
   }
 }

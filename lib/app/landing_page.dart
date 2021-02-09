@@ -39,7 +39,7 @@ class _LandingPageState extends State<LandingPage> {
           categoryID,
         );
       } else {
-        return NoteList(lang, currentColor, categoryID, true);
+        return NoteList(lang, currentColor, categoryID, false);
       }
     } else {
       return Scaffold(
