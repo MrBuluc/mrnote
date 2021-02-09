@@ -1,4 +1,4 @@
-class Note {
+class Note implements Comparable<Note> {
   int noteID;
   int categoryID;
   String categoryTitle;
@@ -39,5 +39,16 @@ class Note {
   @override
   String toString() {
     return 'Note{noteID: $noteID, categoryID: $categoryID, categoryTitle: $categoryTitle, noteTitle: $noteTitle, noteContent: $noteContent, noteTime: $noteTime, notePriority: $notePriority}';
+  }
+
+  @override
+  int compareTo(Note other) {
+    if (this.notePriority > other.notePriority) {
+      return -1;
+    } else if (this.notePriority < other.notePriority) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 }
