@@ -98,6 +98,7 @@ class _NoteDetailState extends State<NoteDetail> {
     if (widget.adOpen) {
       disposeAd();
     }
+    _controller.dispose();
     super.dispose();
   }
 
@@ -250,7 +251,6 @@ class _NoteDetailState extends State<NoteDetail> {
 
   void disposeAd() {
     myInterstitialAd.dispose();
-    _controller.dispose();
   }
 
   List<DropdownMenuItem<int>> createCategoryItem() {

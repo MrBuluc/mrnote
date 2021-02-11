@@ -205,48 +205,45 @@ class _NoteListState extends State<NoteList> {
                     ),
                   PopupMenuItem(
                       child: ListTile(
-                        leading: Icon(
-                          Icons.settings,
-                          color: Colors.green,
-                          size: 30,
-                        ),
-                        title: Text(
-                          texts["PopupMenuItem2"],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        onTap: () async {
-                          Navigator.pop(context);
-                          var result = await _goToPage(SettingsPage(
-                            widget.lang,
-                            widget.color,
-                            adOpen,
-                          ));
-                          if (result != null) {
-                            List<String> resultList = result.split("/");
+                    leading: Icon(
+                      Icons.settings,
+                      color: Colors.green,
+                      size: 30,
+                    ),
+                    title: Text(
+                      texts["PopupMenuItem2"],
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      var result = await _goToPage(SettingsPage(
+                        widget.lang,
+                        widget.color,
+                        adOpen,
+                      ));
+                      if (result != null) {
+                        List<String> resultList = result.split("/");
 
-                            if (resultList.elementAt(2) == "0") {
-                              setState(() {
-                                adOpen = false;
-                              });
-                            } else {
-                              setState(() {
-                                adOpen = true;
-                              });
-                            }
-                            setState(() {
-                              widget.lang = int.parse(resultList.elementAt(0));
-                              widget.color =
-                                  Color(int.parse(resultList.elementAt(1)));
-                              widget.adOpen = adOpen;
-                              print(
-                                  "widget.adOpen: " + widget.adOpen.toString());
-                              print("adOpen: " + adOpen.toString());
-                            });
-                          } else {
-                            setState(() {});
-                          }
-                        },
-                      ))
+                        if (resultList.elementAt(2) == "0") {
+                          setState(() {
+                            adOpen = false;
+                          });
+                        } else {
+                          setState(() {
+                            adOpen = true;
+                          });
+                        }
+                        setState(() {
+                          widget.lang = int.parse(resultList.elementAt(0));
+                          widget.color =
+                              Color(int.parse(resultList.elementAt(1)));
+                          widget.adOpen = adOpen;
+                        });
+                      } else {
+                        setState(() {});
+                      }
+                    },
+                  ))
                 ];
               },
             ),
@@ -659,20 +656,19 @@ class _NotesState extends State<Notes> {
   }
 
   Future<void> getFilterNotesList(int categoryID) async {
+    List<Note> allNotes1;
     if (categoryID == 0) {
-      List<Note> allNotes1 = await databaseHelper.getNoteList();
-      allNotes1.sort();
-      setState(() {
-        allNotes = allNotes1;
-      });
+      allNotes1 = await databaseHelper.getNoteList();
     } else {
-      List<Note> allNotes1 =
-      await databaseHelper.getCategoryNotesList(categoryID);
-      allNotes1.sort();
-      setState(() {
-        allNotes = allNotes1;
-      });
+      allNotes1 = await databaseHelper.getCategoryNotesList(categoryID);
     }
+    allNotes1.sort();
+    if (categoryID == 0 || categoryID == 1) {
+      allNotes1.removeAt(0);
+    }
+    setState(() {
+      allNotes = allNotes1;
+    });
   }
 
   Future<String> _goToDetailPage(BuildContext context, Note note) async {
@@ -737,17 +733,11 @@ class _NotesState extends State<Notes> {
 
   _delNote(int noteID) {
     databaseHelper.deleteNote(noteID).then((deletedID) {
-      if (deletedID != 0) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(texts["_delNote_if"]),
-        ));
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(texts["_delNote_if"]),
+      ));
 
-        setState(() {});
-      } else {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(texts["_delNote_else"]),
-        ));
-      }
+      setState(() {});
     });
   }
 

@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/Settings/DeveloperPage.dart';
 import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
+import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/admob_helper.dart';
+import 'package:mrnote/utils/database_helper.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -39,6 +41,15 @@ class _SettingsPageState extends State<SettingsPage> {
     "Container_Padding1": "Theme Color :",
     "AlertDialog": 'Select a color',
     "RaisedButtonText": "Select Color",
+    "Container_Padding2": "Current Password:",
+    "Container_Padding2_hintText": "Enter Password",
+    "Container_Padding2_labelText": "Mr. Note Password",
+    "Container_Padding3": "New Password:",
+    "password_save_baslik": "Do you want to remove the password?",
+    "password_save_icerik":
+        "If you approve this process, password will be removed.",
+    "password_save_anaButonYazisi": "Approve",
+    "password_save_iptalButonYazisi": "Cancel",
   };
 
   Map<String, String> turkish = {
@@ -56,17 +67,32 @@ class _SettingsPageState extends State<SettingsPage> {
     "Container_Padding1": "Tema Rengi :",
     "AlertDialog": 'Bir Renk Seçin',
     "RaisedButtonText": "Renk Seç",
+    "Container_Padding2": "Mevcut Şifre:",
+    "Container_Padding2_hintText": "Mr. Notun Parolasını Girin",
+    "Container_Padding2_labelText": "Mr. Notun Parolası",
+    "Container_Padding3": "Yeni Parola:",
+    "password_save_baslik": "Parolayı Kaldırmak İstiyor Musunuz?",
+    "password_save_icerik": "Bu işlemi onaylarsanız şifre kaldırılacaktır.",
+    "password_save_anaButonYazisi": "Onayla",
+    "password_save_iptalButonYazisi": "İptal",
   };
 
   Color currentColor;
 
-  bool adOpen;
+  bool adOpen,
+      show = false;
 
   double ekranYuksekligi, ekranGenisligi;
 
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  static GlobalKey<FormState> formKey1 = GlobalKey<FormState>();
 
-  String parola;
+  String gelistiriciSayfasiParola,
+      password = "",
+      newPassword,
+      showPassword = "*";
+
+  DatabaseHelper databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -83,6 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
         break;
     }
     currentColor = widget.color;
+    readPassword();
   }
 
   @override
@@ -185,12 +212,74 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 15),
+                    child: Text(
+                      texts["Container_Padding2"],
+                      style: TextStyle(fontSize: 20, color: Colors.blue),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 15),
+                    child: Text(
+                      show ? password : showPassword,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  GestureDetector(
+                    child: Icon(
+                      show ? Icons.visibility_off : Icons.visibility,
+                      size: 30,
+                    ),
+                    onTap: () {
+                      setState(() {
+                        show = !show;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Form(
+                key: formKey1,
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 15),
+                      child: Text(
+                        texts["Container_Padding3"],
+                        style: TextStyle(fontSize: 20, color: Colors.blue),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            hintText: texts["Container_Padding2_hintText"],
+                            labelText: texts["Container_Padding2_labelText"],
+                            border: OutlineInputBorder(),
+                          ),
+                          onSaved: (text) {
+                            newPassword = text;
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               GestureDetector(
                 child: Container(
                   color: Colors.white,
                   child: SizedBox(
                     width: ekranGenisligi,
-                    height: ekranYuksekligi - 204,
+                    height: ekranYuksekligi - 279,
                   ),
                 ),
                 onLongPress: () async {
@@ -224,15 +313,30 @@ class _SettingsPageState extends State<SettingsPage> {
     AdmobHelper.myBannerAd.dispose();
   }
 
+  Future<void> readPassword() async {
+    List<Note> noteList =
+    await databaseHelper.getNoteTitleNotesList("Password");
+    setState(() {
+      password = noteList[0].noteContent;
+    });
+    prepareShowPassword();
+    print("password: " + password);
+  }
+
+  void prepareShowPassword() {
+    showPassword = "*" * (password.length);
+  }
+
   List<DropdownMenuItem<int>> createLangItem() {
     List<String> langList = [texts["langList0"], texts["langList1"]];
     return langList
-        .map((lang) => DropdownMenuItem<int>(
-              value: langList.indexOf(lang),
-              child: Text(
-                lang,
-                style: TextStyle(fontSize: 20),
-              ),
+        .map((lang) =>
+        DropdownMenuItem<int>(
+          value: langList.indexOf(lang),
+          child: Text(
+            lang,
+            style: TextStyle(fontSize: 20),
+          ),
             ))
         .toList();
   }
@@ -246,6 +350,25 @@ class _SettingsPageState extends State<SettingsPage> {
 
       final file1 = File("$path/theme.txt");
       file1.writeAsString(color.toString());
+
+      formKey1.currentState.save();
+      if (newPassword == "") {
+        bool sonuc = await PlatformDuyarliAlertDialog(
+          baslik: texts["password_save_baslik"],
+          icerik: texts["password_save_icerik"],
+          anaButonYazisi: texts["password_save_anaButonYazisi"],
+          iptalButonYazisi: texts["password_save_iptalButonYazisi"],
+        ).goster(context);
+        if (sonuc) {
+          var suan = DateTime.now();
+          databaseHelper.updateNote(
+              Note.withID(1, 1, "Password", newPassword, suan.toString(), 2));
+        }
+      } else {
+        var suan = DateTime.now();
+        databaseHelper.updateNote(
+            Note.withID(1, 1, "Password", newPassword, suan.toString(), 2));
+      }
     } catch (e) {
       PlatformDuyarliAlertDialog(
         baslik: texts["save_catch_baslik"],
@@ -293,7 +416,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     Icons.lock,
                   ),
                 ),
-                onSaved: (String value) => parola = value,
+                onSaved: (String value) => gelistiriciSayfasiParola = value,
               ),
             ),
             actions: <Widget>[
@@ -322,7 +445,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> gelistiriciSayfasiGiris() async {
     formKey.currentState.save();
-    if (parola == "Hakkican99") {
+    if (gelistiriciSayfasiParola == "Hakkican99") {
       var result = await _goToPage(DeveloperPage(widget.adOpen));
       if (result != null) {
         if (result == "0") {

@@ -147,6 +147,22 @@ class DatabaseHelper {
     return sonuc;
   }
 
+  Future<List<Note>> getNoteIDNotesList(int noteID) async {
+    var noteMapList = await getNoteIDNotes(noteID);
+    var noteList = List<Note>();
+    for (Map map in noteMapList) {
+      noteList.add(Note.fromMap(map));
+    }
+    return noteList;
+  }
+
+  Future<List<Map<String, dynamic>>> getNoteIDNotes(int noteID) async {
+    var db = await _getDatabase();
+    var sonuc = await db.rawQuery(
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.noteID == '$noteID' ORDER by noteID DESC;");
+    return sonuc;
+  }
+
   Future<int> updateNote(Note note) async {
     var db = await _getDatabase();
     var sonuc = await db.update("note", note.toMap(),
@@ -155,14 +171,10 @@ class DatabaseHelper {
   }
 
   Future<int> deleteNote(int noteID) async {
-    if (noteID == 1) {
-      return 0;
-    } else {
-      var db = await _getDatabase();
-      var sonuc =
-          await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
-      return sonuc;
-    }
+    var db = await _getDatabase();
+    var sonuc =
+        await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
+    return sonuc;
   }
 
   Future<int> addNote(Note note) async {
