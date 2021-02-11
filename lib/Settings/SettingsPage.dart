@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -8,7 +6,6 @@ import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/admob_helper.dart';
 import 'package:mrnote/utils/database_helper.dart';
-import 'package:path_provider/path_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   int lang;
@@ -79,8 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Color currentColor;
 
-  bool adOpen,
-      show = false;
+  bool adOpen, show = false;
 
   double ekranYuksekligi, ekranGenisligi;
 
@@ -90,7 +86,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String gelistiriciSayfasiParola,
       password = "",
       newPassword,
-      showPassword = "*";
+      showPassword = "";
 
   DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -231,7 +227,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  GestureDetector(
+                  password != ""
+                      ? GestureDetector(
                     child: Icon(
                       show ? Icons.visibility_off : Icons.visibility,
                       size: 30,
@@ -241,7 +238,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         show = !show;
                       });
                     },
-                  ),
+                  )
+                      : Container()
                 ],
               ),
               Form(
@@ -279,7 +277,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   color: Colors.white,
                   child: SizedBox(
                     width: ekranGenisligi,
-                    height: ekranYuksekligi - 279,
+                    height: ekranYuksekligi - 332,
                   ),
                 ),
                 onLongPress: () async {
@@ -337,19 +335,18 @@ class _SettingsPageState extends State<SettingsPage> {
             lang,
             style: TextStyle(fontSize: 20),
           ),
-            ))
+        ))
         .toList();
   }
 
   Future<void> save(int lang, Color color, bool adOpen) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final path = directory.path;
-      final file = File("$path/language.txt");
-      file.writeAsString("language: $lang");
+      var suan = DateTime.now();
+      databaseHelper.updateNote(
+          Note.withID(2, 0, "Language", lang.toString(), suan.toString(), 2));
 
-      final file1 = File("$path/theme.txt");
-      file1.writeAsString(color.toString());
+      databaseHelper.updateNote(Note.withID(
+          3, 0, "Theme", color.value.toString(), suan.toString(), 2));
 
       formKey1.currentState.save();
       if (newPassword == "") {
@@ -360,14 +357,13 @@ class _SettingsPageState extends State<SettingsPage> {
           iptalButonYazisi: texts["password_save_iptalButonYazisi"],
         ).goster(context);
         if (sonuc) {
-          var suan = DateTime.now();
           databaseHelper.updateNote(
-              Note.withID(1, 1, "Password", newPassword, suan.toString(), 2));
+              Note.withID(1, 0, "Password", newPassword, suan.toString(), 2));
         }
       } else {
         var suan = DateTime.now();
         databaseHelper.updateNote(
-            Note.withID(1, 1, "Password", newPassword, suan.toString(), 2));
+            Note.withID(1, 0, "Password", newPassword, suan.toString(), 2));
       }
     } catch (e) {
       PlatformDuyarliAlertDialog(

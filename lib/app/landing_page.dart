@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:mrnote/Login/login.dart';
 import 'package:mrnote/common_widget/merkez_widget.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_list.dart';
 import 'package:mrnote/utils/database_helper.dart';
-import 'package:path_provider/path_provider.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -72,32 +69,30 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> read() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = directory.path;
-    final file = File("$path/language.txt");
-    final file1 = File("$path/theme.txt");
-    final file2 = File("$path/categoryID.txt");
     try {
-      String contents = await file.readAsString();
-      lang = int.parse(contents[10]);
+      List<Note> languageNoteList =
+          await databaseHelper.getNoteTitleNotesList("Language");
+      lang = int.parse(languageNoteList[0].noteContent);
     } catch (e) {
-      file.writeAsString("language: 0");
+      lang = 0;
       setState(() {});
     }
     try {
-      String contents1 = await file1.readAsString();
-      int color = int.parse(contents1.substring(35, 45));
+      List<Note> themeNoteList =
+      await databaseHelper.getNoteTitleNotesList("Theme");
+      int color = int.parse(themeNoteList[0].noteContent);
       currentColor = Color(color);
       setState(() {});
     } catch (e) {
-      file1.writeAsString("MaterialColor(primary value: Color(0xFFff0000))");
+      currentColor = Color(0xFFff0000);
       setState(() {});
     }
     try {
-      String contents = await file2.readAsString();
-      categoryID = int.parse(contents[12]);
+      List<Note> categoryIDNoteList =
+      await databaseHelper.getNoteTitleNotesList("CategoryID");
+      categoryID = int.parse(categoryIDNoteList[0].noteContent);
     } catch (e) {
-      file2.writeAsString("CategoryID: 0");
+      categoryID = 0;
       setState(() {});
     }
   }

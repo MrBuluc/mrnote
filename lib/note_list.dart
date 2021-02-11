@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:animations/animations.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +6,6 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
 import 'package:mrnote/utils/database_helper.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
@@ -277,10 +274,7 @@ class _NoteListState extends State<NoteList> {
                   Radius.circular(_fabDimension / 2),
                 ),
               ),
-              closedColor: Theme
-                  .of(context)
-                  .colorScheme
-                  .secondary,
+              closedColor: Theme.of(context).colorScheme.secondary,
               closedBuilder:
                   (BuildContext context, VoidCallback openContainer) {
                 return SizedBox(
@@ -289,10 +283,7 @@ class _NoteListState extends State<NoteList> {
                   child: Center(
                     child: Icon(
                       Icons.add,
-                      color: Theme
-                          .of(context)
-                          .colorScheme
-                          .onSecondary,
+                      color: Theme.of(context).colorScheme.onSecondary,
                       size: 40,
                     ),
                   ),
@@ -427,10 +418,9 @@ class _NoteListState extends State<NoteList> {
 
   Future<void> saveCategoryID(int localCategoryID) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final path = directory.path;
-      final file = File("$path/categoryID.txt");
-      file.writeAsString("CategoryID: $localCategoryID");
+      var suan = DateTime.now();
+      databaseHelper.updateNote(Note.withID(
+          4, 0, "CategoryID", localCategoryID.toString(), suan.toString(), 2));
     } catch (e) {
       PlatformDuyarliAlertDialog(
         baslik: texts["saveCategoryID_catch_baslik"],
@@ -663,9 +653,6 @@ class _NotesState extends State<Notes> {
       allNotes1 = await databaseHelper.getCategoryNotesList(categoryID);
     }
     allNotes1.sort();
-    if (categoryID == 0 || categoryID == 1) {
-      allNotes1.removeAt(0);
-    }
     setState(() {
       allNotes = allNotes1;
     });
