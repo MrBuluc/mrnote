@@ -73,6 +73,7 @@ class DatabaseHelper {
     for (Map map in categoryMapList) {
       categoryList.add(Category.fromMap(map));
     }
+    categoryList.removeAt(0);
     return categoryList;
   }
 
@@ -99,7 +100,7 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getNotes() async {
     var db = await _getDatabase();
     var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID order by noteID Desc;");
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 order by noteID Desc;");
 
     return sonuc;
   }

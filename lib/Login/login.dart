@@ -3,6 +3,8 @@ import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_list.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
+import '../const.dart';
+
 class Login extends StatefulWidget {
   int lang, categoryID;
   Color color;
@@ -16,7 +18,6 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   final formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String password, truePassword;
   String result = "";
@@ -28,8 +29,8 @@ class _LoginState extends State<Login> {
   Map<String, String> english = {
     "Text1": "Enter the Password",
     "TextFormField_hintText": "Password",
-    "TextFormField_labelText": "Your Password",
-    "RaisedButton_Text": "Reset The Password",
+    "RaisedButton_Text": "Reset",
+    "Enter": "Enter",
     "result_enterTrue": "Logging In...",
     "result_enterFalse": "Wrong Password",
     "result_resetNull":
@@ -41,12 +42,12 @@ class _LoginState extends State<Login> {
   Map<String, String> turkish = {
     "Text1": "Parolanızı Giriniz",
     "TextFormField_hintText": "Parola",
-    "TextFormField_labelText": "Parolanız",
-    "RaisedButton_Text": "Parolayı Sıfırla",
+    "RaisedButton_Text": "Sıfırla",
+    "Enter": "Giriş",
     "result_enterTrue": "Giriş Yapılıyor...",
     "result_enterFalse": "Yanlış Parola",
     "result_resetNull":
-        "Giriş butonuna basın sonra\n" + "Parolayı Sıfırla butonuna basın",
+    "Giriş butonuna basın sonra\n" + "Parolayı Sıfırla butonuna basın",
     "result_resetElse": "Parola sıfırlandı\n" + "Mr. Note a girebilirsiniz"
   };
 
@@ -66,88 +67,134 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-        data: Theme.of(context).copyWith(
-          accentColor: Colors.green,
-          hintColor: Colors.indigo,
-          errorColor: Colors.red,
-        ),
-        child: Scaffold(
-          key: _scaffoldKey,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              enter();
-            },
-            backgroundColor: Colors.teal,
-            child: Icon(Icons.arrow_forward),
-          ),
-          appBar: AppBar(
-            title: Center(child: Text("Mr. Note")),
-            backgroundColor: widget.color,
-          ),
-          body: Container(
-            child: Center(
-              heightFactor: 100,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 200, 10, 10),
-                child: Form(
-                  key: formKey,
-                  child: ListView(children: <Widget>[
-                    Center(
-                        child: Text(
-                      texts["Text1"],
-                      style: TextStyle(fontSize: 20),
-                    )),
-                    SizedBox(
-                      height: 10,
+    var size = MediaQuery
+        .of(context)
+        .size;
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: scaffoldColor,
+        body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                buildHeader(),
+                buildTextForm(size),
+                buildResult(),
+              ],
+            )),
+      ),
+    );
+  }
+
+  buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Text(texts["Text1"], style: headerStyle3),
+    );
+  }
+
+  Widget buildTextForm(Size size) {
+    return Container(
+      height: 200,
+      width: 350,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3)),
+          ]),
+      child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 30.0, right: 30),
+                child: TextFormField(
+                  obscureText: true,
+                  style: headerStyle4,
+                  decoration: InputDecoration(
+                    hintText: texts["TextFormField_hintText"],
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: generalColor,
                     ),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        hintText: texts["TextFormField_hintText"],
-                        hintStyle: TextStyle(fontSize: 12),
-                        labelText: texts["TextFormField_labelText"],
-                        border: OutlineInputBorder(),
-                      ),
-                      onSaved: (String value) => password = value,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    RaisedButton(
-                      child: Text(
-                        texts["RaisedButton_Text"],
-                        style: TextStyle(color: Colors.yellow),
-                      ),
-                      color: Colors.purple,
-                      onPressed: () {
-                        resetThePassword();
-                      },
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: Text(
-                        result,
-                        style: TextStyle(fontSize: 20),
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  ]),
+                  ),
+                  onSaved: (String value) => password = value,
                 ),
+              ),
+              buildSave()
+            ],
+          )),
+    );
+  }
+
+  buildSave() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 50.0, top: 30, left: 50),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            height: 40,
+            width: 80,
+            decoration: BoxDecoration(
+                color: Colors.grey.shade700,
+                borderRadius: BorderRadius.circular(5)),
+            child: Center(
+              child: GestureDetector(
+                child: Text(
+                  texts["RaisedButton_Text"],
+                  style: headerStyle11,
+                ),
+                onTap: () {
+                  resetThePassword();
+                },
               ),
             ),
           ),
-        ));
+          Container(
+            height: 40,
+            width: 80,
+            decoration: BoxDecoration(
+                color: Colors.grey.shade700,
+                borderRadius: BorderRadius.circular(5)),
+            child: Center(
+              child: GestureDetector(
+                child: Text(
+                  texts["Enter"],
+                  style: headerStyle11,
+                ),
+                onTap: () {
+                  enter();
+                },
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  buildResult() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Text(
+        result,
+        style: TextStyle(fontSize: 20),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 
   Future<void> enter() async {
     List<Note> noteList =
-        await databaseHelper.getNoteTitleNotesList("Password");
+    await databaseHelper.getNoteTitleNotesList("Password");
     truePassword = noteList[0].noteContent;
     if (truePassword == null) {
       truePassword = "";
@@ -178,11 +225,11 @@ class _LoginState extends State<Login> {
         result = texts["result_resetNull"];
       });
     } else {
-      note.noteContent = null;
+      note.noteContent = "";
       var suan = DateTime.now();
       await databaseHelper
           .updateNote(Note.withID(note.noteID, note.categoryID, note.noteTitle,
-              note.noteContent, suan.toString(), note.notePriority))
+          note.noteContent, suan.toString(), note.notePriority))
           .then((updatedID) {
         if (updatedID != 0) {
           setState(() {

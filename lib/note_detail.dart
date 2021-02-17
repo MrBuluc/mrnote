@@ -64,10 +64,8 @@ class _NoteDetailState extends State<NoteDetail> {
     super.initState();
     allCategories = List<Category>();
     databaseHelper = DatabaseHelper();
-    databaseHelper.getCategories().then((value) {
-      for (Map readMap in value) {
-        allCategories.add(Category.fromMap(readMap));
-      }
+    databaseHelper.getCategoryList().then((value) {
+      allCategories = value;
       if (widget.updateNote != null) {
         categoryID = widget.updateNote.categoryID;
         selectedPriority = widget.updateNote.notePriority;

@@ -213,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   Padding(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 15),
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 15),
                     child: Text(
                       texts["Container_Padding2"],
                       style: TextStyle(fontSize: 20, color: Colors.blue),
@@ -227,7 +227,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  password != ""
+                  password != "" || password != null
                       ? GestureDetector(
                     child: Icon(
                       show ? Icons.visibility_off : Icons.visibility,
@@ -317,8 +317,10 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       password = noteList[0].noteContent;
     });
-    prepareShowPassword();
-    print("password: " + password);
+    if (password != "" || password != null) {
+      prepareShowPassword();
+    }
+    debugPrint("password: " + password.toString());
   }
 
   void prepareShowPassword() {

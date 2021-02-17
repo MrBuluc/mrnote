@@ -9,10 +9,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Mr. Note",
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primarySwatch: Colors.purple,
-          primaryColor: Color(0xFFff0000),
-          accentColor: Colors.orange),
+      theme: ThemeData(primarySwatch: Colors.grey),
       home: LandingPage(),
     );
   }

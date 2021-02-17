@@ -338,7 +338,7 @@ class _NoteListState extends State<NoteList> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: texts[
-                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
