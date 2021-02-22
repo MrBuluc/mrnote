@@ -192,7 +192,7 @@ class _LoginState extends State<Login> {
 
   Future<void> enter() async {
     List<Note> noteList =
-    await databaseHelper.getNoteTitleNotesList("Password");
+        await databaseHelper.getNoteTitleNotesList("Password");
     truePassword = noteList[0].noteContent;
     if (truePassword == null) {
       truePassword = "";

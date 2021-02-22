@@ -7,6 +7,7 @@ import 'package:mrnote/utils/admob_helper.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import '../const.dart';
+import 'DeveloperPage.dart';
 
 class SettingsPage extends StatefulWidget {
   int lang;
@@ -91,6 +92,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   final myController = TextEditingController();
 
+  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -120,9 +123,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     ekranGenisligi = size.width;
     ekranYuksekligi = size.height;
     return SafeArea(
@@ -146,21 +147,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             changePassword(bos, texts["Change Your Password"], size),
             saveButton(),
-            // GestureDetector(
-            //   child: Container(
-            //     color: Colors.white,
-            //     child: SizedBox(
-            //       width: ekranGenisligi,
-            //       height: ekranYuksekligi - 332,
-            //     ),
-            //   ),
-            //   onLongPress: () async {
-            //     final sonuc = await _showMyDialog();
-            //     if (sonuc) {
-            //       gelistiriciSayfasiGiris();
-            //     }
-            //   },
-            // )
           ],
         ),
       ),
@@ -202,24 +188,106 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget buildHeader(Size size) {
-    return Container(
-      height: 210,
-      width: ekranGenisligi,
-      color: Colors.grey.shade900,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Text(
-              texts["AppBar_title"],
-              style: headerStyle6,
+    return GestureDetector(
+      child: Container(
+        height: 210,
+        width: ekranGenisligi,
+        color: Colors.grey.shade900,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Text(
+                texts["AppBar_title"],
+                style: headerStyle6,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      onLongPress: () async {
+        final sonuc = await _showMyDialog();
+        if (sonuc) {
+          gelistiriciSayfasiGiris();
+        }
+      },
     );
+  }
+
+  Future<void> gelistiriciSayfasiGiris() async {
+    formKey.currentState.save();
+    if (gelistiriciSayfasiParola == "Hakkican99") {
+      var result = await _goToPage(DeveloperPage(widget.adOpen));
+      if (result != null) {
+        if (result == "0") {
+          setState(() {
+            adOpen = false;
+          });
+        } else {
+          adInitialize();
+          setState(() {
+            adOpen = true;
+          });
+        }
+        setState(() {
+          widget.adOpen = adOpen;
+        });
+      } else {
+        setState(() {});
+      }
+    }
+  }
+
+  Future<String> _goToPage(Object page) async {
+    final result = await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => page));
+    return result;
+  }
+
+  Future<bool> _showMyDialog() async {
+    return showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Geliştirici Sayfası Giriş"),
+            content: Form(
+              key: formKey,
+              child: TextFormField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Parola",
+                  prefixIcon: Icon(
+                    Icons.lock,
+                  ),
+                ),
+                onSaved: (String value) => gelistiriciSayfasiParola = value,
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(
+                  "Iptal",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              FlatButton(
+                child: Text(
+                  "Onayla",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              )
+            ],
+          );
+        });
   }
 
   Widget dropDownButtonsColumn() {
@@ -550,79 +618,5 @@ class _SettingsPageState extends State<SettingsPage> {
       currentColor = color;
       widget.color = color;
     });
-  }
-
-  // Future<bool> _showMyDialog() async {
-  //   return showDialog<bool>(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: Text("Geliştirici Sayfası Giriş"),
-  //           content: Form(
-  //             key: formKey,
-  //             child: TextFormField(
-  //               obscureText: true,
-  //               decoration: InputDecoration(
-  //                 hintText: "Parola",
-  //                 prefixIcon: Icon(
-  //                   Icons.lock,
-  //                 ),
-  //               ),
-  //               onSaved: (String value) => gelistiriciSayfasiParola = value,
-  //             ),
-  //           ),
-  //           actions: <Widget>[
-  //             FlatButton(
-  //               child: Text(
-  //                 "Iptal",
-  //                 style: TextStyle(fontSize: 20),
-  //               ),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop(false);
-  //               },
-  //             ),
-  //             FlatButton(
-  //               child: Text(
-  //                 "Onayla",
-  //                 style: TextStyle(fontSize: 20),
-  //               ),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop(true);
-  //               },
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
-  //
-  // Future<void> gelistiriciSayfasiGiris() async {
-  //   formKey.currentState.save();
-  //   if (gelistiriciSayfasiParola == "Hakkican99") {
-  //     var result = await _goToPage(DeveloperPage(widget.adOpen));
-  //     if (result != null) {
-  //       if (result == "0") {
-  //         setState(() {
-  //           adOpen = false;
-  //         });
-  //       } else {
-  //         adInitialize();
-  //         setState(() {
-  //           adOpen = true;
-  //         });
-  //       }
-  //       setState(() {
-  //         widget.adOpen = adOpen;
-  //       });
-  //     } else {
-  //       setState(() {});
-  //     }
-  //   }
-  // }
-
-  Future<String> _goToPage(Object page) async {
-    final result = await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => page));
-    return result;
   }
 }
