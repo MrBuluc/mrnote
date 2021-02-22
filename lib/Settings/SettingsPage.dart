@@ -1,5 +1,6 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/admob_helper.dart';
@@ -37,10 +38,10 @@ class _SettingsPageState extends State<SettingsPage> {
     "save_baslik": "Saved Successfully ✔",
     "save_icerik": "✔✔✔✔✔✔✔✔✔✔✔✔✔✔✔",
     "save_anaButonYazisi": "Ok",
+    "Theme_Color": "Theme Color:",
     "Currently_Password": "Currently Password:",
-    // "AlertDialog": 'Select a color',
-    // "RaisedButtonText": "Select Color",
-    // "Container_Padding2": "Current Password:",
+    "AlertDialog": 'Select a color',
+    "RaisedButtonText": "Select Color",
     "password_save_baslik": "Do you want to remove the password?",
     "password_save_icerik":
         "If you approve this process, password will be removed.",
@@ -62,6 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
     "save_baslik": "Başarılı Bir Şekilde Kaydedildi ✔",
     "save_icerik": "✔✔✔✔✔✔✔✔✔✔✔✔✔✔✔",
     "save_anaButonYazisi": "Tamam",
+    "Theme_Color": "Tema Rengi:",
     "Currently_Password": "Şuanki Parola:",
     "AlertDialog": 'Bir Renk Seçin',
     "RaisedButtonText": "Renk Seç",
@@ -131,9 +133,13 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             buildHeader(size),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
             dropDownButtonsColumn(),
+            changeColorWidget(),
+            SizedBox(
+              height: 10,
+            ),
             currentPassword(),
             SizedBox(
               height: 10,
@@ -197,7 +203,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget buildHeader(Size size) {
     return Container(
-      height: 220,
+      height: 210,
       width: ekranGenisligi,
       color: Colors.grey.shade900,
       child: Column(
@@ -261,12 +267,54 @@ class _SettingsPageState extends State<SettingsPage> {
         .toList();
   }
 
+  Widget changeColorWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Text(
+            texts["Theme_Color"],
+            style: headerStyle7,
+          ),
+        ),
+        RaisedButton(
+          elevation: 3.0,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(texts["AlertDialog"]),
+                  content: SingleChildScrollView(
+                    child: BlockPicker(
+                      pickerColor: currentColor,
+                      onColorChanged: (Color color) {
+                        Navigator.pop(context);
+                        changeColor(color);
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+          child: Text(
+            texts["RaisedButtonText"],
+            style: TextStyle(color: Colors.black),
+          ),
+          textColor: const Color(0xffffffff),
+        ),
+      ],
+    );
+  }
+
   Widget currentPassword() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 28),
+          padding: const EdgeInsets.only(left: 35),
           child: Text(
             texts["Currently_Password"],
             style: headerStyle7,

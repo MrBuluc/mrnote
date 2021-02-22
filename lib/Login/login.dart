@@ -67,22 +67,20 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery
-        .of(context)
-        .size;
+    var size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: widget.color,
         body: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                buildHeader(),
-                buildTextForm(size),
-                buildResult(),
-              ],
-            )),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            buildHeader(),
+            buildTextForm(size),
+            buildResult(),
+          ],
+        )),
       ),
     );
   }
