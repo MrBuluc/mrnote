@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
-import 'package:mrnote/category_operations.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
@@ -9,10 +8,9 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
+import 'const.dart';
 import 'notification_handler.dart';
 import 'utils/admob_helper.dart';
-
-const double _fabDimension = 56.0;
 
 class NoteList extends StatefulWidget {
   int lang, categoryID;
@@ -36,11 +34,10 @@ class _NoteListState extends State<NoteList> {
   Map<String, String> texts;
 
   Map<String, String> english = {
-    "PopupMenuItem": "Categories =>",
+    "Home": "Home",
+    "PopupMenuItem": "Categories",
     "PopupMenuItem1": "All Notes",
-    "PopupMenuItem2": "Settings =>",
-    "FloatingActionButton_tooltip": "Add Category",
-    "FloatingActionButton1_title": "New Note",
+    "FloatingActionButton_tooltip": "+New",
     "addCategoryDialog_SimpleDialog_title": "Add Category",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Category Name",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
@@ -49,6 +46,7 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
         "category successfully added 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
+    //"FloatingActionButton1_title": "New Note",
     "saveCategoryID_catch_baslik": "Save Failed ❌",
     "save_catch_icerik": "Error: ",
     "save_catch_anaButonYazisi": "Ok",
@@ -59,18 +57,18 @@ class _NoteListState extends State<NoteList> {
   };
 
   Map<String, String> turkish = {
-    "PopupMenuItem": "Kategoriler =>",
+    "Home": "Ana Sayfa",
+    "PopupMenuItem": "Kategoriler",
     "PopupMenuItem1": "Tüm Notlar",
-    "PopupMenuItem2": "Ayarlar =>",
-    "FloatingActionButton_tooltip": "Kategori Ekle",
+    "FloatingActionButton_tooltip": "+Yeni",
     "FloatingActionButton1_title": "Yeni Not",
     "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-        "Lütfen en az 3 karakter giriniz",
+    "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-        "Kategori başarıyla eklendi 👌",
+    "Kategori başarıyla eklendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
     "save_catch_baslik": "Kaydetme Başarısız Oldu ❌",
     "save_catch_icerik": "Hata: ",
@@ -120,184 +118,26 @@ class _NoteListState extends State<NoteList> {
       allCategories = List<Category>();
       updateCategoryList();
     }
+    var size = MediaQuery
+        .of(context)
+        .size;
     return WillPopScope(
       onWillPop: () {
         return _areYouSureforExit();
       },
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: widget.color,
-          title: Center(
-            child: Text("Mr. Note"),
-          ),
-          actions: <Widget>[
-            PopupMenuButton(
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                      child: ListTile(
-                    leading: Icon(
-                      Icons.import_contacts,
-                      color: Colors.blue,
-                    ),
-                    title: Text(
-                      texts["PopupMenuItem"],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    onTap: () async {
-                      Navigator.pop(context);
-                      var result = await _goToPage(Categories(
-                        widget.lang,
-                        widget.color,
-                        adOpen,
-                      ));
-                      if (result != null) {
-                        setState(() {
-                          updateCategoryList();
-                        });
-                      } else {
-                        setState(() {});
-                      }
-                    },
-                  )),
-                  PopupMenuItem(
-                      child: ListTile(
-                    leading: Icon(
-                      Icons.import_contacts,
-                      color: Colors.blue,
-                    ),
-                    title: Text(
-                      texts["PopupMenuItem1"],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    onTap: () async {
-                      setState(() {
-                        localCategoryID = 0;
-                      });
-                      Navigator.pop(context);
-                      setState(() {});
-                    },
-                  )),
-                  for (int index = 0; index < allCategories.length; index++)
-                    PopupMenuItem(
-                      child: ListTile(
-                        onTap: () {
-                          setState(() {
-                            localCategoryID = allCategories[index].categoryID;
-                          });
-                          saveCategoryID(localCategoryID);
-                          Navigator.pop(context);
-                          setState(() {});
-                        },
-                        title: Text(
-                          allCategories[index].categoryTitle,
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        leading: Icon(
-                          Icons.import_contacts,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ),
-                  PopupMenuItem(
-                      child: ListTile(
-                    leading: Icon(
-                      Icons.settings,
-                      color: Colors.green,
-                      size: 30,
-                    ),
-                    title: Text(
-                      texts["PopupMenuItem2"],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    onTap: () async {
-                      Navigator.pop(context);
-                      var result = await _goToPage(SettingsPage(
-                        widget.lang,
-                        widget.color,
-                        adOpen,
-                      ));
-                      if (result != null) {
-                        List<String> resultList = result.split("/");
-
-                        if (resultList.elementAt(2) == "0") {
-                          setState(() {
-                            adOpen = false;
-                          });
-                        } else {
-                          setState(() {
-                            adOpen = true;
-                          });
-                        }
-                        setState(() {
-                          widget.lang = int.parse(resultList.elementAt(0));
-                          widget.color =
-                              Color(int.parse(resultList.elementAt(1)));
-                          widget.adOpen = adOpen;
-                        });
-                      } else {
-                        setState(() {});
-                      }
-                    },
-                  ))
-                ];
-              },
-            ),
-          ],
-        ),
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            FloatingActionButton(
-              onPressed: () async {
-                addCategoryDialog(context);
-              },
-              tooltip: texts["FloatingActionButton_tooltip"],
-              child: Icon(Icons.import_contacts),
-              mini: true,
-            ),
-            OpenContainer(
-              onClosed: (result) {
-                if (result != null) {
-                  setState(() {});
-                }
-              },
-              transitionType: _transitionType,
-              openBuilder: (BuildContext context, VoidCallback _) {
-                return NoteDetail(texts["FloatingActionButton1_title"],
-                    widget.lang, widget.color, adOpen);
-              },
-              closedElevation: 6.0,
-              closedShape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(_fabDimension / 2),
+      child: SafeArea(
+        child: Scaffold(
+            key: _scaffoldKey,
+            backgroundColor: widget.color,
+            body: ListView(
+              children: <Widget>[
+                SizedBox(
+                  height: 25,
                 ),
-              ),
-              closedColor: Theme.of(context).colorScheme.secondary,
-              closedBuilder:
-                  (BuildContext context, VoidCallback openContainer) {
-                return SizedBox(
-                  height: _fabDimension,
-                  width: _fabDimension,
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                      size: 40,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        body: Notes(
-          adOpen,
-          categoryID: localCategoryID,
-          lang: widget.lang,
-          color: widget.color,
-        ),
+                header(size),
+                categoriesAndNew(),
+              ],
+            )),
       ),
     );
   }
@@ -315,6 +155,79 @@ class _NoteListState extends State<NoteList> {
   void disposeAd() {
     myInterstitialAd.dispose();
     myInterstitialAdExit.dispose();
+  }
+
+  Widget header(Size size) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 25),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(texts["Home"], style: headerStyle),
+          GestureDetector(
+            child: Icon(
+              Icons.settings,
+              color: Colors.grey.shade800,
+              size: 30,
+            ),
+            onTap: () async {
+              var result = await _goToPage(SettingsPage(
+                widget.lang,
+                widget.color,
+                adOpen,
+              ));
+              if (result != null) {
+                List<String> resultList = result.split("/");
+
+                if (resultList.elementAt(2) == "0") {
+                  setState(() {
+                    adOpen = false;
+                  });
+                } else {
+                  setState(() {
+                    adOpen = true;
+                  });
+                }
+                setState(() {
+                  widget.lang = int.parse(resultList.elementAt(0));
+                  widget.color = Color(int.parse(resultList.elementAt(1)));
+                  widget.adOpen = adOpen;
+                });
+              } else {
+                setState(() {});
+              }
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget categoriesAndNew() {
+    return Container(
+      height: 80,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 30, top: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              texts["PopupMenuItem"],
+              style: headerStyle2,
+            ),
+            GestureDetector(
+              child: Text(
+                texts["FloatingActionButton_tooltip"],
+                style: headerStyle3,
+              ),
+              onTap: () {
+                addCategoryDialog(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void addCategoryDialog(BuildContext context) {
@@ -410,6 +323,7 @@ class _NoteListState extends State<NoteList> {
 
   void updateCategoryList() {
     databaseHelper.getCategoryList().then((categoryList) {
+      categoryList.add(Category.withID(0, texts["PopupMenuItem1"]));
       setState(() {
         allCategories = categoryList;
       });

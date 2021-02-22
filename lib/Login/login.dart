@@ -47,7 +47,7 @@ class _LoginState extends State<Login> {
     "result_enterTrue": "Giriş Yapılıyor...",
     "result_enterFalse": "Yanlış Parola",
     "result_resetNull":
-    "Giriş butonuna basın sonra\n" + "Parolayı Sıfırla butonuna basın",
+        "Giriş butonuna basın sonra\n" + "Parolayı Sıfırla butonuna basın",
     "result_resetElse": "Parola sıfırlandı\n" + "Mr. Note a girebilirsiniz"
   };
 
@@ -73,7 +73,7 @@ class _LoginState extends State<Login> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: scaffoldColor,
+        backgroundColor: widget.color,
         body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
