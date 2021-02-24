@@ -172,7 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> readPassword() async {
     List<Note> noteList =
-    await databaseHelper.getNoteTitleNotesList("Password");
+        await databaseHelper.getNoteTitleNotesList("Password");
     setState(() {
       password = noteList[0].noteContent;
     });
@@ -375,6 +375,13 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ],
     );
+  }
+
+  void changeColor(Color color) {
+    setState(() {
+      currentColor = color;
+      widget.color = color;
+    });
   }
 
   Widget currentPassword() {
@@ -611,12 +618,5 @@ class _SettingsPageState extends State<SettingsPage> {
       }
       Navigator.pop(context, result1);
     }
-  }
-
-  void changeColor(Color color) {
-    setState(() {
-      currentColor = color;
-      widget.color = color;
-    });
   }
 }

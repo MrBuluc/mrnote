@@ -227,7 +227,7 @@ class _LoginState extends State<Login> {
       var suan = DateTime.now();
       await databaseHelper
           .updateNote(Note.withID(note.noteID, note.categoryID, note.noteTitle,
-          note.noteContent, suan.toString(), note.notePriority))
+              note.noteContent, suan.toString(), note.notePriority))
           .then((updatedID) {
         if (updatedID != 0) {
           setState(() {

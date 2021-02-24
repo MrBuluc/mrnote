@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/note_detail.dart';
@@ -46,6 +47,7 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
         "category successfully added 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
+    'Select_a_color': 'Select a color',
     //"FloatingActionButton1_title": "New Note",
     "saveCategoryID_catch_baslik": "Save Failed ❌",
     "save_catch_icerik": "Error: ",
@@ -65,17 +67,18 @@ class _NoteListState extends State<NoteList> {
     "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-        "Lütfen en az 3 karakter giriniz",
+    "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-        "Kategori başarıyla eklendi 👌",
+    "Kategori başarıyla eklendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
+    'Select_a_color': 'Bir Renk Seç',
     "save_catch_baslik": "Kaydetme Başarısız Oldu ❌",
     "save_catch_icerik": "Hata: ",
     "save_catch_anaButonYazisi": "Tamam",
     "_areYouSureforDelete_baslik": "Emin misiniz?",
     "_areYouSureforDelete_icerik":
-        "Mr. Not dan çıkmak istediğinizden emin misiniz?",
+    "Mr. Not dan çıkmak istediğinizden emin misiniz?",
     "_areYouSureforDelete_anaButonYazisi": "ÇIK",
     "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
   };
@@ -83,6 +86,10 @@ class _NoteListState extends State<NoteList> {
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
   bool adOpen;
+
+  String newCategoryTitle;
+
+  Color currentColor = Colors.red;
 
   @override
   void initState() {
@@ -136,6 +143,7 @@ class _NoteListState extends State<NoteList> {
                 ),
                 header(size),
                 categoriesAndNew(),
+                buildCategories(size),
               ],
             )),
       ),
@@ -203,6 +211,12 @@ class _NoteListState extends State<NoteList> {
     );
   }
 
+  Future<String> _goToPage(Object page) async {
+    final result = await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => page));
+    return result;
+  }
+
   Widget categoriesAndNew() {
     return Container(
       height: 80,
@@ -232,7 +246,6 @@ class _NoteListState extends State<NoteList> {
 
   void addCategoryDialog(BuildContext context) {
     var formKey = GlobalKey<FormState>();
-    String newCategoryTitle;
 
     showDialog(
         barrierDismissible: false,
@@ -249,28 +262,34 @@ class _NoteListState extends State<NoteList> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    initialValue: newCategoryTitle,
                     decoration: InputDecoration(
                       labelText: texts[
-                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value.length < 3) {
                         return texts[
-                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                       } else
                         return null;
                     },
                     onSaved: (value) {
                       newCategoryTitle = value;
                     },
+                    onChanged: (value) {
+                      newCategoryTitle = value;
+                    },
                   ),
                 ),
               ),
+              changeColorWidget(context),
               ButtonBar(
                 children: <Widget>[
                   RaisedButton(
                     onPressed: () {
+                      newCategoryTitle = null;
                       Navigator.pop(context);
                     },
                     color: Colors.orangeAccent,
@@ -285,7 +304,8 @@ class _NoteListState extends State<NoteList> {
                       if (formKey.currentState.validate()) {
                         formKey.currentState.save();
                         databaseHelper
-                            .addCategory(Category(newCategoryTitle))
+                            .addCategory(
+                            Category(newCategoryTitle, currentColor.value))
                             .then((value) {
                           if (value > 0) {
                             _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -293,6 +313,7 @@ class _NoteListState extends State<NoteList> {
                               "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
+                            newCategoryTitle = null;
                             Navigator.pop(context);
                             setState(() {
                               updateCategoryList();
@@ -315,19 +336,111 @@ class _NoteListState extends State<NoteList> {
         });
   }
 
-  Future<String> _goToPage(Object page) async {
-    final result = await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => page));
-    return result;
+  Widget changeColorWidget(BuildContext context) {
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 26),
+          child: Text(
+            texts['Select_a_color'],
+            style:
+            TextStyle(color: Theme
+                .of(context)
+                .primaryColor, fontSize: 20),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 80),
+          child: GestureDetector(
+            child: Container(
+              height: 30,
+              width: 30,
+              decoration:
+              BoxDecoration(shape: BoxShape.circle, color: currentColor),
+            ),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(texts['Select_a_color']),
+                    content: SingleChildScrollView(
+                      child: BlockPicker(
+                        pickerColor: currentColor,
+                        onColorChanged: (Color color) {
+                          Navigator.pop(context);
+                          changeColor(color);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  void changeColor(Color color) {
+    setState(() {
+      currentColor = color;
+    });
+    Navigator.pop(context);
+    addCategoryDialog(
+      context,
+    );
   }
 
   void updateCategoryList() {
     databaseHelper.getCategoryList().then((categoryList) {
-      categoryList.add(Category.withID(0, texts["PopupMenuItem1"]));
+      categoryList.insert(
+          0, Category.withID(0, texts["PopupMenuItem1"], widget.color.value));
       setState(() {
         allCategories = categoryList;
       });
     });
+  }
+
+  Widget buildCategories(Size size) {
+    return Container(
+      height: 130,
+      width: size.width,
+      child: ListView.builder(
+          itemCount: allCategories.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 10.0, left: 10),
+              child: Container(
+                width: 150,
+                decoration: BoxDecoration(
+                    borderRadius: borderRadis1, color: Colors.white),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 20,
+                        width: 20,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(allCategories[index].categoryColor)),
+                      ),
+                      Text(
+                        allCategories[index].categoryTitle,
+                        style: headerStyle4,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+    );
   }
 
   Future<void> saveCategoryID(int localCategoryID) async {
