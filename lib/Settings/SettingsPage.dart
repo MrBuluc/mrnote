@@ -324,14 +324,13 @@ class _SettingsPageState extends State<SettingsPage> {
   List<DropdownMenuItem<int>> createLangItem() {
     List<String> langList = [texts["langList0"], texts["langList1"]];
     return langList
-        .map((lang) =>
-        DropdownMenuItem<int>(
-          value: langList.indexOf(lang),
-          child: Text(
-            lang,
-            style: headerStyle7,
-          ),
-        ))
+        .map((lang) => DropdownMenuItem<int>(
+              value: langList.indexOf(lang),
+              child: Text(
+                lang,
+                style: headerStyle7,
+              ),
+            ))
         .toList();
   }
 

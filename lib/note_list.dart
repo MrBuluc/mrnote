@@ -40,14 +40,22 @@ class _NoteListState extends State<NoteList> {
     "PopupMenuItem1": "All Notes",
     "FloatingActionButton_tooltip": "+New",
     "addCategoryDialog_SimpleDialog_title": "Add Category",
+    "Edit_Category": "Edit Category",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Category Name",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
         "Please enter least 3 character",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "Cancel ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
         "category successfully added 👌",
+    "editCategory_SnackBar": "category successfully edited 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
     'Select_a_color': 'Select a color',
+    "Delete": "Delete🗑",
+    "_sureForDelCategory_baslik": "Are you sure?",
+    "_sureForDelCategory_icerik": "Are you sure for delete the category?\n" +
+        "This action will delete all notes in this category.",
+    "_sureForDelCategory_anaButonYazisi": "Yes",
+    "_sureForDelCategory_iptalButonYazisi": "No",
     //"FloatingActionButton1_title": "New Note",
     "saveCategoryID_catch_baslik": "Save Failed ❌",
     "save_catch_icerik": "Error: ",
@@ -65,14 +73,23 @@ class _NoteListState extends State<NoteList> {
     "FloatingActionButton_tooltip": "+Yeni",
     "FloatingActionButton1_title": "Yeni Not",
     "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
+    "Edit_Category": "Kategori Düzenle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
     "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
     "Kategori başarıyla eklendi 👌",
+    "editCategory_SnackBar": "Kategori başarıyla düzenlendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
     'Select_a_color': 'Bir Renk Seç',
+    "Delete": "Kaldır",
+    "_sureForDelCategory_baslik": "Emin misiniz?",
+    "_sureForDelCategory_icerik":
+    "Kategoriyi silmek istediğinizden emin misiniz?\n" +
+        "Bu işlem, bu kategorideki tüm notları silecek.",
+    "_sureForDelCategory_anaButonYazisi": "Evet",
+    "_sureForDelCategory_iptalButonYazisi": "Hayır",
     "save_catch_baslik": "Kaydetme Başarısız Oldu ❌",
     "save_catch_icerik": "Hata: ",
     "save_catch_anaButonYazisi": "Tamam",
@@ -89,7 +106,8 @@ class _NoteListState extends State<NoteList> {
 
   String newCategoryTitle;
 
-  Color currentColor = Colors.red;
+  Color currentColor = Colors.red,
+      editColor;
 
   @override
   void initState() {
@@ -411,36 +429,226 @@ class _NoteListState extends State<NoteList> {
           itemCount: allCategories.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 10.0, left: 10),
-              child: Container(
-                width: 150,
-                decoration: BoxDecoration(
-                    borderRadius: borderRadis1, color: Colors.white),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 20,
-                        width: 20,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(allCategories[index].categoryColor)),
-                      ),
-                      Text(
-                        allCategories[index].categoryTitle,
-                        style: headerStyle4,
-                      ),
-                    ],
+            return GestureDetector(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10.0, left: 10),
+                child: Container(
+                  width: 150,
+                  decoration: BoxDecoration(
+                      borderRadius: borderRadis1, color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(allCategories[index].categoryColor)),
+                        ),
+                        Text(
+                          allCategories[index].categoryTitle,
+                          style: headerStyle4,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
+              onLongPress: () {
+                if (index != 0) {
+                  editCategoryDialog(context, allCategories[index]);
+                }
+              },
             );
           }),
     );
+  }
+
+  void editCategoryDialog(BuildContext context, Category category) {
+    var formKey = GlobalKey<FormState>();
+
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(
+              texts["Edit_Category"],
+              style: TextStyle(color: Theme
+                  .of(context)
+                  .primaryColor),
+            ),
+            children: <Widget>[
+              Form(
+                key: formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    initialValue: category.categoryTitle,
+                    decoration: InputDecoration(
+                      labelText: texts[
+                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value.length < 3) {
+                        return texts[
+                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                      } else
+                        return null;
+                    },
+                    onSaved: (value) {
+                      newCategoryTitle = value;
+                    },
+                    onChanged: (value) {
+                      category.categoryTitle = value;
+                    },
+                  ),
+                ),
+              ),
+              editColorWidget(context, category),
+              ButtonBar(
+                alignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  RaisedButton(
+                    color: Colors.red,
+                    child: Text(
+                      texts["Delete"],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      _sureForDelCategory(context, category.categoryID);
+                    },
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    color: Colors.orangeAccent,
+                    child: Text(
+                      texts[
+                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      if (formKey.currentState.validate()) {
+                        formKey.currentState.save();
+                        databaseHelper
+                            .updateCategory(Category.withID(category.categoryID,
+                            newCategoryTitle, category.categoryColor))
+                            .then((value) {
+                          if (value > 0) {
+                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                              content: Text(texts["editCategory_SnackBar"]),
+                              duration: Duration(seconds: 2),
+                            ));
+                            newCategoryTitle = null;
+                            Navigator.pop(context);
+                            setState(() {
+                              updateCategoryList();
+                            });
+                          }
+                        });
+                      }
+                    },
+                    color: Colors.green,
+                    child: Text(
+                      texts[
+                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  Widget editColorWidget(BuildContext context, Category category) {
+    Color categoryColor = Color(category.categoryColor);
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 26),
+          child: Text(
+            texts['Select_a_color'],
+            style:
+            TextStyle(color: Theme
+                .of(context)
+                .primaryColor, fontSize: 20),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 80),
+          child: GestureDetector(
+            child: Container(
+              height: 30,
+              width: 30,
+              decoration:
+              BoxDecoration(shape: BoxShape.circle, color: categoryColor),
+            ),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(texts['Select_a_color']),
+                    content: SingleChildScrollView(
+                      child: BlockPicker(
+                        pickerColor: categoryColor,
+                        onColorChanged: (Color color) {
+                          Navigator.pop(context);
+                          editColorFonc(color, category);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  void editColorFonc(Color color, Category category) {
+    setState(() {
+      category.categoryColor = color.value;
+    });
+    Navigator.pop(context);
+    editCategoryDialog(context, category);
+  }
+
+  void _sureForDelCategory(BuildContext context, int categoryID) async {
+    final result = await PlatformDuyarliAlertDialog(
+      baslik: texts["_sureForDelCategory_baslik"],
+      icerik: texts["_sureForDelCategory_icerik"],
+      anaButonYazisi: texts["_sureForDelCategory_anaButonYazisi"],
+      iptalButonYazisi: texts["_sureForDelCategory_iptalButonYazisi"],
+    ).goster(context);
+
+    if (result) {
+      _delCategory(context, categoryID);
+    }
+  }
+
+  void _delCategory(BuildContext context, int categoryID) {
+    databaseHelper.deleteCategory(categoryID).then((deletedCategory) {
+      if (deletedCategory != 0) {
+        setState(() {
+          updateCategoryList();
+        });
+        Navigator.pop(context);
+      }
+    });
   }
 
   Future<void> saveCategoryID(int localCategoryID) async {
