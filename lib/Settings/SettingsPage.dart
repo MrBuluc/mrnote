@@ -127,9 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
         texts = turkish;
         break;
     }
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     ekranGenisligi = size.width;
     ekranYuksekligi = size.height;
     return SafeArea(

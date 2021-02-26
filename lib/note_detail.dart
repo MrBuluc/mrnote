@@ -1,31 +1,29 @@
 import 'package:firebase_admob/firebase_admob.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
-import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
+import 'const.dart';
+import 'models/notes.dart';
 import 'utils/admob_helper.dart';
 
 class NoteDetail extends StatefulWidget {
-  String title;
   Note updateNote;
   int lang;
   Color color;
   bool adOpen;
 
-  NoteDetail(this.title, this.lang, this.color, this.adOpen, {this.updateNote});
+  NoteDetail(this.lang, this.color, this.adOpen, {this.updateNote});
 
   @override
   _NoteDetailState createState() => _NoteDetailState();
 }
 
 class _NoteDetailState extends State<NoteDetail> {
-  var formkey = GlobalKey<FormState>();
+  var formKey = GlobalKey<FormState>();
   List<Category> allCategories;
   DatabaseHelper databaseHelper;
-  int categoryID;
-  int selectedPriority;
+  int categoryID, selectedPriority;
   String noteTitle, noteContent;
 
   InterstitialAd myInterstitialAd;
@@ -36,27 +34,17 @@ class _NoteDetailState extends State<NoteDetail> {
     "_priority0": "Low",
     "_priority1": "Medium",
     "_priority2": "High",
-    "Container_Padding": "Category :",
     "Container_Padding1_hintText": "Enter Mr. Note Title",
     "Container_Padding2_hintText": "Enter Mr. Note Content",
-    "Container_Padding2_labelText": "Mr. Note Content",
-    "Container_Row": "Priority :",
-    "Container_RaisedButton1": "Save",
   };
 
   Map<String, String> turkish = {
     "_priority0": "Düşük",
     "_priority1": "Orta",
     "_priority2": "Yüksek",
-    "Container_Padding": "Kategori :",
     "Container_Padding1_hintText": "Mr. Notun Başlığını Girin",
     "Container_Padding2_hintText": "Mr. Notun İçeriğini Girin",
-    "Container_Padding2_labelText": "Mr. Not İçeriği",
-    "Container_Row": "Öncelik :",
-    "Container_RaisedButton1": "Kaydet",
   };
-
-  TextEditingController _controller;
 
   @override
   void initState() {
@@ -86,9 +74,6 @@ class _NoteDetailState extends State<NoteDetail> {
         texts = turkish;
         break;
     }
-    _controller = TextEditingController();
-    _controller.text =
-        widget.updateNote != null ? widget.updateNote.noteTitle : "";
   }
 
   @override
@@ -96,146 +81,55 @@ class _NoteDetailState extends State<NoteDetail> {
     if (widget.adOpen) {
       disposeAd();
     }
-    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     var _priority = [
       texts["_priority0"],
       texts["_priority1"],
       texts["_priority2"],
     ];
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          decoration: InputDecoration(
-            hintText: texts["Container_Padding1_hintText"],
-          ),
-        ),
-        backgroundColor: widget.color,
-        actions: [
-          FlatButton(
-            color: Colors.red.shade600,
-            textColor: Colors.black,
-            child: Text(
-              texts["Container_RaisedButton1"],
-              style: TextStyle(fontSize: 20),
-            ),
-            onPressed: () {
-              save(context);
-            },
-          )
-        ],
-      ),
-      body: allCategories.length <= 0
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : SingleChildScrollView(
-              child: Container(
-                child: Form(
-                  key: formkey,
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text(
-                              texts["Container_Padding"],
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.purple),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 12),
-                            margin: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.blue, width: 2),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                items: createCategoryItem(),
-                                value: categoryID,
-                                onChanged: (selectedCategoryID) {
-                                  setState(() {
-                                    categoryID = selectedCategoryID;
-                                  });
-                                },
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text(
-                              texts["Container_Row"],
-                              style: TextStyle(
-                                  fontSize: 20, color: Color(0xFFff0000)),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 12),
-                            margin: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.blue, width: 2),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<int>(
-                                items: _priority.map((e) {
-                                  return DropdownMenuItem<int>(
-                                    child: Text(
-                                      e,
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    value: _priority.indexOf(e),
-                                  );
-                                }).toList(),
-                                value: selectedPriority,
-                                onChanged: (selectedPriorityID) {
-                                  setState(() {
-                                    selectedPriority = selectedPriorityID;
-                                  });
-                                },
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: TextFormField(
-                          initialValue: widget.updateNote != null
-                              ? widget.updateNote.noteContent
-                              : "",
-                          maxLines: null,
-                          decoration: InputDecoration(
-                            hintText: texts["Container_Padding2_hintText"],
-                            labelText: texts["Container_Padding2_labelText"],
-                            border: OutlineInputBorder(),
-                          ),
-                          onSaved: (text) {
-                            noteContent = text;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+    return SafeArea(
+      child: SafeArea(
+        child: Scaffold(
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                save(context);
+              },
+              backgroundColor: Colors.white,
+              elevation: 5,
+              child: Icon(
+                Icons.save,
+                color: Colors.grey.shade700,
               ),
             ),
+          ),
+          backgroundColor: widget.color,
+          body: allCategories.length <= 0
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : SingleChildScrollView(
+                  child: Container(
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          buildAppBar(size, _priority),
+                          buildTitleFormField(size),
+                          buildFormField(size),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ),
     );
   }
 
@@ -251,26 +145,13 @@ class _NoteDetailState extends State<NoteDetail> {
     myInterstitialAd.dispose();
   }
 
-  List<DropdownMenuItem<int>> createCategoryItem() {
-    return allCategories
-        .map((category) => DropdownMenuItem<int>(
-              value: category.categoryID,
-              child: Text(
-                category.categoryTitle,
-                style: TextStyle(fontSize: 20),
-              ),
-            ))
-        .toList();
-  }
-
   void save(BuildContext context) {
-    formkey.currentState.save();
-    noteTitle = _controller.text;
+    formKey.currentState.save();
     var suan = DateTime.now();
     if (widget.updateNote == null) {
       databaseHelper
           .addNote(Note(categoryID, noteTitle, noteContent, suan.toString(),
-              selectedPriority))
+          selectedPriority))
           .then((savedNoteID) {
         if (savedNoteID != 0) {
           Navigator.pop(context, "saved");
@@ -279,12 +160,157 @@ class _NoteDetailState extends State<NoteDetail> {
     } else {
       databaseHelper
           .updateNote(Note.withID(widget.updateNote.noteID, categoryID,
-              noteTitle, noteContent, suan.toString(), selectedPriority))
+          noteTitle, noteContent, suan.toString(), selectedPriority))
           .then((updatedID) {
         if (updatedID != 0) {
           Navigator.pop(context, "updated");
         }
       });
     }
+  }
+
+  Widget buildAppBar(Size size, List<String> priority) {
+    return Container(
+      height: 50,
+      width: size.width,
+      color: Colors.grey.shade100,
+      child: Row(
+        children: [
+          GestureDetector(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Icon(
+                Icons.close,
+                size: 40,
+                color: Colors.grey.shade400,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          SizedBox(
+            width: size.width * 0.25,
+          ),
+          dropDown(),
+          SizedBox(
+            width: size.width * 0.05,
+          ),
+          dropDownPriorty(priority)
+        ],
+      ),
+    );
+  }
+
+  Widget dropDown() {
+    return DropdownButton(
+      value: categoryID,
+      icon: Icon(Icons.keyboard_arrow_down),
+      iconSize: 20,
+      style: TextStyle(color: Colors.deepPurple),
+      underline: Container(
+        height: 2,
+        color: Colors.transparent,
+      ),
+      onChanged: (selectedCategoryID) {
+        setState(() {
+          categoryID = selectedCategoryID;
+        });
+      },
+      items: createCategoryItem(),
+    );
+  }
+
+  List<DropdownMenuItem<int>> createCategoryItem() {
+    return allCategories
+        .map((category) =>
+        DropdownMenuItem<int>(
+          value: category.categoryID,
+          child: Text(
+            category.categoryTitle,
+            style: headerStyle3,
+          ),
+        ))
+        .toList();
+  }
+
+  Widget dropDownPriorty(List<String> priority) {
+    return DropdownButton<int>(
+      value: selectedPriority,
+      icon: Icon(Icons.keyboard_arrow_down),
+      iconSize: 20,
+      style: TextStyle(color: Colors.deepPurple),
+      underline: Container(
+        color: Colors.transparent,
+      ),
+      onChanged: (selectedPriorityID) {
+        setState(() {
+          selectedPriority = selectedPriorityID;
+        });
+      },
+      items: priority.map((e) {
+        return DropdownMenuItem<int>(
+          child: Text(
+            e,
+            style: headerStyle3_1,
+          ),
+          value: priority.indexOf(e),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget buildTitleFormField(Size size) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, top: 5),
+      child: TextFormField(
+        initialValue:
+        widget.updateNote != null ? widget.updateNote.noteTitle : "",
+        maxLines: null,
+        style: headerStyle5,
+        cursorColor: Colors.grey.shade600,
+        decoration: new InputDecoration(
+          hintText: texts["Container_Padding1_hintText"],
+          hintStyle: headerStyle5,
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+        ),
+        onSaved: (text) {
+          noteTitle = text;
+        },
+      ),
+    );
+  }
+
+  buildFormField(Size size) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Column(
+        children: [
+          TextFormField(
+            initialValue:
+            widget.updateNote != null ? widget.updateNote.noteContent : "",
+            maxLines: null,
+            style: headerStyle10,
+            cursorColor: Colors.grey.shade800,
+            decoration: InputDecoration(
+              hintText: texts["Container_Padding2_hintText"],
+              hintStyle: headerStyle10,
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+            ),
+            onSaved: (text) {
+              noteContent = text;
+            },
+          )
+        ],
+      ),
+    );
   }
 }

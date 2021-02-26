@@ -2,15 +2,16 @@ import 'package:animations/animations.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:mrnote/create_note.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/note_detail.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
+import 'category_page.dart';
+import 'common_widget/build_note_list.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
 import 'const.dart';
-import 'note_with_category_page.dart';
 import 'notification_handler.dart';
 import 'utils/admob_helper.dart';
 
@@ -133,9 +134,7 @@ class _NoteListState extends State<NoteList> {
       allCategories = List<Category>();
       updateCategoryList();
     }
-    var size = MediaQuery
-        .of(context)
-        .size;
+    var size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
         return _areYouSureforExit();
@@ -457,11 +456,8 @@ class _NoteListState extends State<NoteList> {
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        Notes_With_Category_Page(
-                            allCategories[index],
-                            widget.lang,
-                            widget.color,
-                            widget.adOpen)));
+                        Category_Page(allCategories[index],
+                            widget.lang, widget.color, widget.adOpen)));
               },
               onLongPress: () {
                 if (index != 0) {
@@ -736,6 +732,15 @@ class _NotesState extends State<Notes> {
       child: Column(
         children: <Widget>[
           buildRecentOnesAndFilterHeader(),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            height: 150.0 * allNotes.length,
+            width: 300,
+            child:
+            BuildNoteList(widget.lang, size, widget.color, widget.adOpen),
+          )
         ],
       ),
     );
@@ -773,7 +778,7 @@ class _NotesState extends State<Notes> {
                   },
                   transitionType: _transitionType,
                   openBuilder: (BuildContext context, VoidCallback _) {
-                    return CreateNote(widget.lang, widget.color, widget.adOpen);
+                    return NoteDetail(widget.lang, widget.color, widget.adOpen);
                   },
                   closedElevation: 6.0,
                   closedColor: widget.color,

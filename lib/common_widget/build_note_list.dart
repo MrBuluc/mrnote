@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import '../const.dart';
-import '../create_note.dart';
+import '../note_detail.dart';
 import 'platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
   int lang;
-  List<Note> allNotes;
   Size size;
-  Color categoryColor, color;
+  Color color;
   bool adOpen;
+  Category category;
 
-  BuildNoteList(this.lang, this.allNotes, this.size, this.categoryColor,
-      this.color, this.adOpen);
+  BuildNoteList(this.lang, this.size, this.color, this.adOpen, {this.category});
 
   @override
   _BuildNoteListState createState() => _BuildNoteListState();
@@ -22,6 +22,7 @@ class BuildNoteList extends StatefulWidget {
 
 class _BuildNoteListState extends State<BuildNoteList> {
   List<Note> allNotes;
+  Category category;
 
   Map<String, dynamic> texts;
 
@@ -49,8 +50,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  Color categoryColor;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -63,13 +62,14 @@ class _BuildNoteListState extends State<BuildNoteList> {
         texts = turkish;
         break;
     }
-    allNotes = widget.allNotes;
+    allNotes = List<Note>();
+    category = widget.category;
     size = widget.size;
-    categoryColor = widget.categoryColor;
   }
 
   @override
   Widget build(BuildContext context) {
+    fillAllNotes();
     return ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         itemCount: allNotes.length,
@@ -115,7 +115,12 @@ class _BuildNoteListState extends State<BuildNoteList> {
                               Row(
                                 children: <Widget>[
                                   Text(
-                                    "${allNotes[index].noteTitle}",
+                                    allNotes[index].noteTitle.length >= 10
+                                        ? allNotes[index]
+                                                .noteTitle
+                                                .substring(0, 11) +
+                                            "..."
+                                        : allNotes[index].noteTitle,
                                     style: headerStyle5,
                                   ),
                                   SizedBox(
@@ -136,9 +141,9 @@ class _BuildNoteListState extends State<BuildNoteList> {
                               Text(
                                 allNotes[index].noteContent.length >= 50
                                     ? allNotes[index]
-                                            .noteContent
-                                            .substring(0, 50) +
-                                        "..."
+                                    .noteContent
+                                    .substring(0, 50) +
+                                    "..."
                                     : allNotes[index].noteContent,
                                 style: headerStyle4,
                               ),
@@ -154,7 +159,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                               width: 15,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: categoryColor,
+                                color: Color(allNotes[index].categoryColor),
                               ),
                             ),
                           ],
@@ -164,7 +169,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                   ),
                   onTap: () async {
                     var result =
-                        await _goToDetailPage(context, allNotes[index]);
+                    await _goToDetailPage(context, allNotes[index]);
                     if (result != null) {
                       setState(() {});
                     }
@@ -177,6 +182,25 @@ class _BuildNoteListState extends State<BuildNoteList> {
             ],
           );
         });
+  }
+
+  Future<void> fillAllNotes() async {
+    List<Note> allNotes1;
+    if (category != null) {
+      if (category.categoryID == 0) {
+        allNotes1 = await databaseHelper.getNoteList();
+      } else {
+        allNotes1 =
+        await databaseHelper.getCategoryNotesList(category.categoryID);
+      }
+    } else {
+      String suan = DateTime.now().toString().substring(0, 10);
+      allNotes1 = await databaseHelper.getTodayNoteList(suan);
+    }
+    allNotes1.sort();
+    setState(() {
+      allNotes = allNotes1;
+    });
   }
 
   Future<void> _areYouSureforDelete(int noteID) async {
@@ -237,7 +261,8 @@ class _BuildNoteListState extends State<BuildNoteList> {
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CreateNote(
+            builder: (context) =>
+                NoteDetail(
                   widget.lang,
                   widget.color,
                   widget.adOpen,

@@ -8,20 +8,19 @@ import 'const.dart';
 import 'models/notes.dart';
 import 'utils/admob_helper.dart';
 
-class Notes_With_Category_Page extends StatefulWidget {
+class Category_Page extends StatefulWidget {
   Category category;
   int lang;
   Color color;
   bool adOpen;
 
-  Notes_With_Category_Page(this.category, this.lang, this.color, this.adOpen);
+  Category_Page(this.category, this.lang, this.color, this.adOpen);
 
   @override
-  _Notes_With_Category_PageState createState() =>
-      _Notes_With_Category_PageState();
+  _Category_PageState createState() => _Category_PageState();
 }
 
-class _Notes_With_Category_PageState extends State<Notes_With_Category_Page> {
+class _Category_PageState extends State<Category_Page> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
   InterstitialAd myInterstitialAd;
@@ -99,12 +98,12 @@ class _Notes_With_Category_PageState extends State<Notes_With_Category_Page> {
                   : Container(
                       height: 150.0 * allNotes.length,
                       child: BuildNoteList(
-                          widget.lang,
-                          allNotes,
-                          size,
-                          Color(category.categoryColor),
-                          widget.color,
-                          widget.adOpen)),
+                        widget.lang,
+                        size,
+                        widget.color,
+                        widget.adOpen,
+                        category: category,
+                      )),
             ],
           ),
         ),
