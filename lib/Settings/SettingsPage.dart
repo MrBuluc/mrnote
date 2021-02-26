@@ -39,6 +39,8 @@ class _SettingsPageState extends State<SettingsPage> {
     "save_baslik": "Saved Successfully ✔",
     "save_icerik": "✔✔✔✔✔✔✔✔✔✔✔✔✔✔✔",
     "save_anaButonYazisi": "Ok",
+    "refresh_catch_baslik": "Refresh Failed ❌",
+    "refresh_baslik": "Refresh Successfully ✔",
     "Theme_Color": "Theme Color:",
     "Currently_Password": "Currently Password:",
     "AlertDialog": 'Select a color',
@@ -64,6 +66,8 @@ class _SettingsPageState extends State<SettingsPage> {
     "save_baslik": "Başarılı Bir Şekilde Kaydedildi ✔",
     "save_icerik": "✔✔✔✔✔✔✔✔✔✔✔✔✔✔✔",
     "save_anaButonYazisi": "Tamam",
+    "refresh_catch_baslik": "Varsayılana Dönmek Başarısız Oldu ❌",
+    "refresh_baslik": "Başarılı Bir Şekilde Varsayılana Dönüldü ✔",
     "Theme_Color": "Tema Rengi:",
     "Currently_Password": "Şuanki Parola:",
     "AlertDialog": 'Bir Renk Seçin',
@@ -100,14 +104,6 @@ class _SettingsPageState extends State<SettingsPage> {
     if (widget.adOpen) {
       adInitialize();
     }
-    switch (widget.lang) {
-      case 0:
-        texts = english;
-        break;
-      case 1:
-        texts = turkish;
-        break;
-    }
     currentColor = widget.color;
     readPassword();
   }
@@ -123,7 +119,17 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    switch (widget.lang) {
+      case 0:
+        texts = english;
+        break;
+      case 1:
+        texts = turkish;
+        break;
+    }
+    Size size = MediaQuery
+        .of(context)
+        .size;
     ekranGenisligi = size.width;
     ekranYuksekligi = size.height;
     return SafeArea(
@@ -342,7 +348,7 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.only(left: 20),
           child: Text(
             texts["Theme_Color"],
-            style: headerStyle7,
+            style: headerStyle7.copyWith(color: Colors.grey.shade900),
           ),
         ),
         RaisedButton(
@@ -391,7 +397,7 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.only(left: 35),
           child: Text(
             texts["Currently_Password"],
-            style: headerStyle7,
+            style: headerStyle7.copyWith(color: Colors.grey.shade900),
           ),
         ),
         Text(
@@ -538,6 +544,25 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 50,
               width: 50,
               child: Icon(
+                Icons.refresh,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+            onTap: () {
+              refreshLangTheme();
+            },
+          ),
+          SizedBox(
+            width: 150,
+          ),
+          GestureDetector(
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3), color: Colors.black),
+              height: 50,
+              width: 50,
+              child: Icon(
                 Icons.save,
                 color: Colors.white,
                 size: 30,
@@ -610,6 +635,37 @@ class _SettingsPageState extends State<SettingsPage> {
     ).goster(context);
     if (result) {
       String result1 = "${lang.toString()}/${color.value.toString()}/";
+      if (widget.adOpen) {
+        result1 += "1/";
+      } else {
+        result1 += "0/";
+      }
+      Navigator.pop(context, result1);
+    }
+  }
+
+  Future<void> refreshLangTheme() async {
+    try {
+      var suan = DateTime.now();
+      databaseHelper
+          .updateNote(Note.withID(2, 0, "Language", "0", suan.toString(), 2));
+
+      databaseHelper.updateNote(
+          Note.withID(3, 0, "Theme", "4293914607", suan.toString(), 2));
+    } catch (e) {
+      PlatformDuyarliAlertDialog(
+        baslik: texts["refresh_catch_baslik"],
+        icerik: texts["save_catch_icerik"] + e.toString(),
+        anaButonYazisi: texts["save_catch_anaButonYazisi"],
+      ).goster(context);
+    }
+    final result = await PlatformDuyarliAlertDialog(
+      baslik: texts["refresh_baslik"],
+      icerik: texts["save_icerik"],
+      anaButonYazisi: texts["save_anaButonYazisi"],
+    ).goster(context);
+    if (result) {
+      String result1 = "0/4293914607/";
       if (widget.adOpen) {
         result1 += "1/";
       } else {

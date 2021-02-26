@@ -114,6 +114,22 @@ class DatabaseHelper {
     return noteList;
   }
 
+  Future<List<Map<String, dynamic>>> getTodayNotes(String suan) async {
+    var db = await _getDatabase();
+    var sonuc = await db.rawQuery(
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteID Desc;");
+    return sonuc;
+  }
+
+  Future<List<Note>> getTodayNoteList(String suan) async {
+    var noteMapList = await getTodayNotes(suan);
+    var noteList = List<Note>();
+    for (Map map in noteMapList) {
+      noteList.add(Note.fromMap(map));
+    }
+    return noteList;
+  }
+
   Future<List<Map<String, dynamic>>> getCategoryNotes(int categoryID) async {
     var db = await _getDatabase();
     var sonuc = await db.rawQuery(

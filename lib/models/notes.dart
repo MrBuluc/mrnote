@@ -2,6 +2,7 @@ class Note implements Comparable<Note> {
   int noteID;
   int categoryID;
   String categoryTitle;
+  int categoryColor;
   String noteTitle;
   String noteContent;
   String noteTime;
@@ -30,6 +31,7 @@ class Note implements Comparable<Note> {
     this.noteID = map["noteID"];
     this.categoryID = map["categoryID"];
     this.categoryTitle = map["categoryTitle"];
+    this.categoryColor = map["categoryColor"];
     this.noteTitle = map['noteTitle'];
     this.noteContent = map['noteContent'];
     this.noteTime = map['noteTime'];

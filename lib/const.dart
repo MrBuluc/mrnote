@@ -76,9 +76,4 @@ var scaffoldColor = Color.fromRGBO(239, 239, 239, 1);
 
 Color generalColor = Color.fromRGBO(176, 140, 249, 1);
 
-Color sportColor = Color.fromRGBO(162, 228, 173, 1);
-Color familyColor = Color.fromRGBO(249, 164, 164, 1);
-Color schoolColor = Color.fromRGBO(253, 191, 255, 1);
-Color businessColor = Color.fromRGBO(211, 238, 251, 1);
-
 BorderRadius borderRadis1 = BorderRadius.circular(5);

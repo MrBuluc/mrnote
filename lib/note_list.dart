@@ -2,14 +2,15 @@ import 'package:animations/animations.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:mrnote/create_note.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/notes.dart';
-import 'package:mrnote/note_detail.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
 import 'const.dart';
+import 'note_with_category_page.dart';
 import 'notification_handler.dart';
 import 'utils/admob_helper.dart';
 
@@ -56,10 +57,6 @@ class _NoteListState extends State<NoteList> {
         "This action will delete all notes in this category.",
     "_sureForDelCategory_anaButonYazisi": "Yes",
     "_sureForDelCategory_iptalButonYazisi": "No",
-    //"FloatingActionButton1_title": "New Note",
-    "saveCategoryID_catch_baslik": "Save Failed ❌",
-    "save_catch_icerik": "Error: ",
-    "save_catch_anaButonYazisi": "Ok",
     "_areYouSureforDelete_baslik": "Are you Sure?",
     "_areYouSureforDelete_icerik": "Are you sure for exit to Mr. Note?",
     "_areYouSureforDelete_anaButonYazisi": "EXIT",
@@ -71,43 +68,36 @@ class _NoteListState extends State<NoteList> {
     "PopupMenuItem": "Kategoriler",
     "PopupMenuItem1": "Tüm Notlar",
     "FloatingActionButton_tooltip": "+Yeni",
-    "FloatingActionButton1_title": "Yeni Not",
     "addCategoryDialog_SimpleDialog_title": "Kategori Ekle",
     "Edit_Category": "Kategori Düzenle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-    "Lütfen en az 3 karakter giriniz",
+        "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-    "Kategori başarıyla eklendi 👌",
+        "Kategori başarıyla eklendi 👌",
     "editCategory_SnackBar": "Kategori başarıyla düzenlendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
     'Select_a_color': 'Bir Renk Seç',
     "Delete": "Kaldır",
     "_sureForDelCategory_baslik": "Emin misiniz?",
     "_sureForDelCategory_icerik":
-    "Kategoriyi silmek istediğinizden emin misiniz?\n" +
-        "Bu işlem, bu kategorideki tüm notları silecek.",
+        "Kategoriyi silmek istediğinizden emin misiniz?\n" +
+            "Bu işlem, bu kategorideki tüm notları silecek.",
     "_sureForDelCategory_anaButonYazisi": "Evet",
     "_sureForDelCategory_iptalButonYazisi": "Hayır",
-    "save_catch_baslik": "Kaydetme Başarısız Oldu ❌",
-    "save_catch_icerik": "Hata: ",
-    "save_catch_anaButonYazisi": "Tamam",
     "_areYouSureforDelete_baslik": "Emin misiniz?",
     "_areYouSureforDelete_icerik":
-    "Mr. Not dan çıkmak istediğinizden emin misiniz?",
+        "Mr. Not dan çıkmak istediğinizden emin misiniz?",
     "_areYouSureforDelete_anaButonYazisi": "ÇIK",
     "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
   };
-
-  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
   bool adOpen;
 
   String newCategoryTitle;
 
-  Color currentColor = Colors.red,
-      editColor;
+  Color currentColor = Colors.red, editColor;
 
   @override
   void initState() {
@@ -162,6 +152,11 @@ class _NoteListState extends State<NoteList> {
                 header(size),
                 categoriesAndNew(),
                 buildCategories(size),
+                Notes(
+                  adOpen,
+                  lang: widget.lang,
+                  color: widget.color,
+                )
               ],
             )),
       ),
@@ -218,6 +213,7 @@ class _NoteListState extends State<NoteList> {
                   widget.lang = int.parse(resultList.elementAt(0));
                   widget.color = Color(int.parse(resultList.elementAt(1)));
                   widget.adOpen = adOpen;
+                  updateCategoryList();
                 });
               } else {
                 setState(() {});
@@ -458,6 +454,15 @@ class _NoteListState extends State<NoteList> {
                   ),
                 ),
               ),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        Notes_With_Category_Page(
+                            allCategories[index],
+                            widget.lang,
+                            widget.color,
+                            widget.adOpen)));
+              },
               onLongPress: () {
                 if (index != 0) {
                   editCategoryDialog(context, allCategories[index]);
@@ -651,20 +656,6 @@ class _NoteListState extends State<NoteList> {
     });
   }
 
-  Future<void> saveCategoryID(int localCategoryID) async {
-    try {
-      var suan = DateTime.now();
-      databaseHelper.updateNote(Note.withID(
-          4, 0, "CategoryID", localCategoryID.toString(), suan.toString(), 2));
-    } catch (e) {
-      PlatformDuyarliAlertDialog(
-        baslik: texts["saveCategoryID_catch_baslik"],
-        icerik: texts["saveCategoryID_catch_icerik"] + e.toString(),
-        anaButonYazisi: texts["saveCategoryID_catch_anaButonYazisi"],
-      ).goster(context);
-    }
-  }
-
   Future<bool> _areYouSureforExit() async {
     final sonuc = await PlatformDuyarliAlertDialog(
       baslik: texts["_areYouSureforDelete_baslik"],
@@ -673,10 +664,13 @@ class _NoteListState extends State<NoteList> {
       iptalButonYazisi: texts["_areYouSureforDelete_iptalButonYazisi"],
     ).goster(context);
 
-    if (sonuc && widget.adOpen) {
-      return showAd();
+    if (sonuc) {
+      if (widget.adOpen) {
+        return showAd();
+      }
+      return Future.value(true);
     }
-    return Future.value(true);
+    return Future.value(false);
   }
 
   Future<bool> showAd() async {
@@ -686,12 +680,11 @@ class _NoteListState extends State<NoteList> {
 }
 
 class Notes extends StatefulWidget {
-  int categoryID;
   int lang;
   Color color;
   bool adOpen;
 
-  Notes(this.adOpen, {this.categoryID, this.lang, this.color});
+  Notes(this.adOpen, {this.lang, this.color});
 
   @override
   _NotesState createState() => _NotesState();
@@ -705,38 +698,18 @@ class _NotesState extends State<Notes> {
   Map<String, dynamic> texts;
 
   Map<String, dynamic> english = {
-    "Padding": "Before create new note, you have to create new category",
-    "Column_Row": "Category: ",
-    "Column_Row1": "Creation Date: ",
-    "Column_Padding": "Content",
-    "Column_RaisedButton": "Open",
-    "Column_RaisedButton1": "Delete",
-    "NoteDetail": "Update Note",
-    "Priority": ["Low", "Medium", "High"],
-    "_delNote_if": "1 Mr. Note Deleted",
-    "_delNote_else": "You can't delete Password Note",
-    "_areYouSureforDelete_baslik": "Are you Sure?",
-    "_areYouSureforDelete_icerik": "1 Mr. Note will be deleted.",
-    "_areYouSureforDelete_anaButonYazisi": "DELETE",
-    "_areYouSureforDelete_iptalButonYazisi": "CANCEL",
+    "Padding": "Welcome again 🥳\n" + "You didn't edit any notes today 😉",
+    "Recent_Notes": "Recent Mr. Notes",
+    "FloatingActionButton_tooltip": "+New",
   };
 
   Map<String, dynamic> turkish = {
-    "Padding": "Yeni Not oluşturmadan önce, yeni kategori oluşturmalısınız",
-    "Column_Row": "Kategori: ",
-    "Column_Row1": "Oluşturma Tarihi: ",
-    "Column_Padding": "İçerik",
-    "Column_RaisedButton": "Aç",
-    "Column_RaisedButton1": "Sil",
-    "NoteDetail": "Notu Güncelle",
-    "Priority": ["Düşük", "Orta", "Yüksek"],
-    "_delNote_if": "1 Mr. Not Silindi",
-    "_delNote_else": "Parola Notunu silemezsiniz",
-    "_areYouSureforDelete_baslik": "Emin misiniz?",
-    "_areYouSureforDelete_icerik": "1 Mr. Note silinecek.",
-    "_areYouSureforDelete_anaButonYazisi": "SİL",
-    "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
+    "Padding": "Tekrar hoşgeldin 🥳\n" + "Bugün hiçbir not düzenlemedin 😉",
+    "Recent_Notes": "Son Mr. Notlar",
+    "FloatingActionButton_tooltip": "+Yeni",
   };
+
+  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
   @override
   void initState() {
@@ -755,224 +728,72 @@ class _NotesState extends State<Notes> {
         texts = turkish;
         break;
     }
-    getFilterNotesList(widget.categoryID);
-    return allNotes.length == 0
-        ? Center(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Text(
-          texts["Padding"],
-          style: TextStyle(fontSize: 20),
-        ),
+    var size = MediaQuery
+        .of(context)
+        .size;
+    getTodayNotesList();
+    return Container(
+      child: Column(
+        children: <Widget>[
+          buildRecentOnesAndFilterHeader(),
+        ],
       ),
-    )
-        : ListView.builder(
-        itemCount: allNotes.length,
-        itemBuilder: (context, index) {
-          return ExpansionTile(
-            leading: _setPriorityIcon(allNotes[index].notePriority),
-            title: Text(
-              allNotes[index].noteTitle,
-              style: TextStyle(fontSize: 20),
-            ),
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(4),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            texts["Column_Row"],
-                            style: TextStyle(
-                                color: Colors.black, fontSize: 20),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            allNotes[index].categoryTitle,
-                            style: TextStyle(color: red, fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            texts["Column_Row1"],
-                            style: TextStyle(
-                                color: Colors.black, fontSize: 20),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            databaseHelper.dateFormat(
-                                DateTime.parse(allNotes[index].noteTime),
-                                widget.lang),
-                            style: TextStyle(color: red, fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: TextFormField(
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            labelText: texts["Column_Padding"],
-                            border: OutlineInputBorder(),
-                          ),
-                          initialValue: allNotes[index].noteContent,
-                          readOnly: true,
-                        )),
-                    ButtonBar(
-                      alignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        RaisedButton(
-                          onPressed: () async {
-                            var result = await _goToDetailPage(
-                                context, allNotes[index]);
-                            if (result != null) {
-                              setState(() {});
-                            }
-                          },
-                          child: Text(
-                            texts["Column_RaisedButton"],
-                            style: TextStyle(
-                                color: allNotes[index].notePriority == 2
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontSize: 20),
-                          ),
-                          color: _setBackgroundColor(
-                              allNotes[index].notePriority),
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            _areYouSureforDelete(allNotes[index].noteID);
-                          },
-                          child: Text(
-                            texts["Column_RaisedButton1"],
-                            style: TextStyle(
-                                color: _setBackgroundColor(
-                                    allNotes[index].notePriority),
-                                fontSize: 20),
-                          ),
-                          color: allNotes[index].notePriority == 2
-                              ? Colors.grey
-                              : Colors.black,
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              )
-            ],
-          );
-        });
+    );
   }
 
-  Future<void> getFilterNotesList(int categoryID) async {
+  Future<void> getTodayNotesList() async {
     List<Note> allNotes1;
-    if (categoryID == 0) {
-      allNotes1 = await databaseHelper.getNoteList();
-    } else {
-      allNotes1 = await databaseHelper.getCategoryNotesList(categoryID);
-    }
+    String suan = DateTime.now().toString().substring(0, 10);
+    allNotes1 = await databaseHelper.getTodayNoteList(suan);
     allNotes1.sort();
     setState(() {
       allNotes = allNotes1;
     });
   }
 
-  Future<String> _goToDetailPage(BuildContext context, Note note) async {
-    final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                NoteDetail(
-                  texts["NoteDetail"],
-                  widget.lang,
-                  widget.color,
-                  widget.adOpen,
-                  updateNote: note,
-                )));
-    return result;
-  }
-
-  _setPriorityIcon(int notePriority) {
-    switch (notePriority) {
-      case 0:
-        return CircleAvatar(
-          child: Text(
-            texts["Priority"][0],
-            style: TextStyle(color: Colors.black, fontSize: 13),
-          ),
-          backgroundColor: Colors.green,
-        );
-        break;
-      case 1:
-        return CircleAvatar(
-          child: Text(
-            texts["Priority"][1],
-            style: TextStyle(color: Colors.black, fontSize: 10),
-          ),
-          backgroundColor: Colors.yellow,
-        );
-        break;
-      case 2:
-        return CircleAvatar(
-            child: Text(
-              texts["Priority"][2],
-              style: TextStyle(color: Colors.white, fontSize: 12),
+  Widget buildRecentOnesAndFilterHeader() {
+    return Container(
+      height: 60,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 30, top: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              texts["Recent_Notes"],
+              style: headerStyle2,
             ),
-            backgroundColor: red);
-        break;
-    }
-  }
-
-  _setBackgroundColor(int notePriority) {
-    switch (notePriority) {
-      case 0:
-        return Colors.green;
-        break;
-      case 1:
-        return Colors.yellow;
-        break;
-      case 2:
-        return red;
-        break;
-    }
-  }
-
-  _delNote(int noteID) {
-    databaseHelper.deleteNote(noteID).then((deletedID) {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(texts["_delNote_if"]),
-      ));
-
-      setState(() {});
-    });
-  }
-
-  Future<void> _areYouSureforDelete(int noteID) async {
-    final sonuc = await PlatformDuyarliAlertDialog(
-      baslik: texts["_areYouSureforDelete_baslik"],
-      icerik: texts["_areYouSureforDelete_icerik"],
-      anaButonYazisi: texts["_areYouSureforDelete_anaButonYazisi"],
-      iptalButonYazisi: texts["_areYouSureforDelete_iptalButonYazisi"],
-    ).goster(context);
-
-    if (sonuc) {
-      _delNote(noteID);
-    }
+            Row(
+              children: [
+                OpenContainer(
+                  onClosed: (result) {
+                    if (result != null) {
+                      setState(() {});
+                    }
+                  },
+                  transitionType: _transitionType,
+                  openBuilder: (BuildContext context, VoidCallback _) {
+                    return CreateNote(widget.lang, widget.color, widget.adOpen);
+                  },
+                  closedElevation: 6.0,
+                  closedColor: widget.color,
+                  closedBuilder:
+                      (BuildContext context, VoidCallback openContainer) {
+                    return Text(
+                      texts["FloatingActionButton_tooltip"],
+                      style: headerStyle2,
+                    );
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Icon(Icons.sort)
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
