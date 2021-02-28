@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
-import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/models/note.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import '../const.dart';
@@ -8,13 +8,20 @@ import '../note_detail.dart';
 import 'platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
-  int lang;
+  int lang, sortBy, orderBy;
   Size size;
   Color color;
-  bool adOpen;
+  bool adOpen, isSorted;
   Category category;
 
-  BuildNoteList(this.lang, this.size, this.color, this.adOpen, {this.category});
+  BuildNoteList(
+    this.lang,
+    this.size,
+    this.color,
+    this.adOpen,
+    this.isSorted, {
+    this.category,
+  });
 
   @override
   _BuildNoteListState createState() => _BuildNoteListState();
@@ -50,10 +57,21 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   DatabaseHelper databaseHelper = DatabaseHelper();
 
+  bool isSorted;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    allNotes = List<Note>();
+    category = widget.category;
+    size = widget.size;
+    isSorted = widget.isSorted;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    fillAllNotes();
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -62,14 +80,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
         texts = turkish;
         break;
     }
-    allNotes = List<Note>();
-    category = widget.category;
-    size = widget.size;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    fillAllNotes();
     return ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         itemCount: allNotes.length,
@@ -193,11 +203,11 @@ class _BuildNoteListState extends State<BuildNoteList> {
         allNotes1 =
         await databaseHelper.getCategoryNotesList(category.categoryID);
       }
+      allNotes1.sort();
     } else {
       String suan = DateTime.now().toString().substring(0, 10);
-      allNotes1 = await databaseHelper.getTodayNoteList(suan);
+      allNotes1 = await databaseHelper.getSortNoteList(suan);
     }
-    allNotes1.sort();
     setState(() {
       allNotes = allNotes1;
     });

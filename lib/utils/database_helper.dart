@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:mrnote/models/category.dart';
-import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/models/note.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -128,6 +128,84 @@ class DatabaseHelper {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
+  }
+
+  Future<List<Map<String, dynamic>>> getSortNotes(String suan) async {
+    var db = await _getDatabase();
+    List<String> sortList = await readSort();
+    int sortBy = int.parse(sortList[0]);
+    int orderBy = int.parse(sortList[1]);
+    String query;
+    switch (sortBy) {
+      case 0:
+        if (orderBy == 0) {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by categoryID ASC;";
+        } else {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by categoryID DESC;";
+        }
+        break;
+      case 1:
+        if (orderBy == 0) {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTitle ASC;";
+        } else {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTitle DESC;";
+        }
+        break;
+      case 2:
+        if (orderBy == 0) {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteContent ASC;";
+        } else {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteContent DESC;";
+        }
+        break;
+      case 3:
+        if (orderBy == 0) {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTime ASC;";
+        } else {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTime DESC;";
+        }
+        break;
+      case 4:
+        if (orderBy == 0) {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by notePriority ASC;";
+        } else {
+          query =
+              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by notePriority DESC;";
+        }
+        break;
+    }
+    var sonuc = await db.rawQuery(query);
+    return sonuc;
+  }
+
+  Future<List<Note>> getSortNoteList(String suan) async {
+    var noteMapList = await getSortNotes(suan);
+    var noteList = List<Note>();
+    for (Map map in noteMapList) {
+      noteList.add(Note.fromMap(map));
+    }
+    return noteList;
+  }
+
+  Future<List<String>> readSort() async {
+    List<String> sortList;
+    try {
+      List<Note> sortNoteList = await getNoteTitleNotesList("Sort");
+      String sortContent = sortNoteList[0].noteContent;
+      sortList = sortContent.split("/");
+    } catch (e) {
+      sortList = ["3", "1"];
+    }
+    return sortList;
   }
 
   Future<List<Map<String, dynamic>>> getCategoryNotes(int categoryID) async {

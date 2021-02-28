@@ -2,7 +2,7 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
-import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/models/note.dart';
 import 'package:mrnote/utils/admob_helper.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
@@ -402,18 +402,18 @@ class _SettingsPageState extends State<SettingsPage> {
           show ? password : showPassword,
           style: TextStyle(fontSize: 20),
         ),
-        password != ""
+        password != null
             ? GestureDetector(
-          child: Icon(
-            show ? Icons.visibility_off : Icons.visibility,
-            size: 30,
-          ),
-          onTap: () {
-            setState(() {
-              show = !show;
-            });
-          },
-        )
+                child: Icon(
+                  show ? Icons.visibility_off : Icons.visibility,
+                  size: 30,
+                ),
+                onTap: () {
+                  setState(() {
+                    show = !show;
+                  });
+                },
+              )
             : Container(
           width: 30,
         )
@@ -588,7 +588,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ).goster(context);
         if (sonuc) {
           databaseHelper.updateNote(
-              Note.withID(1, 0, "Password", newPassword, suan.toString(), 2));
+              Note.withID(1, 0, "Password", null, suan.toString(), 2));
         }
       } else {
         databaseHelper.updateNote(
@@ -608,6 +608,7 @@ class _SettingsPageState extends State<SettingsPage> {
     ).goster(context);
     if (result) {
       Navigator.pop(context);
+      setState(() {});
     }
   }
 

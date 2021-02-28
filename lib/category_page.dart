@@ -5,7 +5,7 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'const.dart';
-import 'models/notes.dart';
+import 'models/note.dart';
 import 'utils/admob_helper.dart';
 
 class Category_Page extends StatefulWidget {
@@ -74,7 +74,7 @@ class _Category_PageState extends State<Category_Page> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    getFilterNotesList(category.categoryID);
+    fillAllNotes();
     return SafeArea(
       child: Scaffold(
         backgroundColor: scaffoldColor,
@@ -102,6 +102,7 @@ class _Category_PageState extends State<Category_Page> {
                         size,
                         widget.color,
                         widget.adOpen,
+                        null,
                         category: category,
                       )),
             ],
@@ -123,12 +124,13 @@ class _Category_PageState extends State<Category_Page> {
     myInterstitialAd.dispose();
   }
 
-  Future<void> getFilterNotesList(int categoryID) async {
+  Future<void> fillAllNotes() async {
     List<Note> allNotes1;
-    if (categoryID == 0) {
+    if (category.categoryID == 0) {
       allNotes1 = await databaseHelper.getNoteList();
     } else {
-      allNotes1 = await databaseHelper.getCategoryNotesList(categoryID);
+      allNotes1 =
+      await databaseHelper.getCategoryNotesList(category.categoryID);
     }
     allNotes1.sort();
     setState(() {

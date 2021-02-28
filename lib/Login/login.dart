@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/models/note.dart';
 import 'package:mrnote/note_list.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import '../const.dart';
 
 class Login extends StatefulWidget {
-  int lang, categoryID;
+  int lang;
   Color color;
 
-  Login(this.lang, this.color, this.categoryID);
+  Login(this.lang, this.color);
 
   @override
   _LoginState createState() => _LoginState();
@@ -208,8 +208,8 @@ class _LoginState extends State<Login> {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => NoteList(
-                  widget.lang, widget.color, widget.categoryID, false)));
+              builder: (context) =>
+                  NoteList(widget.lang, widget.color, false)));
     } else {
       setState(() {
         result = texts["result_enterFalse"];

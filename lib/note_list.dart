@@ -3,7 +3,7 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/models/category.dart';
-import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/models/note.dart';
 import 'package:mrnote/note_detail.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
@@ -16,11 +16,11 @@ import 'notification_handler.dart';
 import 'utils/admob_helper.dart';
 
 class NoteList extends StatefulWidget {
-  int lang, categoryID;
+  int lang;
   Color color;
   bool adOpen;
 
-  NoteList(this.lang, this.color, this.categoryID, this.adOpen);
+  NoteList(this.lang, this.color, this.adOpen);
 
   @override
   _NoteListState createState() => _NoteListState();
@@ -30,7 +30,6 @@ class _NoteListState extends State<NoteList> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   var _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Category> allCategories;
-  int localCategoryID = 0;
 
   InterstitialAd myInterstitialAd, myInterstitialAdExit;
 
@@ -107,7 +106,6 @@ class _NoteListState extends State<NoteList> {
     if (widget.adOpen) {
       adInitialize();
     }
-    localCategoryID = widget.categoryID;
     adOpen = widget.adOpen;
     NotificationHandler().initializeFCMNotification(context);
   }
@@ -275,10 +273,9 @@ class _NoteListState extends State<NoteList> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    initialValue: newCategoryTitle,
                     decoration: InputDecoration(
                       labelText: texts[
-                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
@@ -291,9 +288,6 @@ class _NoteListState extends State<NoteList> {
                     onSaved: (value) {
                       newCategoryTitle = value;
                     },
-                    onChanged: (value) {
-                      newCategoryTitle = value;
-                    },
                   ),
                 ),
               ),
@@ -302,7 +296,6 @@ class _NoteListState extends State<NoteList> {
                 children: <Widget>[
                   RaisedButton(
                     onPressed: () {
-                      newCategoryTitle = null;
                       Navigator.pop(context);
                     },
                     color: Colors.orangeAccent,
@@ -326,7 +319,6 @@ class _NoteListState extends State<NoteList> {
                               "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
-                            newCategoryTitle = null;
                             Navigator.pop(context);
                             setState(() {
                               updateCategoryList();
@@ -350,59 +342,55 @@ class _NoteListState extends State<NoteList> {
   }
 
   Widget changeColorWidget(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 26),
-          child: Text(
-            texts['Select_a_color'],
-            style:
-            TextStyle(color: Theme
-                .of(context)
-                .primaryColor, fontSize: 20),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 80),
-          child: GestureDetector(
-            child: Container(
-              height: 30,
-              width: 30,
-              decoration:
-              BoxDecoration(shape: BoxShape.circle, color: currentColor),
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter blockPickerState) {
+        return Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 26),
+              child: Text(
+                texts['Select_a_color'],
+                style: TextStyle(
+                    color: Theme
+                        .of(context)
+                        .primaryColor, fontSize: 20),
+              ),
             ),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(texts['Select_a_color']),
-                    content: SingleChildScrollView(
-                      child: BlockPicker(
-                        pickerColor: currentColor,
-                        onColorChanged: (Color color) {
-                          Navigator.pop(context);
-                          changeColor(color);
-                        },
-                      ),
-                    ),
+            Padding(
+              padding: const EdgeInsets.only(left: 80),
+              child: GestureDetector(
+                child: Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle, color: currentColor),
+                ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(texts['Select_a_color']),
+                        content: SingleChildScrollView(
+                          child: BlockPicker(
+                            pickerColor: currentColor,
+                            onColorChanged: (Color color) {
+                              Navigator.pop(context);
+                              blockPickerState(() {
+                                currentColor = color;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-            },
-          ),
-        )
-      ],
-    );
-  }
-
-  void changeColor(Color color) {
-    setState(() {
-      currentColor = color;
-    });
-    Navigator.pop(context);
-    addCategoryDialog(
-      context,
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -697,21 +685,35 @@ class _NotesState extends State<Notes> {
     "Padding": "Welcome again 🥳\n" + "You didn't edit any notes today 😉",
     "Recent_Notes": "Recent Mr. Notes",
     "FloatingActionButton_tooltip": "+New",
+    "Sort_Title": "Sort Mr. Note",
+    "SortList": ["Category", "Title", "Content", "Time", "Priority"],
+    "OrderList": ["Ascending", "Descending"],
+    "Cancel": "Cancel",
+    "Sort": "Sort",
   };
 
   Map<String, dynamic> turkish = {
     "Padding": "Tekrar hoşgeldin 🥳\n" + "Bugün hiçbir not düzenlemedin 😉",
     "Recent_Notes": "Son Mr. Notlar",
     "FloatingActionButton_tooltip": "+Yeni",
+    "Sort_Title": "Mr. Notu Sırala",
+    "SortList": ["Kategori", "Başlık", "İçerik", "Zaman", "Öncelik"],
+    "OrderList": ["Artan", "Azalan"],
+    "Cancel": "İptal",
+    "Sort": "Sırala",
   };
 
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
+
+  int sortBy, orderBy;
+  bool isSorted = false;
 
   @override
   void initState() {
     super.initState();
     allNotes = List<Note>();
     databaseHelper = DatabaseHelper();
+    readSort();
   }
 
   @override
@@ -727,26 +729,28 @@ class _NotesState extends State<Notes> {
     var size = MediaQuery
         .of(context)
         .size;
-    getTodayNotesList();
+    var _sortList = texts["SortList"];
+    var _orderList = texts["OrderList"];
+    fillAllNotes();
     return Container(
       child: Column(
         children: <Widget>[
-          buildRecentOnesAndFilterHeader(),
+          buildRecentOnesAndFilterHeader(_sortList, _orderList),
           SizedBox(
             height: 10,
           ),
           Container(
             height: 150.0 * allNotes.length,
             width: 300,
-            child:
-            BuildNoteList(widget.lang, size, widget.color, widget.adOpen),
+            child: BuildNoteList(
+                widget.lang, size, widget.color, widget.adOpen, isSorted),
           )
         ],
       ),
     );
   }
 
-  Future<void> getTodayNotesList() async {
+  Future<void> fillAllNotes() async {
     List<Note> allNotes1;
     String suan = DateTime.now().toString().substring(0, 10);
     allNotes1 = await databaseHelper.getTodayNoteList(suan);
@@ -756,7 +760,8 @@ class _NotesState extends State<Notes> {
     });
   }
 
-  Widget buildRecentOnesAndFilterHeader() {
+  Widget buildRecentOnesAndFilterHeader(List<String> sortList,
+      List<String> orderList) {
     return Container(
       height: 60,
       child: Padding(
@@ -793,12 +798,157 @@ class _NotesState extends State<Notes> {
                 SizedBox(
                   width: 10,
                 ),
-                Icon(Icons.sort)
+                GestureDetector(
+                  child: Icon(Icons.sort),
+                  onTap: () {
+                    sortNotesDialog(context, sortList, orderList);
+                  },
+                )
               ],
             )
           ],
         ),
       ),
     );
+  }
+
+  sortNotesDialog(BuildContext context, List<String> sortList,
+      List<String> orderList) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(
+              texts["Sort_Title"],
+              style: TextStyle(color: Theme
+                  .of(context)
+                  .primaryColor),
+            ),
+            contentPadding: const EdgeInsets.only(left: 25),
+            children: <Widget>[
+              dropDown(sortList),
+              dropDownOrder(orderList),
+              ButtonBar(
+                children: <Widget>[
+                  RaisedButton(
+                    onPressed: () {
+                      setState(() {
+                        isSorted = false;
+                      });
+                      Navigator.pop(context);
+                    },
+                    color: Colors.orangeAccent,
+                    child: Text(
+                      texts["Cancel"],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  RaisedButton(
+                    onPressed: () async {
+                      var suan = DateTime.now();
+                      String sort =
+                          sortBy.toString() + "/" + orderBy.toString();
+                      databaseHelper.updateNote(
+                          Note.withID(4, 0, "Sort", sort, suan.toString(), 2));
+                      setState(() {
+                        isSorted = true;
+                      });
+                      Navigator.pop(context);
+                    },
+                    color: Colors.redAccent,
+                    child: Text(
+                      texts["Sort"],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  Future<void> readSort() async {
+    try {
+      List<Note> sortNoteList =
+      await databaseHelper.getNoteTitleNotesList("Sort");
+      String sortContent = sortNoteList[0].noteContent;
+      List<String> sortList = sortContent.split("/");
+      setState(() {
+        sortBy = int.parse(sortList[0]);
+        orderBy = int.parse(sortList[1]);
+      });
+    } catch (e) {
+      setState(() {
+        sortBy = 3;
+        orderBy = 1;
+      });
+    }
+  }
+
+  Widget dropDown(List<String> sortList) {
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter dropDownState) {
+        return DropdownButton(
+          value: sortBy,
+          icon: Icon(Icons.keyboard_arrow_down),
+          iconSize: 20,
+          style: TextStyle(color: Colors.deepPurple),
+          underline: Container(
+            height: 2,
+            color: Colors.transparent,
+          ),
+          onChanged: (selectedSortBy) {
+            dropDownState(() {
+              sortBy = selectedSortBy;
+            });
+          },
+          items: sortList.map((e) {
+            return DropdownMenuItem<int>(
+              child: Text(
+                e,
+                style: headerStyle3_1,
+              ),
+              value: sortList.indexOf(e),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  Widget dropDownOrder(List<String> orderList) {
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter dropDownOrderState) {
+        return DropdownButton<int>(
+          value: orderBy,
+          icon: Icon(Icons.keyboard_arrow_down),
+          iconSize: 20,
+          style: TextStyle(color: Colors.deepPurple),
+          underline: Container(
+            color: Colors.transparent,
+          ),
+          onChanged: (selectedOrderBy) {
+            dropDownOrderState(() {
+              orderBy = selectedOrderBy;
+            });
+          },
+          items: createOrderByItem(orderList),
+        );
+      },
+    );
+  }
+
+  List<DropdownMenuItem<int>> createOrderByItem(List<String> orderList) {
+    return orderList
+        .map((order) =>
+        DropdownMenuItem<int>(
+          value: orderList.indexOf(order),
+          child: Text(
+            order,
+            style: headerStyle3,
+          ),
+        ))
+        .toList();
   }
 }

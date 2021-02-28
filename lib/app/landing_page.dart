@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/Login/login.dart';
 import 'package:mrnote/common_widget/merkez_widget.dart';
-import 'package:mrnote/models/notes.dart';
+import 'package:mrnote/models/note.dart';
 import 'package:mrnote/note_list.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
@@ -11,7 +11,7 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  int lang, categoryID;
+  int lang;
   Color currentColor;
 
   DatabaseHelper databaseHelper = DatabaseHelper();
@@ -33,10 +33,9 @@ class _LandingPageState extends State<LandingPage> {
         return Login(
           lang,
           currentColor,
-          categoryID,
         );
       } else {
-        return NoteList(lang, currentColor, categoryID, false);
+        return NoteList(lang, currentColor, false);
       }
     } else {
       return Scaffold(
@@ -79,20 +78,12 @@ class _LandingPageState extends State<LandingPage> {
     }
     try {
       List<Note> themeNoteList =
-      await databaseHelper.getNoteTitleNotesList("Theme");
+          await databaseHelper.getNoteTitleNotesList("Theme");
       int color = int.parse(themeNoteList[0].noteContent);
       currentColor = Color(color);
       setState(() {});
     } catch (e) {
       currentColor = Color(0xFFff0000);
-      setState(() {});
-    }
-    try {
-      List<Note> categoryIDNoteList =
-      await databaseHelper.getNoteTitleNotesList("CategoryID");
-      categoryID = int.parse(categoryIDNoteList[0].noteContent);
-    } catch (e) {
-      categoryID = 0;
       setState(() {});
     }
   }

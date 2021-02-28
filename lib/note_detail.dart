@@ -4,7 +4,7 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'const.dart';
-import 'models/notes.dart';
+import 'models/note.dart';
 import 'utils/admob_helper.dart';
 
 class NoteDetail extends StatefulWidget {
@@ -151,7 +151,7 @@ class _NoteDetailState extends State<NoteDetail> {
     if (widget.updateNote == null) {
       databaseHelper
           .addNote(Note(categoryID, noteTitle, noteContent, suan.toString(),
-          selectedPriority))
+              selectedPriority))
           .then((savedNoteID) {
         if (savedNoteID != 0) {
           Navigator.pop(context, "saved");
