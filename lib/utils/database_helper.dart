@@ -135,53 +135,29 @@ class DatabaseHelper {
     List<String> sortList = await readSort();
     int sortBy = int.parse(sortList[0]);
     int orderBy = int.parse(sortList[1]);
-    String query;
+    String query =
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by ";
     switch (sortBy) {
       case 0:
-        if (orderBy == 0) {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by categoryID ASC;";
-        } else {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by categoryID DESC;";
-        }
+        query += "categoryID ";
         break;
       case 1:
-        if (orderBy == 0) {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTitle ASC;";
-        } else {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTitle DESC;";
-        }
+        query += "noteTitle ";
         break;
       case 2:
-        if (orderBy == 0) {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteContent ASC;";
-        } else {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteContent DESC;";
-        }
+        query += "noteContent ";
         break;
       case 3:
-        if (orderBy == 0) {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTime ASC;";
-        } else {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteTime DESC;";
-        }
+        query += "noteTime ";
         break;
       case 4:
-        if (orderBy == 0) {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by notePriority ASC;";
-        } else {
-          query =
-              "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by notePriority DESC;";
-        }
+        query += "notePriority ";
         break;
+    }
+    if (orderBy == 0) {
+      query += "ASC;";
+    } else {
+      query += "DESC;";
     }
     var sonuc = await db.rawQuery(query);
     return sonuc;

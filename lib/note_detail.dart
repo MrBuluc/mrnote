@@ -160,7 +160,7 @@ class _NoteDetailState extends State<NoteDetail> {
     } else {
       databaseHelper
           .updateNote(Note.withID(widget.updateNote.noteID, categoryID,
-          noteTitle, noteContent, suan.toString(), selectedPriority))
+              noteTitle, noteContent, suan.toString(), selectedPriority))
           .then((updatedID) {
         if (updatedID != 0) {
           Navigator.pop(context, "updated");

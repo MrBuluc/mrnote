@@ -415,8 +415,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               )
             : Container(
-          width: 30,
-        )
+                width: 30,
+              )
       ],
     );
   }

@@ -130,7 +130,7 @@ class _Category_PageState extends State<Category_Page> {
       allNotes1 = await databaseHelper.getNoteList();
     } else {
       allNotes1 =
-      await databaseHelper.getCategoryNotesList(category.categoryID);
+          await databaseHelper.getCategoryNotesList(category.categoryID);
     }
     allNotes1.sort();
     setState(() {

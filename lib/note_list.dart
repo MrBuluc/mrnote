@@ -281,7 +281,7 @@ class _NoteListState extends State<NoteList> {
                     validator: (value) {
                       if (value.length < 3) {
                         return texts[
-                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                       } else
                         return null;
                     },
@@ -739,7 +739,17 @@ class _NotesState extends State<Notes> {
           SizedBox(
             height: 10,
           ),
-          Container(
+          allNotes.length == 0
+              ? Center(
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Text(
+                texts["Padding"],
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          )
+              : Container(
             height: 150.0 * allNotes.length,
             width: 300,
             child: BuildNoteList(
