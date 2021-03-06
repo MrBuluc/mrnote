@@ -264,7 +264,7 @@ class _NoteDetailState extends State<NoteDetail> {
       padding: const EdgeInsets.only(left: 20.0, top: 5),
       child: TextFormField(
         initialValue:
-        widget.updateNote != null ? widget.updateNote.noteTitle : "",
+            widget.updateNote != null ? widget.updateNote.noteTitle : "",
         maxLines: null,
         style: headerStyle5,
         cursorColor: Colors.grey.shade600,

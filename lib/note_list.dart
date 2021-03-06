@@ -5,7 +5,6 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/note_detail.dart';
-import 'package:mrnote/search_page.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
@@ -14,6 +13,7 @@ import 'common_widget/build_note_list.dart';
 import 'common_widget/platform_duyarli_alert_dialog.dart';
 import 'const.dart';
 import 'notification_handler.dart';
+import 'search_page.dart';
 import 'utils/admob_helper.dart';
 
 class NoteList extends StatefulWidget {
@@ -75,7 +75,7 @@ class _NoteListState extends State<NoteList> {
     "Edit_Category": "Kategori Düzenle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-    "Lütfen en az 3 karakter giriniz",
+        "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
         "Kategori başarıyla eklendi 👌",
@@ -576,58 +576,57 @@ class _NoteListState extends State<NoteList> {
 
   Widget editColorWidget(BuildContext context, Category category) {
     Color categoryColor = Color(category.categoryColor);
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 26),
-          child: Text(
-            texts['Select_a_color'],
-            style:
-            TextStyle(color: Theme
-                .of(context)
-                .primaryColor, fontSize: 20),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 80),
-          child: GestureDetector(
-            child: Container(
-              height: 30,
-              width: 30,
-              decoration:
-              BoxDecoration(shape: BoxShape.circle, color: categoryColor),
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter blockPickerState) {
+        return Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 26),
+              child: Text(
+                texts['Select_a_color'],
+                style: TextStyle(
+                    color: Theme
+                        .of(context)
+                        .primaryColor, fontSize: 20),
+              ),
             ),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(texts['Select_a_color']),
-                    content: SingleChildScrollView(
-                      child: BlockPicker(
-                        pickerColor: categoryColor,
-                        onColorChanged: (Color color) {
-                          Navigator.pop(context);
-                          editColorFonc(color, category);
-                        },
-                      ),
-                    ),
+            Padding(
+              padding: const EdgeInsets.only(left: 80),
+              child: GestureDetector(
+                child: Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle, color: categoryColor),
+                ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(texts['Select_a_color']),
+                        content: SingleChildScrollView(
+                          child: BlockPicker(
+                            pickerColor: categoryColor,
+                            onColorChanged: (Color color) {
+                              Navigator.pop(context);
+                              blockPickerState(() {
+                                category.categoryColor = color.value;
+                                categoryColor = color;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-            },
-          ),
-        )
-      ],
+              ),
+            )
+          ],
+        );
+      },
     );
-  }
-
-  void editColorFonc(Color color, Category category) {
-    setState(() {
-      category.categoryColor = color.value;
-    });
-    Navigator.pop(context);
-    editCategoryDialog(context, category);
   }
 
   void _sureForDelCategory(BuildContext context, int categoryID) async {

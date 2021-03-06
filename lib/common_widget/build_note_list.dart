@@ -122,9 +122,9 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                   Text(
                                     allNotes[index].noteTitle.length >= 10
                                         ? allNotes[index]
-                                        .noteTitle
-                                        .substring(0, 11) +
-                                        "..."
+                                                .noteTitle
+                                                .substring(0, 11) +
+                                            "..."
                                         : allNotes[index].noteTitle,
                                     style: headerStyle5,
                                   ),

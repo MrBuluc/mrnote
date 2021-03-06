@@ -89,6 +89,18 @@ class DatabaseHelper {
     return sonuc;
   }
 
+  Future<bool> addColumn(
+      String tableName, String columnName, String datatype) async {
+    try {
+      var db = await _getDatabase();
+      await db.execute("ALTER TABLE $tableName ADD $columnName $datatype;");
+    } catch (e) {
+      print("addColum Catch: " + e.toString());
+      return false;
+    }
+    return true;
+  }
+
   Future<int> deleteCategory(int categoryID) async {
     var db = await _getDatabase();
     var sonuc = await db

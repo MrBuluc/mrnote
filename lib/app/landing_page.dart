@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/Login/login.dart';
 import 'package:mrnote/common_widget/merkez_widget.dart';
+import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/note_list.dart';
 import 'package:mrnote/utils/database_helper.dart';
@@ -37,7 +38,7 @@ class _LandingPageState extends State<LandingPage> {
           currentColor,
         );
       } else {
-        return NoteList(lang, currentColor, false);
+        return NoteList(lang, currentColor, true);
       }
     } else {
       return Scaffold(
@@ -73,7 +74,29 @@ class _LandingPageState extends State<LandingPage> {
     List<Note> noteList =
         await databaseHelper.getNoteTitleNotesList("Password");
     Note passwordNote = noteList[0];
-    if (passwordNote.categoryID == 1) {}
+    if (passwordNote.categoryID == 1) {
+      var suan = DateTime.now();
+      await databaseHelper
+          .addNote(Note(0, "Language", "0", suan.toString(), 2));
+      await databaseHelper
+          .addNote(Note(0, "Theme", "4293914607", suan.toString(), 2));
+      await databaseHelper.addNote(Note(0, "Sort", "3/1", suan.toString(), 2));
+      await databaseHelper
+          .addNote(Note(0, "Version", "2.0.0", suan.toString(), 2));
+      await databaseHelper.updateNote(Note.withID(
+          1, 0, "Password", passwordNote.noteContent, suan.toString(), 2));
+      await databaseHelper.addColumn("category", "categoryColor", "INTEGER");
+      await databaseHelper
+          .updateCategory(Category.withID(1, "General", 4289760505));
+      await databaseHelper
+          .updateCategory(Category.withID(2, "Sport", 4288865453));
+      await databaseHelper
+          .updateCategory(Category.withID(3, "Family", 4294550692));
+      await databaseHelper
+          .updateCategory(Category.withID(4, "Job", 4292079355));
+      await databaseHelper
+          .updateCategory(Category.withID(5, "School", 4294819839));
+    }
     try {
       List<Note> languageNoteList =
           await databaseHelper.getNoteTitleNotesList("Language");

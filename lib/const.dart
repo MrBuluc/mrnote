@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 var headerStyle =
-    TextStyle(fontFamily: "Aileron", fontSize: 50, color: Colors.grey.shade800);
+    TextStyle(fontFamily: "Aileron", fontSize: 38, color: Colors.grey.shade800);
 
 var headerStyle2 = TextStyle(
     fontFamily: "Aileron",
