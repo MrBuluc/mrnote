@@ -99,10 +99,8 @@ class _Category_PageState extends State<Category_Page> {
                       height: 150.0 * allNotes.length,
                       child: BuildNoteList(
                         widget.lang,
-                        size,
                         widget.color,
                         widget.adOpen,
-                        null,
                         category: category,
                       )),
             ],

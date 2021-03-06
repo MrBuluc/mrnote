@@ -22,7 +22,8 @@ class Category {
   Category.fromMap(Map<String, dynamic> map) {
     this.categoryTitle = map['categoryTitle'];
     this.categoryID = map['categoryID'];
-    this.categoryColor = map['categoryColor'];
+    this.categoryColor =
+        map["categoryColor"] != null ? map["categoryColor"] : 4293914607;
   }
 
   @override

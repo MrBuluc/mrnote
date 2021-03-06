@@ -9,19 +9,13 @@ import 'platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
   int lang, sortBy, orderBy;
-  Size size;
   Color color;
   bool adOpen, isSorted;
   Category category;
+  String search;
 
-  BuildNoteList(
-    this.lang,
-    this.size,
-    this.color,
-    this.adOpen,
-    this.isSorted, {
-    this.category,
-  });
+  BuildNoteList(this.lang, this.color, this.adOpen,
+      {this.category, this.isSorted, this.search});
 
   @override
   _BuildNoteListState createState() => _BuildNoteListState();
@@ -53,11 +47,11 @@ class _BuildNoteListState extends State<BuildNoteList> {
     "Priority": ["Düşük", "Orta", "Yüksek"],
   };
 
-  Size size;
-
   DatabaseHelper databaseHelper = DatabaseHelper();
 
   bool isSorted;
+
+  String search;
 
   @override
   void initState() {
@@ -65,12 +59,13 @@ class _BuildNoteListState extends State<BuildNoteList> {
     super.initState();
     allNotes = List<Note>();
     category = widget.category;
-    size = widget.size;
     isSorted = widget.isSorted;
+    search = widget.search;
   }
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     fillAllNotes();
     switch (widget.lang) {
       case 0:
@@ -127,9 +122,9 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                   Text(
                                     allNotes[index].noteTitle.length >= 10
                                         ? allNotes[index]
-                                                .noteTitle
-                                                .substring(0, 11) +
-                                            "..."
+                                        .noteTitle
+                                        .substring(0, 11) +
+                                        "..."
                                         : allNotes[index].noteTitle,
                                     style: headerStyle5,
                                   ),
@@ -151,9 +146,9 @@ class _BuildNoteListState extends State<BuildNoteList> {
                               Text(
                                 allNotes[index].noteContent.length >= 50
                                     ? allNotes[index]
-                                            .noteContent
-                                            .substring(0, 50) +
-                                        "..."
+                                    .noteContent
+                                    .substring(0, 50) +
+                                    "..."
                                     : allNotes[index].noteContent,
                                 style: headerStyle4,
                               ),
@@ -204,9 +199,15 @@ class _BuildNoteListState extends State<BuildNoteList> {
         await databaseHelper.getCategoryNotesList(category.categoryID);
       }
       allNotes1.sort();
-    } else {
+    } else if (search != null) {
+      allNotes1 = await databaseHelper.getSearchNoteList(search);
+      allNotes1.sort();
+    } else if (isSorted != null) {
       String suan = DateTime.now().toString().substring(0, 10);
       allNotes1 = await databaseHelper.getSortNoteList(suan);
+    } else {
+      allNotes1 = await databaseHelper.getNoteList();
+      allNotes1.sort();
     }
     setState(() {
       allNotes = allNotes1;

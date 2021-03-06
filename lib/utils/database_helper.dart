@@ -62,7 +62,7 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getCategories() async {
     var db = await _getDatabase();
-    var sonuc = await db.query("category");
+    var sonuc = await db.query("category", where: "categoryID != 0");
 
     return sonuc;
   }
@@ -73,7 +73,6 @@ class DatabaseHelper {
     for (Map map in categoryMapList) {
       categoryList.add(Category.fromMap(map));
     }
-    categoryList.removeAt(0);
     return categoryList;
   }
 
@@ -100,13 +99,29 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getNotes() async {
     var db = await _getDatabase();
     var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 order by noteID Desc;");
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 order by noteID ASC;");
 
     return sonuc;
   }
 
   Future<List<Note>> getNoteList() async {
     var noteMapList = await getNotes();
+    var noteList = List<Note>();
+    for (Map map in noteMapList) {
+      noteList.add(Note.fromMap(map));
+    }
+    return noteList;
+  }
+
+  Future<List<Map<String, dynamic>>> getSearchNotes(String search) async {
+    var db = await _getDatabase();
+    var sonuc = await db.rawQuery(
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND (note.noteTitle LIKE '%$search%' OR note.noteContent LIKE '%$search%') order by noteID Desc;");
+    return sonuc;
+  }
+
+  Future<List<Note>> getSearchNoteList(String search) async {
+    var noteMapList = await getSearchNotes(search);
     var noteList = List<Note>();
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));

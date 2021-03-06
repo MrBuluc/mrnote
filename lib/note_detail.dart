@@ -223,14 +223,13 @@ class _NoteDetailState extends State<NoteDetail> {
 
   List<DropdownMenuItem<int>> createCategoryItem() {
     return allCategories
-        .map((category) =>
-        DropdownMenuItem<int>(
-          value: category.categoryID,
-          child: Text(
-            category.categoryTitle,
-            style: headerStyle3,
-          ),
-        ))
+        .map((category) => DropdownMenuItem<int>(
+              value: category.categoryID,
+              child: Text(
+                category.categoryTitle,
+                style: headerStyle3,
+              ),
+            ))
         .toList();
   }
 

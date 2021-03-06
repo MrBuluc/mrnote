@@ -18,6 +18,8 @@ class _LandingPageState extends State<LandingPage> {
 
   bool flag = false;
 
+  String truePassword;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -68,6 +70,10 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> read() async {
+    List<Note> noteList =
+        await databaseHelper.getNoteTitleNotesList("Password");
+    Note passwordNote = noteList[0];
+    if (passwordNote.categoryID == 1) {}
     try {
       List<Note> languageNoteList =
           await databaseHelper.getNoteTitleNotesList("Language");
@@ -90,8 +96,8 @@ class _LandingPageState extends State<LandingPage> {
 
   Future<bool> read1() async {
     List<Note> noteList =
-        await databaseHelper.getNoteTitleNotesList("Password");
-    String truePassword = noteList[0].noteContent;
+    await databaseHelper.getNoteTitleNotesList("Password");
+    truePassword = noteList[0].noteContent;
     return truePassword != null && truePassword.isNotEmpty;
   }
 }

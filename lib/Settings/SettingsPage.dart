@@ -180,7 +180,7 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       password = noteList[0].noteContent;
     });
-    if (password != "" || password != null) {
+    if (password != null) {
       prepareShowPassword();
     }
   }

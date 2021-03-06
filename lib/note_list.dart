@@ -5,6 +5,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/note_detail.dart';
+import 'package:mrnote/search_page.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'Settings/SettingsPage.dart';
@@ -37,6 +38,7 @@ class _NoteListState extends State<NoteList> {
 
   Map<String, String> english = {
     "Home": "Home",
+    "search": "Search",
     "PopupMenuItem": "Categories",
     "PopupMenuItem1": "All Notes",
     "FloatingActionButton_tooltip": "+New",
@@ -65,6 +67,7 @@ class _NoteListState extends State<NoteList> {
 
   Map<String, String> turkish = {
     "Home": "Ana Sayfa",
+    "search": "Ara",
     "PopupMenuItem": "Kategoriler",
     "PopupMenuItem1": "Tüm Notlar",
     "FloatingActionButton_tooltip": "+Yeni",
@@ -72,7 +75,7 @@ class _NoteListState extends State<NoteList> {
     "Edit_Category": "Kategori Düzenle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-        "Lütfen en az 3 karakter giriniz",
+    "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
         "Kategori başarıyla eklendi 👌",
@@ -182,6 +185,17 @@ class _NoteListState extends State<NoteList> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(texts["Home"], style: headerStyle),
+          RaisedButton(
+            child: Text(
+              texts["search"],
+              style: headerStyle3,
+            ),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      SearchPage(widget.lang, widget.color, widget.adOpen)));
+            },
+          ),
           GestureDetector(
             child: Icon(
               Icons.settings,
@@ -677,7 +691,6 @@ class Notes extends StatefulWidget {
 class _NotesState extends State<Notes> {
   List<Note> allNotes;
   DatabaseHelper databaseHelper;
-  Color red = Color(0xFFff0000);
 
   Map<String, dynamic> texts;
 
@@ -726,9 +739,6 @@ class _NotesState extends State<Notes> {
         texts = turkish;
         break;
     }
-    var size = MediaQuery
-        .of(context)
-        .size;
     var _sortList = texts["SortList"];
     var _orderList = texts["OrderList"];
     fillAllNotes();
@@ -753,7 +763,11 @@ class _NotesState extends State<Notes> {
             height: 150.0 * allNotes.length,
             width: 300,
             child: BuildNoteList(
-                widget.lang, size, widget.color, widget.adOpen, isSorted),
+              widget.lang,
+              widget.color,
+              widget.adOpen,
+              isSorted: isSorted,
+            ),
           )
         ],
       ),
@@ -764,7 +778,6 @@ class _NotesState extends State<Notes> {
     List<Note> allNotes1;
     String suan = DateTime.now().toString().substring(0, 10);
     allNotes1 = await databaseHelper.getTodayNoteList(suan);
-    allNotes1.sort();
     setState(() {
       allNotes = allNotes1;
     });
