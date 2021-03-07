@@ -209,6 +209,11 @@ class _LoginState extends State<Login> {
           context,
           MaterialPageRoute(
               builder: (context) => NoteList(widget.lang, widget.color, true)));
+    } else if (truePassword == "") {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NoteList(widget.lang, widget.color, true)));
     } else {
       setState(() {
         result = texts["result_enterFalse"];

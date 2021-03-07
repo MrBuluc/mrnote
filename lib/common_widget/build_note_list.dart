@@ -146,9 +146,9 @@ class _BuildNoteListState extends State<BuildNoteList> {
                               Text(
                                 allNotes[index].noteContent.length >= 50
                                     ? allNotes[index]
-                                    .noteContent
-                                    .substring(0, 50) +
-                                    "..."
+                                            .noteContent
+                                            .substring(0, 50) +
+                                        "..."
                                     : allNotes[index].noteContent,
                                 style: headerStyle4,
                               ),

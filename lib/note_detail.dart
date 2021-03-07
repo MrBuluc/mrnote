@@ -291,7 +291,7 @@ class _NoteDetailState extends State<NoteDetail> {
         children: [
           TextFormField(
             initialValue:
-            widget.updateNote != null ? widget.updateNote.noteContent : "",
+                widget.updateNote != null ? widget.updateNote.noteContent : "",
             maxLines: null,
             style: headerStyle10,
             cursorColor: Colors.grey.shade800,

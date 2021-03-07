@@ -119,7 +119,7 @@ class _LandingPageState extends State<LandingPage> {
 
   Future<bool> read1() async {
     List<Note> noteList =
-    await databaseHelper.getNoteTitleNotesList("Password");
+        await databaseHelper.getNoteTitleNotesList("Password");
     truePassword = noteList[0].noteContent;
     return truePassword != null && truePassword.isNotEmpty;
   }
