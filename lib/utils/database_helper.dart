@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
@@ -9,6 +10,8 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseHelper {
   static DatabaseHelper _databaseHelper;
   static Database _database;
+
+  static int counter = 0;
 
   factory DatabaseHelper() {
     if (_database == null) {
@@ -92,10 +95,19 @@ class DatabaseHelper {
   Future<bool> addColumn(
       String tableName, String columnName, String datatype) async {
     try {
-      var db = await _getDatabase();
-      await db.execute("ALTER TABLE $tableName ADD $columnName $datatype;");
+      if (counter == 0) {
+        counter++;
+        var db = await _getDatabase();
+        await db.execute("ALTER TABLE $tableName ADD $columnName $datatype;");
+        Map<String, dynamic> settingsMap = {
+          "categoryID": 0,
+          "categoryTitle": "Settings",
+          "categoryColor": null
+        };
+        await db.insert("category", settingsMap);
+      }
     } catch (e) {
-      print("addColum Catch: " + e.toString());
+      debugPrint("addColum Catch: " + e.toString());
       return false;
     }
     return true;
@@ -245,13 +257,26 @@ class DatabaseHelper {
     return sonuc;
   }
 
-  Future<List<Note>> getNoteIDNotesList(int noteID) async {
-    var noteMapList = await getNoteIDNotes(noteID);
+  Future<List<Note>> getSettingsNoteTitleList(String noteTitle) async {
+    var noteMapList = await getSettingsNoteTitle(noteTitle);
     var noteList = List<Note>();
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
+  }
+
+  Future<List<Map<String, dynamic>>> getSettingsNoteTitle(
+      String noteTitle) async {
+    var db = await _getDatabase();
+    var sonuc = await db.rawQuery(
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.noteTitle == '$noteTitle' AND note.categoryID = 0 ORDER by noteID DESC;");
+    return sonuc;
+  }
+
+  Future<Note> getNoteIDNote(int noteID) async {
+    var noteMapList = await getNoteIDNotes(noteID);
+    return Note.fromMap(noteMapList.first);
   }
 
   Future<List<Map<String, dynamic>>> getNoteIDNotes(int noteID) async {
@@ -266,6 +291,21 @@ class DatabaseHelper {
     var sonuc = await db.update("note", note.toMap(),
         where: 'noteID = ?', whereArgs: [note.noteID]);
     return sonuc;
+  }
+
+  Future<void> updateSettingsNote(Note note) async {
+    var db = await _getDatabase();
+    await db.execute(
+        "UPDATE note SET categoryID = ?, noteTitle = ?, noteContent = ?, noteTime = ?, notePriority = ? WHERE noteTitle = ? AND categoryID = ?",
+        [
+          note.categoryID,
+          note.noteTitle,
+          note.noteContent,
+          note.noteTime,
+          note.notePriority,
+          note.noteTitle,
+          0
+        ]);
   }
 
   Future<int> deleteNote(int noteID) async {

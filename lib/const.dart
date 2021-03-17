@@ -11,13 +11,13 @@ var headerStyle2 = TextStyle(
 
 var headerStyle3 = TextStyle(
     fontFamily: "Aileron",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: FontWeight.bold,
     color: Colors.grey.shade800);
 
 var headerStyle3_1 = TextStyle(
     fontFamily: "Aileron",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: FontWeight.bold,
     color: Colors.grey.shade500);
 

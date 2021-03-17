@@ -174,7 +174,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                   ),
                   onTap: () async {
                     var result =
-                    await _goToDetailPage(context, allNotes[index]);
+                        await _goToDetailPage(context, allNotes[index]);
                     if (result != null) {
                       setState(() {});
                     }

@@ -19,10 +19,10 @@ class _LoginState extends State<Login> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   final formKey = GlobalKey<FormState>();
 
-  String password, truePassword;
+  String passwordStr, truePassword;
   String result = "";
 
-  Note note;
+  Note password;
 
   Map<String, String> texts;
 
@@ -123,7 +123,7 @@ class _LoginState extends State<Login> {
                       color: generalColor,
                     ),
                   ),
-                  onSaved: (String value) => password = value,
+                  onSaved: (String value) => passwordStr = value,
                 ),
               ),
               buildSave()
@@ -191,20 +191,19 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> enter() async {
-    List<Note> noteList =
-        await databaseHelper.getNoteTitleNotesList("Password");
-    truePassword = noteList[0].noteContent;
+    password = await databaseHelper.getNoteIDNote(1);
+    debugPrint("password: " + password.toString());
+    truePassword = password.noteContent;
     if (truePassword == null) {
       truePassword = "";
     }
-    note = noteList[0];
 
     formKey.currentState.save();
     setState(() {
       result = texts["result_enterTrue"];
     });
 
-    if (password == truePassword) {
+    if (passwordStr == truePassword) {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -222,22 +221,25 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> resetThePassword() async {
-    if (note == null) {
+    if (password == null) {
       setState(() {
         result = texts["result_resetNull"];
       });
     } else {
-      note.noteContent = "";
+      password.noteContent = "";
       var suan = DateTime.now();
       await databaseHelper
-          .updateNote(Note.withID(note.noteID, note.categoryID, note.noteTitle,
-              note.noteContent, suan.toString(), note.notePriority))
-          .then((updatedID) {
-        if (updatedID != 0) {
-          setState(() {
-            result = texts["result_resetElse"];
-          });
-        }
+          .updateSettingsNote(Note.withID(
+              password.noteID,
+              password.categoryID,
+              password.noteTitle,
+              password.noteContent,
+              suan.toString(),
+              password.notePriority))
+          .then((value) {
+        setState(() {
+          result = texts["result_resetElse"];
+        });
       });
     }
   }

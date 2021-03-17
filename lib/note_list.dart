@@ -325,7 +325,7 @@ class _NoteListState extends State<NoteList> {
                         formKey.currentState.save();
                         databaseHelper
                             .addCategory(
-                            Category(newCategoryTitle, currentColor.value))
+                                Category(newCategoryTitle, currentColor.value))
                             .then((value) {
                           if (value > 0) {
                             _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -870,8 +870,8 @@ class _NotesState extends State<Notes> {
                       var suan = DateTime.now();
                       String sort =
                           sortBy.toString() + "/" + orderBy.toString();
-                      databaseHelper.updateNote(
-                          Note.withID(4, 0, "Sort", sort, suan.toString(), 2));
+                      databaseHelper.updateSettingsNote(
+                          Note(0, "Sort", sort, suan.toString(), 2));
                       setState(() {
                         isSorted = true;
                       });
@@ -893,7 +893,7 @@ class _NotesState extends State<Notes> {
   Future<void> readSort() async {
     try {
       List<Note> sortNoteList =
-      await databaseHelper.getNoteTitleNotesList("Sort");
+      await databaseHelper.getSettingsNoteTitleList("Sort");
       String sortContent = sortNoteList[0].noteContent;
       List<String> sortList = sortContent.split("/");
       setState(() {

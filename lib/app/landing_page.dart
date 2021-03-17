@@ -71,56 +71,60 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> read() async {
-    List<Note> noteList =
-        await databaseHelper.getNoteTitleNotesList("Password");
-    Note passwordNote = noteList[0];
-    if (passwordNote.categoryID == 1) {
-      var suan = DateTime.now();
-      await databaseHelper
-          .addNote(Note(0, "Language", "0", suan.toString(), 2));
-      await databaseHelper
-          .addNote(Note(0, "Theme", "4293914607", suan.toString(), 2));
-      await databaseHelper.addNote(Note(0, "Sort", "3/1", suan.toString(), 2));
-      await databaseHelper
-          .addNote(Note(0, "Version", "2.0.0", suan.toString(), 2));
-      await databaseHelper.updateNote(Note.withID(
-          1, 0, "Password", passwordNote.noteContent, suan.toString(), 2));
-      await databaseHelper.addColumn("category", "categoryColor", "INTEGER");
-      await databaseHelper
-          .updateCategory(Category.withID(1, "General", 4289760505));
-      await databaseHelper
-          .updateCategory(Category.withID(2, "Sport", 4288865453));
-      await databaseHelper
-          .updateCategory(Category.withID(3, "Family", 4294550692));
-      await databaseHelper
-          .updateCategory(Category.withID(4, "Job", 4292079355));
-      await databaseHelper
-          .updateCategory(Category.withID(5, "School", 4294819839));
+    try {
+      Note password = await databaseHelper.getNoteIDNote(1);
+      if (password != null && password.categoryID == 1) {
+        var suan = DateTime.now();
+        await databaseHelper.addColumn("category", "categoryColor", "INTEGER");
+        await databaseHelper
+            .addNote(Note(0, "Language", "0", suan.toString(), 2));
+        await databaseHelper
+            .addNote(Note(0, "Theme", "4293914607", suan.toString(), 2));
+        await databaseHelper
+            .addNote(Note(0, "Sort", "3/1", suan.toString(), 2));
+        await databaseHelper
+            .addNote(Note(0, "Version", "2.0.0", suan.toString(), 2));
+        await databaseHelper.deleteNote(1);
+        await databaseHelper
+            .addNote(Note.withID(1, 0, "Password", null, suan.toString(), 2));
+        await databaseHelper
+            .updateCategory(Category.withID(1, "General", 4289760505));
+        await databaseHelper
+            .updateCategory(Category.withID(2, "Sport", 4288865453));
+        await databaseHelper
+            .updateCategory(Category.withID(3, "Family", 4294550692));
+        await databaseHelper
+            .updateCategory(Category.withID(4, "Job", 4292079355));
+        await databaseHelper
+            .updateCategory(Category.withID(5, "School", 4294819839));
+      }
+    } catch (e) {
+      debugPrint("read hata: " + e.toString());
     }
+
     try {
       List<Note> languageNoteList =
-          await databaseHelper.getNoteTitleNotesList("Language");
+          await databaseHelper.getSettingsNoteTitleList("Language");
       lang = int.parse(languageNoteList[0].noteContent);
     } catch (e) {
       lang = 0;
-      setState(() {});
     }
     try {
       List<Note> themeNoteList =
-          await databaseHelper.getNoteTitleNotesList("Theme");
+          await databaseHelper.getSettingsNoteTitleList("Theme");
       int color = int.parse(themeNoteList[0].noteContent);
       currentColor = Color(color);
-      setState(() {});
     } catch (e) {
-      currentColor = Color(0xFFff0000);
-      setState(() {});
+      currentColor = Color(4293914607);
     }
+    setState(() {});
   }
 
   Future<bool> read1() async {
-    List<Note> noteList =
-        await databaseHelper.getNoteTitleNotesList("Password");
-    truePassword = noteList[0].noteContent;
+    Note password = await databaseHelper.getNoteIDNote(1);
+    setState(() {
+      truePassword = password.noteContent;
+    });
     return truePassword != null && truePassword.isNotEmpty;
   }
 }

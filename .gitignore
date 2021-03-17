@@ -44,3 +44,4 @@ app.*.map.json
 
 /key.jks
 /screenshots/
+/android/app/google-services.json

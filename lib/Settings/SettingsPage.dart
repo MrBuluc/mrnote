@@ -86,7 +86,7 @@ class _SettingsPageState extends State<SettingsPage> {
   double ekranYuksekligi, ekranGenisligi;
 
   String gelistiriciSayfasiParola,
-      password = "",
+      passwordStr = "",
       newPassword,
       showPassword = "";
 
@@ -106,6 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
     currentColor = widget.color;
     readPassword();
+    adOpen = widget.adOpen;
   }
 
   @override
@@ -175,26 +176,33 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> readPassword() async {
-    List<Note> noteList =
-        await databaseHelper.getNoteTitleNotesList("Password");
-    setState(() {
-      password = noteList[0].noteContent;
-    });
-    if (password != null) {
-      prepareShowPassword();
+    try {
+      Note password = await databaseHelper.getNoteIDNote(1);
+      if (password != null) {
+        setState(() {
+          passwordStr = password.noteContent;
+        });
+        if (passwordStr != null) {
+          prepareShowPassword();
+        }
+      }
+    } catch (e) {
+      setState(() {
+        passwordStr = null;
+      });
     }
   }
 
   void prepareShowPassword() {
     setState(() {
-      showPassword = "*" * (password.length);
+      showPassword = "*" * (passwordStr.length);
     });
   }
 
   Widget buildHeader(Size size) {
     return GestureDetector(
       child: Container(
-        height: 210,
+        height: 200,
         width: ekranGenisligi,
         color: Colors.grey.shade900,
         child: Column(
@@ -399,10 +407,10 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
         Text(
-          show ? password : showPassword,
+          show ? passwordStr : showPassword,
           style: TextStyle(fontSize: 20),
         ),
-        password != null
+        passwordStr != null
             ? GestureDetector(
                 child: Icon(
                   show ? Icons.visibility_off : Icons.visibility,
@@ -587,11 +595,11 @@ class _SettingsPageState extends State<SettingsPage> {
           iptalButonYazisi: texts["password_save_iptalButonYazisi"],
         ).goster(context);
         if (sonuc) {
-          databaseHelper.updateNote(
+          databaseHelper.updateSettingsNote(
               Note.withID(1, 0, "Password", null, suan.toString(), 2));
         }
       } else {
-        databaseHelper.updateNote(
+        databaseHelper.updateSettingsNote(
             Note.withID(1, 0, "Password", newPassword, suan.toString(), 2));
       }
     } catch (e) {
@@ -615,11 +623,11 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> save(int lang, Color color, bool adOpen) async {
     try {
       var suan = DateTime.now();
-      databaseHelper.updateNote(
-          Note.withID(2, 0, "Language", lang.toString(), suan.toString(), 2));
+      databaseHelper.updateSettingsNote(
+          Note(0, "Language", lang.toString(), suan.toString(), 2));
 
-      databaseHelper.updateNote(Note.withID(
-          3, 0, "Theme", color.value.toString(), suan.toString(), 2));
+      databaseHelper.updateSettingsNote(
+          Note(0, "Theme", color.value.toString(), suan.toString(), 2));
     } catch (e) {
       PlatformDuyarliAlertDialog(
         baslik: texts["save_catch_baslik"],
@@ -647,10 +655,10 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       var suan = DateTime.now();
       databaseHelper
-          .updateNote(Note.withID(2, 0, "Language", "0", suan.toString(), 2));
+          .updateSettingsNote(Note(0, "Language", "0", suan.toString(), 2));
 
-      databaseHelper.updateNote(
-          Note.withID(3, 0, "Theme", "4293914607", suan.toString(), 2));
+      databaseHelper.updateSettingsNote(
+          Note(0, "Theme", "4293914607", suan.toString(), 2));
     } catch (e) {
       PlatformDuyarliAlertDialog(
         baslik: texts["refresh_catch_baslik"],
