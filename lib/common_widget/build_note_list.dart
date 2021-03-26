@@ -196,7 +196,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
         allNotes1 = await databaseHelper.getNoteList();
       } else {
         allNotes1 =
-        await databaseHelper.getCategoryNotesList(category.categoryID);
+            await databaseHelper.getCategoryNotesList(category.categoryID);
       }
       allNotes1.sort();
     } else if (search != null) {
@@ -276,7 +276,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
                 NoteDetail(
                   widget.lang,
                   widget.color,
-                  widget.adOpen,
                   updateNote: note,
                 )));
     return result;

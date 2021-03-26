@@ -1,19 +1,16 @@
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/utils/database_helper.dart';
 
 import 'const.dart';
 import 'models/note.dart';
-import 'utils/admob_helper.dart';
 
 class NoteDetail extends StatefulWidget {
   Note updateNote;
   int lang;
   Color color;
-  bool adOpen;
 
-  NoteDetail(this.lang, this.color, this.adOpen, {this.updateNote});
+  NoteDetail(this.lang, this.color, {this.updateNote});
 
   @override
   _NoteDetailState createState() => _NoteDetailState();
@@ -25,8 +22,6 @@ class _NoteDetailState extends State<NoteDetail> {
   DatabaseHelper databaseHelper;
   int categoryID, selectedPriority;
   String noteTitle, noteContent;
-
-  InterstitialAd myInterstitialAd;
 
   Map<String, String> texts;
 
@@ -63,9 +58,6 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    if (widget.adOpen) {
-      adInitialize();
-    }
     switch (widget.lang) {
       case 0:
         texts = english;
@@ -74,14 +66,6 @@ class _NoteDetailState extends State<NoteDetail> {
         texts = turkish;
         break;
     }
-  }
-
-  @override
-  void dispose() {
-    if (widget.adOpen) {
-      disposeAd();
-    }
-    super.dispose();
   }
 
   @override
@@ -131,18 +115,6 @@ class _NoteDetailState extends State<NoteDetail> {
         ),
       ),
     );
-  }
-
-  void adInitialize() {
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-  }
-
-  void disposeAd() {
-    myInterstitialAd.dispose();
   }
 
   void save(BuildContext context) {

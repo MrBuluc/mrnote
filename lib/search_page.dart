@@ -276,7 +276,6 @@ class _SearchPageState extends State<SearchPage> {
             builder: (context) => NoteDetail(
                   widget.lang,
                   widget.color,
-                  widget.adOpen,
                   updateNote: note,
                 )));
     return result;

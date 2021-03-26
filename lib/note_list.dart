@@ -330,7 +330,7 @@ class _NoteListState extends State<NoteList> {
                           if (value > 0) {
                             _scaffoldKey.currentState.showSnackBar(SnackBar(
                               content: Text(texts[
-                              "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
+                                  "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
                             Navigator.pop(context);
@@ -805,7 +805,7 @@ class _NotesState extends State<Notes> {
                   },
                   transitionType: _transitionType,
                   openBuilder: (BuildContext context, VoidCallback _) {
-                    return NoteDetail(widget.lang, widget.color, widget.adOpen);
+                    return NoteDetail(widget.lang, widget.color);
                   },
                   closedElevation: 6.0,
                   closedColor: widget.color,
