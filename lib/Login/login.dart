@@ -5,6 +5,7 @@ import 'package:mrnote/utils/database_helper.dart';
 
 import '../const.dart';
 
+// ignore: must_be_immutable
 class Login extends StatefulWidget {
   int lang;
   Color color;
@@ -53,7 +54,6 @@ class _LoginState extends State<Login> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     switch (widget.lang) {
       case 0:

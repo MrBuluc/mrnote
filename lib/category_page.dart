@@ -8,19 +8,20 @@ import 'const.dart';
 import 'models/note.dart';
 import 'utils/admob_helper.dart';
 
-class Category_Page extends StatefulWidget {
+// ignore: must_be_immutable
+class CategoryPage extends StatefulWidget {
   Category category;
   int lang;
   Color color;
   bool adOpen;
 
-  Category_Page(this.category, this.lang, this.color, this.adOpen);
+  CategoryPage(this.category, this.lang, this.color, this.adOpen);
 
   @override
-  _Category_PageState createState() => _Category_PageState();
+  _CategoryPageState createState() => _CategoryPageState();
 }
 
-class _Category_PageState extends State<Category_Page> {
+class _CategoryPageState extends State<CategoryPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
   InterstitialAd myInterstitialAd;
@@ -45,7 +46,6 @@ class _Category_PageState extends State<Category_Page> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (widget.adOpen) {
       adInitialize();
@@ -60,7 +60,7 @@ class _Category_PageState extends State<Category_Page> {
     }
     currentColor = widget.color;
     category = widget.category;
-    allNotes = List<Note>();
+    allNotes = [];
   }
 
   @override

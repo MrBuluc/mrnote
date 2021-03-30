@@ -7,6 +7,7 @@ import '../const.dart';
 import '../note_detail.dart';
 import 'platform_duyarli_alert_dialog.dart';
 
+// ignore: must_be_immutable
 class BuildNoteList extends StatefulWidget {
   int lang, sortBy, orderBy;
   Color color;
@@ -55,9 +56,8 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    allNotes = List<Note>();
+    allNotes = [];
     category = widget.category;
     isSorted = widget.isSorted;
     search = widget.search;
@@ -272,8 +272,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                NoteDetail(
+            builder: (context) => NoteDetail(
                   widget.lang,
                   widget.color,
                   updateNote: note,

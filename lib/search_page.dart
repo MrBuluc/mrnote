@@ -6,6 +6,7 @@ import 'common_widget/platform_duyarli_alert_dialog.dart';
 import 'const.dart';
 import 'note_detail.dart';
 
+// ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   int lang;
   Color color;
@@ -59,7 +60,7 @@ class _SearchPageState extends State<SearchPage> {
         texts = turkish;
         break;
     }
-    allNotes = List<Note>();
+    allNotes = [];
   }
 
   @override

@@ -23,7 +23,6 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     read1().then((value) => flag = value);
   }

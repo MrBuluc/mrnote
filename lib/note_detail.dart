@@ -5,6 +5,7 @@ import 'package:mrnote/utils/database_helper.dart';
 import 'const.dart';
 import 'models/note.dart';
 
+// ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
   Note updateNote;
   int lang;
@@ -43,9 +44,8 @@ class _NoteDetailState extends State<NoteDetail> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    allCategories = List<Category>();
+    allCategories = [];
     databaseHelper = DatabaseHelper();
     databaseHelper.getCategoryList().then((value) {
       allCategories = value;

@@ -27,7 +27,10 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
   Widget buildAndroidWidget(BuildContext context) {
     return AlertDialog(
       title: Text(baslik),
-      content: Text(icerik, style: TextStyle(fontSize: 20),),
+      content: Text(
+        icerik,
+        style: TextStyle(fontSize: 20),
+      ),
       actions: _dialogButonlariniAyarla(context),
     );
   }
@@ -36,7 +39,10 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
   Widget buildIOSWidget(BuildContext context) {
     return CupertinoAlertDialog(
       title: Text(baslik),
-      content: Text(icerik, style: TextStyle(fontSize: 20),),
+      content: Text(
+        icerik,
+        style: TextStyle(fontSize: 20),
+      ),
       actions: _dialogButonlariniAyarla(context),
     );
   }
@@ -47,27 +53,41 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
     if (Platform.isIOS) {
       if (iptalButonYazisi != null) {
         tumButonlar.add(CupertinoDialogAction(
-          child: Text(iptalButonYazisi, style: TextStyle(fontSize: 20),),
-          onPressed: () {Navigator.of(context).pop(false);},
+          child: Text(
+            iptalButonYazisi,
+            style: TextStyle(fontSize: 20),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
         ));
       }
       tumButonlar.add(CupertinoDialogAction(
-        child: Text(anaButonYazisi, style: TextStyle(fontSize: 20),),
+        child: Text(
+          anaButonYazisi,
+          style: TextStyle(fontSize: 20),
+        ),
         onPressed: () {
           Navigator.of(context).pop(true);
         },
       ));
     } else {
       if (iptalButonYazisi != null) {
-        tumButonlar.add(FlatButton(
-          child: Text(iptalButonYazisi, style: TextStyle(fontSize: 20),),
+        tumButonlar.add(TextButton(
+          child: Text(
+            iptalButonYazisi,
+            style: TextStyle(fontSize: 20),
+          ),
           onPressed: () {
             Navigator.of(context).pop(false);
           },
         ));
       }
-      tumButonlar.add(FlatButton(
-        child: Text(anaButonYazisi, style: TextStyle(fontSize: 20),),
+      tumButonlar.add(TextButton(
+        child: Text(
+          anaButonYazisi,
+          style: TextStyle(fontSize: 20),
+        ),
         onPressed: () {
           Navigator.of(context).pop(true);
         },

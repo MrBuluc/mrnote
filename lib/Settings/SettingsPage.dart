@@ -9,6 +9,7 @@ import 'package:mrnote/utils/database_helper.dart';
 import '../const.dart';
 import 'DeveloperPage.dart';
 
+// ignore: must_be_immutable
 class SettingsPage extends StatefulWidget {
   int lang;
   Color color;
@@ -279,7 +280,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(
                   "Iptal",
                   style: TextStyle(fontSize: 20),
@@ -288,7 +289,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   Navigator.of(context).pop(false);
                 },
               ),
-              FlatButton(
+              TextButton(
                 child: Text(
                   "Onayla",
                   style: TextStyle(fontSize: 20),
@@ -512,8 +513,10 @@ class _SettingsPageState extends State<SettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            RaisedButton(
-              color: Colors.grey.shade800,
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(Colors.grey.shade800)),
               onPressed: () {
                 savePassword();
               },
@@ -522,7 +525,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 style: headerStyle7,
               ),
             ),
-            RaisedButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
