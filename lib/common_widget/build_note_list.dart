@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
-import 'package:mrnote/utils/database_helper.dart';
+import 'package:mrnote/services/database_helper.dart';
 
 import '../const.dart';
-import '../note_detail.dart';
-import 'platform_duyarli_alert_dialog.dart';
+import '../ui/Note_Detail/note_detail.dart';
+import 'Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
   int lang, sortBy, orderBy;

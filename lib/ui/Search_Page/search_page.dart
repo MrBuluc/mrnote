@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/note.dart';
-import 'package:mrnote/utils/database_helper.dart';
+import 'package:mrnote/services/database_helper.dart';
 
-import 'common_widget/platform_duyarli_alert_dialog.dart';
-import 'const.dart';
-import 'note_detail.dart';
+import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
+import '../../const.dart';
+import '../Note_Detail/note_detail.dart';
 
 class SearchPage extends StatefulWidget {
   int lang;

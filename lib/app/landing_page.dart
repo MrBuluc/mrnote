@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mrnote/Login/login.dart';
 import 'package:mrnote/common_widget/merkez_widget.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
-import 'package:mrnote/note_list.dart';
-import 'package:mrnote/utils/database_helper.dart';
+import 'package:mrnote/ui/Login/login.dart';
+
+import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
+import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/ui/Note_List/note_list.dart';
 
 class LandingPage extends StatefulWidget {
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mrnote/utils/admob_helper.dart';
+
+import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/admob_helper.dart';
 
 class DeveloperPage extends StatefulWidget {
   bool adOpen;

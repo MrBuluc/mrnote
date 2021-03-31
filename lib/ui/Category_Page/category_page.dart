@@ -2,11 +2,11 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/build_note_list.dart';
 import 'package:mrnote/models/category.dart';
-import 'package:mrnote/utils/database_helper.dart';
+import 'package:mrnote/models/note.dart';
+import 'package:mrnote/services/database_helper.dart';
 
-import 'const.dart';
-import 'models/note.dart';
-import 'utils/admob_helper.dart';
+import '../../const.dart';
+import '../../services/admob_helper.dart';
 
 class Category_Page extends StatefulWidget {
   Category category;

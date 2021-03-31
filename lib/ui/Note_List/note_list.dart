@@ -4,17 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
-import 'package:mrnote/note_detail.dart';
-import 'package:mrnote/utils/database_helper.dart';
 
-import 'Settings/SettingsPage.dart';
-import 'category_page.dart';
-import 'common_widget/build_note_list.dart';
-import 'common_widget/platform_duyarli_alert_dialog.dart';
-import 'const.dart';
-import 'notification_handler.dart';
-import 'search_page.dart';
-import 'utils/admob_helper.dart';
+import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
+
+import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
+import '../../common_widget/build_note_list.dart';
+import '../../const.dart';
+import '../../notification_handler.dart';
+import '../../services/admob_helper.dart';
+import '../Category_Page/category_page.dart';
+import '../Note_Detail/note_detail.dart';
+import '../Search_Page/search_page.dart';
+import '../Settings/SettingsPage.dart';
 
 class NoteList extends StatefulWidget {
   int lang;
@@ -365,9 +366,7 @@ class _NoteListState extends State<NoteList> {
               child: Text(
                 texts['Select_a_color'],
                 style: TextStyle(
-                    color: Theme
-                        .of(context)
-                        .primaryColor, fontSize: 20),
+                    color: Theme.of(context).primaryColor, fontSize: 20),
               ),
             ),
             Padding(

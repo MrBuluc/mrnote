@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
-import 'package:mrnote/utils/database_helper.dart';
+import 'package:mrnote/models/note.dart';
+import 'package:mrnote/services/database_helper.dart';
 
-import 'const.dart';
-import 'models/note.dart';
+import '../../const.dart';
 
 class NoteDetail extends StatefulWidget {
   Note updateNote;

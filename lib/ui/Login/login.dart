@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/note.dart';
-import 'package:mrnote/note_list.dart';
-import 'package:mrnote/utils/database_helper.dart';
 
-import '../const.dart';
+import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
+
+import '../../const.dart';
+import '../Note_List/note_list.dart';
 
 class Login extends StatefulWidget {
   int lang;

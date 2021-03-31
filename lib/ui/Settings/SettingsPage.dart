@@ -1,12 +1,13 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:mrnote/common_widget/platform_duyarli_alert_dialog.dart';
+import 'package:mrnote/common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 import 'package:mrnote/models/note.dart';
-import 'package:mrnote/utils/admob_helper.dart';
-import 'package:mrnote/utils/database_helper.dart';
 
-import '../const.dart';
+import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/admob_helper.dart';
+import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
+
+import '../../const.dart';
 import 'DeveloperPage.dart';
 
 class SettingsPage extends StatefulWidget {
