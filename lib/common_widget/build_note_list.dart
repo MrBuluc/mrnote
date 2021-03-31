@@ -272,8 +272,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                NoteDetail(
+            builder: (context) => NoteDetail(
                   widget.lang,
                   widget.color,
                   updateNote: note,

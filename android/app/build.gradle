@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '15'
+    flutterVersionCode = '16'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = 'reklam duzeltmesi'
+    flutterVersionName = 'notlar düzeltildi'
 }
 
 apply plugin: 'com.android.application'

@@ -344,7 +344,7 @@ class _NoteListState extends State<NoteList> {
                     color: Colors.redAccent,
                     child: Text(
                       texts[
-                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -741,6 +741,9 @@ class _NotesState extends State<Notes> {
     var _sortList = texts["SortList"];
     var _orderList = texts["OrderList"];
     fillAllNotes();
+    Size size = MediaQuery
+        .of(context)
+        .size;
     return Container(
       child: Column(
         children: <Widget>[
@@ -760,7 +763,7 @@ class _NotesState extends State<Notes> {
           )
               : Container(
             height: 150.0 * allNotes.length,
-            width: 300,
+            width: size.width * 0.85,
             child: BuildNoteList(
               widget.lang,
               widget.color,
