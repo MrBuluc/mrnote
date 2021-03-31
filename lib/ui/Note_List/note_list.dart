@@ -10,7 +10,7 @@ import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/dat
 import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 import '../../common_widget/build_note_list.dart';
 import '../../const.dart';
-import '../../notification_handler.dart';
+import '../../services/notification_handler.dart';
 import '../../services/admob_helper.dart';
 import '../Category_Page/category_page.dart';
 import '../Note_Detail/note_detail.dart';
@@ -456,9 +456,8 @@ class _NoteListState extends State<NoteList> {
               ),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        Category_Page(allCategories[index],
-                            widget.lang, widget.color, widget.adOpen)));
+                    builder: (context) => Category_Page(allCategories[index],
+                        widget.lang, widget.color, widget.adOpen)));
               },
               onLongPress: () {
                 if (index != 0) {

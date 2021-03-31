@@ -6,7 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
+import '../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
