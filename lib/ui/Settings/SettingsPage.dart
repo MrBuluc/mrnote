@@ -231,7 +231,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> gelistiriciSayfasiGiris() async {
     formKey.currentState.save();
-    if (gelistiriciSayfasiParola == "Hakkican99") {
+    if (gelistiriciSayfasiParola == "*****") {
       var result = await _goToPage(DeveloperPage(widget.adOpen));
       if (result != null) {
         if (result == "0") {

@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
-
-import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
+import 'package:mrnote/services/database_helper.dart';
+import 'package:mrnote/services/notification_handler.dart';
 
 import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 import '../../common_widget/build_note_list.dart';
 import '../../const.dart';
-import '../../services/notification_handler.dart';
 import '../../services/admob_helper.dart';
 import '../Category_Page/category_page.dart';
 import '../Note_Detail/note_detail.dart';
@@ -479,9 +478,7 @@ class _NoteListState extends State<NoteList> {
           return SimpleDialog(
             title: Text(
               texts["Edit_Category"],
-              style: TextStyle(color: Theme
-                  .of(context)
-                  .primaryColor),
+              style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             children: <Widget>[
               Form(
