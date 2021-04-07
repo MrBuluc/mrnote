@@ -3,20 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 import 'package:mrnote/models/note.dart';
-
-import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/admob_helper.dart';
-import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
+import 'package:mrnote/models/settings.dart';
 
 import '../../const.dart';
+import '../../services/admob_helper.dart';
+import '../../services/database_helper.dart';
 import 'DeveloperPage.dart';
 
 class SettingsPage extends StatefulWidget {
-  int lang;
-  Color color;
-  bool adOpen;
-
-  SettingsPage(this.lang, this.color, this.adOpen);
-
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -80,9 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
     "password_save_iptalButonYazisi": "İptal",
   };
 
-  Color currentColor;
-
-  bool adOpen, show = false;
+  bool show = false;
 
   double ekranYuksekligi, ekranGenisligi;
 
@@ -99,20 +91,26 @@ class _SettingsPageState extends State<SettingsPage> {
 
   static GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  Settings settings = Settings();
+
+  int lang;
+
+  Color currentColor;
+
   @override
   void initState() {
     super.initState();
-    if (widget.adOpen) {
+    if (settings.adOpen) {
       adInitialize();
     }
-    currentColor = widget.color;
     readPassword();
-    adOpen = widget.adOpen;
+    lang = settings.lang;
+    currentColor = settings.currentColor;
   }
 
   @override
   void dispose() {
-    if (widget.adOpen) {
+    if (settings.adOpen) {
       disposeAd();
     }
     myController.dispose();
@@ -121,7 +119,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.lang) {
+    switch (lang) {
       case 0:
         texts = english;
         break;
@@ -232,31 +230,9 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> gelistiriciSayfasiGiris() async {
     formKey.currentState.save();
     if (gelistiriciSayfasiParola == "*****") {
-      var result = await _goToPage(DeveloperPage(widget.adOpen));
-      if (result != null) {
-        if (result == "0") {
-          setState(() {
-            adOpen = false;
-          });
-        } else {
-          adInitialize();
-          setState(() {
-            adOpen = true;
-          });
-        }
-        setState(() {
-          widget.adOpen = adOpen;
-        });
-      } else {
-        setState(() {});
-      }
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => DeveloperPage()));
     }
-  }
-
-  Future<String> _goToPage(Object page) async {
-    final result = await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => page));
-    return result;
   }
 
   Future<bool> _showMyDialog() async {
@@ -322,10 +298,10 @@ class _SettingsPageState extends State<SettingsPage> {
               child: DropdownButton(
                 iconEnabledColor: Colors.grey.shade400,
                 items: createLangItem(),
-                value: widget.lang,
+                value: lang,
                 onChanged: (selectedLang) {
                   setState(() {
-                    widget.lang = selectedLang;
+                    lang = selectedLang;
                   });
                 },
               ),
@@ -368,10 +344,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Text(texts["AlertDialog"]),
                   content: SingleChildScrollView(
                     child: BlockPicker(
-                      pickerColor: currentColor,
+                      pickerColor: settings.currentColor,
                       onColorChanged: (Color color) {
+                        setState(() {
+                          currentColor = color;
+                        });
                         Navigator.pop(context);
-                        changeColor(color);
                       },
                     ),
                   ),
@@ -383,17 +361,9 @@ class _SettingsPageState extends State<SettingsPage> {
             texts["RaisedButtonText"],
             style: TextStyle(color: Colors.black),
           ),
-          textColor: const Color(0xffffffff),
         ),
       ],
     );
-  }
-
-  void changeColor(Color color) {
-    setState(() {
-      currentColor = color;
-      widget.color = color;
-    });
   }
 
   Widget currentPassword() {
@@ -576,7 +546,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             onTap: () {
-              save(widget.lang, widget.color, adOpen);
+              save();
             },
           ),
         ],
@@ -621,14 +591,16 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<void> save(int lang, Color color, bool adOpen) async {
+  Future<void> save() async {
     try {
+      settings.lang = lang;
       var suan = DateTime.now();
       databaseHelper.updateSettingsNote(
           Note(0, "Language", lang.toString(), suan.toString(), 2));
 
+      settings.currentColor = currentColor;
       databaseHelper.updateSettingsNote(
-          Note(0, "Theme", color.value.toString(), suan.toString(), 2));
+          Note(0, "Theme", currentColor.value.toString(), suan.toString(), 2));
     } catch (e) {
       PlatformDuyarliAlertDialog(
         baslik: texts["save_catch_baslik"],
@@ -636,20 +608,12 @@ class _SettingsPageState extends State<SettingsPage> {
         anaButonYazisi: texts["save_catch_anaButonYazisi"],
       ).goster(context);
     }
-    final result = await PlatformDuyarliAlertDialog(
+    await PlatformDuyarliAlertDialog(
       baslik: texts["save_baslik"],
       icerik: texts["save_icerik"],
       anaButonYazisi: texts["save_anaButonYazisi"],
     ).goster(context);
-    if (result) {
-      String result1 = "${lang.toString()}/${color.value.toString()}/";
-      if (widget.adOpen) {
-        result1 += "1/";
-      } else {
-        result1 += "0/";
-      }
-      Navigator.pop(context, result1);
-    }
+    Navigator.pop(context, "saved");
   }
 
   Future<void> refreshLangTheme() async {
@@ -657,9 +621,11 @@ class _SettingsPageState extends State<SettingsPage> {
       var suan = DateTime.now();
       databaseHelper
           .updateSettingsNote(Note(0, "Language", "0", suan.toString(), 2));
+      settings.lang = 0;
 
       databaseHelper.updateSettingsNote(
           Note(0, "Theme", "4293914607", suan.toString(), 2));
+      settings.currentColor = Color(4293914607);
     } catch (e) {
       PlatformDuyarliAlertDialog(
         baslik: texts["refresh_catch_baslik"],
@@ -667,19 +633,11 @@ class _SettingsPageState extends State<SettingsPage> {
         anaButonYazisi: texts["save_catch_anaButonYazisi"],
       ).goster(context);
     }
-    final result = await PlatformDuyarliAlertDialog(
+    await PlatformDuyarliAlertDialog(
       baslik: texts["refresh_baslik"],
       icerik: texts["save_icerik"],
       anaButonYazisi: texts["save_anaButonYazisi"],
     ).goster(context);
-    if (result) {
-      String result1 = "0/4293914607/";
-      if (widget.adOpen) {
-        result1 += "1/";
-      } else {
-        result1 += "0/";
-      }
-      Navigator.pop(context, result1);
-    }
+    Navigator.pop(context, "refreshed");
   }
 }

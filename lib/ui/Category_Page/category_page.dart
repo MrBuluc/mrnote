@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/build_note_list.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
+import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
 
 import '../../const.dart';
@@ -10,17 +11,14 @@ import '../../services/admob_helper.dart';
 
 class Category_Page extends StatefulWidget {
   Category category;
-  int lang;
-  Color color;
-  bool adOpen;
 
-  Category_Page(this.category, this.lang, this.color, this.adOpen);
+  Category_Page({@required this.category});
 
   @override
-  _Category_PageState createState() => _Category_PageState();
+  _CategoryPageState createState() => _CategoryPageState();
 }
 
-class _Category_PageState extends State<Category_Page> {
+class _CategoryPageState extends State<Category_Page> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
   InterstitialAd myInterstitialAd;
@@ -37,20 +35,20 @@ class _Category_PageState extends State<Category_Page> {
     "Padding": "Buralar soğuk gözüküyor 🥶\n" + "Hadi biraz ısıtalım 🥳",
   };
 
-  Color currentColor;
-
   Category category;
 
   List<Note> allNotes;
+
+  Settings settings = Settings();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.adOpen) {
+    if (settings.adOpen) {
       adInitialize();
     }
-    switch (widget.lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -58,14 +56,13 @@ class _Category_PageState extends State<Category_Page> {
         texts = turkish;
         break;
     }
-    currentColor = widget.color;
     category = widget.category;
     allNotes = List<Note>();
   }
 
   @override
   void dispose() {
-    if (widget.adOpen) {
+    if (settings.adOpen) {
       disposeAd();
     }
     super.dispose();
@@ -98,9 +95,6 @@ class _Category_PageState extends State<Category_Page> {
                   : Container(
                       height: 150.0 * allNotes.length,
                       child: BuildNoteList(
-                        widget.lang,
-                        widget.color,
-                        widget.adOpen,
                         category: category,
                       )),
             ],

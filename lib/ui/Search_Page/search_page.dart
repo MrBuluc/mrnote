@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/note.dart';
+import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
 
 import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
@@ -7,12 +8,6 @@ import '../../const.dart';
 import '../Note_Detail/note_detail.dart';
 
 class SearchPage extends StatefulWidget {
-  int lang;
-  Color color;
-  bool adOpen;
-
-  SearchPage(this.lang, this.color, this.adOpen);
-
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -48,10 +43,12 @@ class _SearchPageState extends State<SearchPage> {
 
   String search;
 
+  Settings settings = Settings();
+
   @override
   void initState() {
     super.initState();
-    switch (widget.lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -67,7 +64,7 @@ class _SearchPageState extends State<SearchPage> {
     fillAllNotes();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: widget.color,
+      backgroundColor: settings.currentColor,
       appBar: AppBar(
           title: TextField(
         decoration: InputDecoration(
@@ -143,7 +140,7 @@ class _SearchPageState extends State<SearchPage> {
                                           databaseHelper.dateFormat(
                                               DateTime.parse(
                                                   allNotes[index].noteTime),
-                                              widget.lang),
+                                              settings.lang),
                                           style: headerStyle3_2,
                                         )
                                       ],
@@ -274,8 +271,6 @@ class _SearchPageState extends State<SearchPage> {
         context,
         MaterialPageRoute(
             builder: (context) => NoteDetail(
-                  widget.lang,
-                  widget.color,
                   updateNote: note,
                 )));
     return result;

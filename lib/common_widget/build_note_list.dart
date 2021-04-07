@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
+import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
 
 import '../const.dart';
@@ -8,14 +9,12 @@ import '../ui/Note_Detail/note_detail.dart';
 import 'Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
-  int lang, sortBy, orderBy;
-  Color color;
-  bool adOpen, isSorted;
+  int sortBy, orderBy;
+  bool isSorted;
   Category category;
   String search;
 
-  BuildNoteList(this.lang, this.color, this.adOpen,
-      {this.category, this.isSorted, this.search});
+  BuildNoteList({this.category, this.isSorted, this.search});
 
   @override
   _BuildNoteListState createState() => _BuildNoteListState();
@@ -53,6 +52,8 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   String search;
 
+  Settings settings = Settings();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -67,7 +68,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     fillAllNotes();
-    switch (widget.lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -135,7 +136,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                     databaseHelper.dateFormat(
                                         DateTime.parse(
                                             allNotes[index].noteTime),
-                                        widget.lang),
+                                        settings.lang),
                                     style: headerStyle3_2,
                                   )
                                 ],
@@ -273,8 +274,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
         context,
         MaterialPageRoute(
             builder: (context) => NoteDetail(
-                  widget.lang,
-                  widget.color,
                   updateNote: note,
                 )));
     return result;

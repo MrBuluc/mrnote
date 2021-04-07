@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/merkez_widget.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
+import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/ui/Login/login.dart';
 
-import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
-import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/ui/Note_List/note_list.dart';
+import '../services/database_helper.dart';
+import '../ui/Note_List/note_list.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -13,14 +14,13 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  int lang;
-  Color currentColor;
-
   DatabaseHelper databaseHelper = DatabaseHelper();
 
   bool flag = false;
 
   String truePassword;
+
+  Settings settings = Settings();
 
   @override
   void initState() {
@@ -32,14 +32,11 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     read();
-    if (lang != null && currentColor != null) {
+    if (settings.lang != null && settings.currentColor != null) {
       if (flag) {
-        return Login(
-          lang,
-          currentColor,
-        );
+        return Login();
       } else {
-        return NoteList(lang, currentColor, true);
+        return NoteList();
       }
     } else {
       return Scaffold(
@@ -102,21 +99,20 @@ class _LandingPageState extends State<LandingPage> {
     } catch (e) {
       debugPrint("read hata: " + e.toString());
     }
-
     try {
       List<Note> languageNoteList =
           await databaseHelper.getSettingsNoteTitleList("Language");
-      lang = int.parse(languageNoteList[0].noteContent);
+      settings.lang = int.parse(languageNoteList[0].noteContent);
     } catch (e) {
-      lang = 0;
+      settings.lang = 0;
     }
     try {
       List<Note> themeNoteList =
-          await databaseHelper.getSettingsNoteTitleList("Theme");
+      await databaseHelper.getSettingsNoteTitleList("Theme");
       int color = int.parse(themeNoteList[0].noteContent);
-      currentColor = Color(color);
+      settings.currentColor = Color(color);
     } catch (e) {
-      currentColor = Color(4293914607);
+      settings.currentColor = Color(4293914607);
     }
     setState(() {});
   }

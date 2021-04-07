@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
+import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
 
 import '../../const.dart';
 
 class NoteDetail extends StatefulWidget {
   Note updateNote;
-  int lang;
-  Color color;
 
-  NoteDetail(this.lang, this.color, {this.updateNote});
+  NoteDetail({this.updateNote});
 
   @override
   _NoteDetailState createState() => _NoteDetailState();
@@ -41,6 +40,8 @@ class _NoteDetailState extends State<NoteDetail> {
     "Container_Padding2_hintText": "Mr. Notun İçeriğini Girin",
   };
 
+  Settings settings = Settings();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -58,7 +59,7 @@ class _NoteDetailState extends State<NoteDetail> {
       }
       setState(() {});
     });
-    switch (widget.lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -93,7 +94,7 @@ class _NoteDetailState extends State<NoteDetail> {
               ),
             ),
           ),
-          backgroundColor: widget.color,
+          backgroundColor: settings.currentColor,
           body: allCategories.length <= 0
               ? Center(
                   child: CircularProgressIndicator(),

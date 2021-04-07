@@ -1,36 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mrnote/models/settings.dart';
 
-import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/admob_helper.dart';
+import '../../services/admob_helper.dart';
 
 class DeveloperPage extends StatefulWidget {
-  bool adOpen;
-
-  DeveloperPage(this.adOpen);
-
   @override
   _DeveloperPageState createState() => _DeveloperPageState();
 }
 
 class _DeveloperPageState extends State<DeveloperPage> {
+  Settings settings = Settings();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Geliştirici Sayfası"),
-        actions: <Widget>[
-          FlatButton(
-            color: Colors.red.shade600,
-            textColor: Colors.black,
-            child: Text(
-              "Save",
-              style: TextStyle(fontSize: 20),
-            ),
-            onPressed: () {
-              save(widget.adOpen);
-            },
-          )
-        ],
       ),
       body: Container(
         child: Column(
@@ -48,13 +34,13 @@ class _DeveloperPageState extends State<DeveloperPage> {
                   padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                   margin: EdgeInsets.all(8),
                   child: Switch(
-                    value: widget.adOpen,
+                    value: settings.adOpen,
                     onChanged: (value) {
                       if (!value) {
                         AdmobHelper.myBannerAd.dispose();
                       }
                       setState(() {
-                        widget.adOpen = value;
+                        settings.adOpen = value;
                       });
                     },
                     activeTrackColor: Colors.lightGreenAccent,
@@ -67,15 +53,5 @@ class _DeveloperPageState extends State<DeveloperPage> {
         ),
       ),
     );
-  }
-
-  void save(bool adOpen) {
-    String result;
-    if (adOpen) {
-      result = "1";
-    } else {
-      result = "0";
-    }
-    Navigator.pop(context, result);
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
+import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
 import 'package:mrnote/services/notification_handler.dart';
 
@@ -17,12 +18,6 @@ import '../Search_Page/search_page.dart';
 import '../Settings/SettingsPage.dart';
 
 class NoteList extends StatefulWidget {
-  int lang;
-  Color color;
-  bool adOpen;
-
-  NoteList(this.lang, this.color, this.adOpen);
-
   @override
   _NoteListState createState() => _NoteListState();
 }
@@ -96,26 +91,25 @@ class _NoteListState extends State<NoteList> {
     "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
   };
 
-  bool adOpen;
-
   String newCategoryTitle;
 
-  Color currentColor = Colors.red, editColor;
+  Color currentColor = Colors.red;
+
+  Settings settings = Settings();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.adOpen) {
+    if (settings.adOpen) {
       adInitialize();
     }
-    adOpen = widget.adOpen;
     NotificationHandler().initializeFCMNotification(context);
   }
 
   @override
   void dispose() {
-    if (widget.adOpen) {
+    if (settings.adOpen) {
       disposeAd();
     }
     super.dispose();
@@ -123,7 +117,7 @@ class _NoteListState extends State<NoteList> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -143,7 +137,7 @@ class _NoteListState extends State<NoteList> {
       child: SafeArea(
         child: Scaffold(
             key: _scaffoldKey,
-            backgroundColor: widget.color,
+            backgroundColor: settings.currentColor,
             body: ListView(
               children: <Widget>[
                 SizedBox(
@@ -152,11 +146,7 @@ class _NoteListState extends State<NoteList> {
                 header(size),
                 categoriesAndNew(),
                 buildCategories(size),
-                Notes(
-                  adOpen,
-                  lang: widget.lang,
-                  color: widget.color,
-                )
+                Notes()
               ],
             )),
       ),
@@ -191,9 +181,8 @@ class _NoteListState extends State<NoteList> {
               style: headerStyle3,
             ),
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      SearchPage(widget.lang, widget.color, widget.adOpen)));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => SearchPage()));
             },
           ),
           GestureDetector(
@@ -203,29 +192,10 @@ class _NoteListState extends State<NoteList> {
               size: 30,
             ),
             onTap: () async {
-              var result = await _goToPage(SettingsPage(
-                widget.lang,
-                widget.color,
-                adOpen,
-              ));
+              String result = await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => SettingsPage()));
               if (result != null) {
-                List<String> resultList = result.split("/");
-
-                if (resultList.elementAt(2) == "0") {
-                  setState(() {
-                    adOpen = false;
-                  });
-                } else {
-                  setState(() {
-                    adOpen = true;
-                  });
-                }
-                setState(() {
-                  widget.lang = int.parse(resultList.elementAt(0));
-                  widget.color = Color(int.parse(resultList.elementAt(1)));
-                  widget.adOpen = adOpen;
-                  updateCategoryList();
-                });
+                updateCategoryList();
               } else {
                 setState(() {});
               }
@@ -234,12 +204,6 @@ class _NoteListState extends State<NoteList> {
         ],
       ),
     );
-  }
-
-  Future<String> _goToPage(Object page) async {
-    final result = await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => page));
-    return result;
   }
 
   Widget categoriesAndNew() {
@@ -409,7 +373,9 @@ class _NoteListState extends State<NoteList> {
   void updateCategoryList() {
     databaseHelper.getCategoryList().then((categoryList) {
       categoryList.insert(
-          0, Category.withID(0, texts["PopupMenuItem1"], widget.color.value));
+          0,
+          Category.withID(
+              0, texts["PopupMenuItem1"], settings.currentColor.value));
       setState(() {
         allCategories = categoryList;
       });
@@ -455,8 +421,10 @@ class _NoteListState extends State<NoteList> {
               ),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => Category_Page(allCategories[index],
-                        widget.lang, widget.color, widget.adOpen)));
+                    builder: (context) =>
+                        Category_Page(
+                          category: allCategories[index],
+                        )));
               },
               onLongPress: () {
                 if (index != 0) {
@@ -657,7 +625,7 @@ class _NoteListState extends State<NoteList> {
     ).goster(context);
 
     if (sonuc) {
-      if (widget.adOpen) {
+      if (settings.adOpen) {
         return showAd();
       }
       return Future.value(true);
@@ -672,12 +640,6 @@ class _NoteListState extends State<NoteList> {
 }
 
 class Notes extends StatefulWidget {
-  int lang;
-  Color color;
-  bool adOpen;
-
-  Notes(this.adOpen, {this.lang, this.color});
-
   @override
   _NotesState createState() => _NotesState();
 }
@@ -715,6 +677,8 @@ class _NotesState extends State<Notes> {
   int sortBy, orderBy;
   bool isSorted = false;
 
+  Settings settings = Settings();
+
   @override
   void initState() {
     super.initState();
@@ -725,7 +689,7 @@ class _NotesState extends State<Notes> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -760,9 +724,6 @@ class _NotesState extends State<Notes> {
             height: 150.0 * allNotes.length,
             width: size.width * 0.85,
             child: BuildNoteList(
-              widget.lang,
-              widget.color,
-              widget.adOpen,
               isSorted: isSorted,
             ),
           )
@@ -803,10 +764,10 @@ class _NotesState extends State<Notes> {
                   },
                   transitionType: _transitionType,
                   openBuilder: (BuildContext context, VoidCallback _) {
-                    return NoteDetail(widget.lang, widget.color);
+                    return NoteDetail();
                   },
                   closedElevation: 6.0,
-                  closedColor: widget.color,
+                  closedColor: settings.currentColor,
                   closedBuilder:
                       (BuildContext context, VoidCallback openContainer) {
                     return Text(

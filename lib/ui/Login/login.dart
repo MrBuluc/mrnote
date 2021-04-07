@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/note.dart';
-
-import 'file:///C:/Users/HAKKICAN/AndroidStudioProjects/mr_note/lib/services/database_helper.dart';
+import 'package:mrnote/models/settings.dart';
 
 import '../../const.dart';
+import '../../services/database_helper.dart';
 import '../Note_List/note_list.dart';
 
 class Login extends StatefulWidget {
-  int lang;
-  Color color;
-
-  Login(this.lang, this.color);
-
   @override
   _LoginState createState() => _LoginState();
 }
@@ -52,11 +47,13 @@ class _LoginState extends State<Login> {
     "result_resetElse": "Parola sıfırlandı\n" + "Mr. Note a girebilirsiniz"
   };
 
+  Settings settings = Settings();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    switch (widget.lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -72,16 +69,16 @@ class _LoginState extends State<Login> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: widget.color,
+        backgroundColor: settings.currentColor,
         body: Center(
             child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            buildHeader(),
-            buildTextForm(size),
-            buildResult(),
-          ],
-        )),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                buildHeader(),
+                buildTextForm(size),
+                buildResult(),
+              ],
+            )),
       ),
     );
   }
@@ -206,14 +203,10 @@ class _LoginState extends State<Login> {
 
     if (passwordStr == truePassword) {
       Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => NoteList(widget.lang, widget.color, true)));
+          context, MaterialPageRoute(builder: (context) => NoteList()));
     } else if (truePassword == "") {
       Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => NoteList(widget.lang, widget.color, true)));
+          context, MaterialPageRoute(builder: (context) => NoteList()));
     } else {
       setState(() {
         result = texts["result_enterFalse"];
