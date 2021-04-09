@@ -4,7 +4,7 @@ class Settings {
   static Settings _settings;
   int lang;
   Color currentColor;
-  bool adOpen = false;
+  bool adOpen = true;
 
   factory Settings() {
     if (_settings == null) {

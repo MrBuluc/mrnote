@@ -72,13 +72,13 @@ class _LoginState extends State<Login> {
         backgroundColor: settings.currentColor,
         body: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                buildHeader(),
-                buildTextForm(size),
-                buildResult(),
-              ],
-            )),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            buildHeader(),
+            buildTextForm(size),
+            buildResult(),
+          ],
+        )),
       ),
     );
   }

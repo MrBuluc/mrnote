@@ -108,7 +108,7 @@ class _LandingPageState extends State<LandingPage> {
     }
     try {
       List<Note> themeNoteList =
-      await databaseHelper.getSettingsNoteTitleList("Theme");
+          await databaseHelper.getSettingsNoteTitleList("Theme");
       int color = int.parse(themeNoteList[0].noteContent);
       settings.currentColor = Color(color);
     } catch (e) {

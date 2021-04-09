@@ -421,8 +421,7 @@ class _NoteListState extends State<NoteList> {
               ),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        Category_Page(
+                    builder: (context) => Category_Page(
                           category: allCategories[index],
                         )));
               },
