@@ -229,7 +229,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> gelistiriciSayfasiGiris() async {
     formKey.currentState.save();
-    if (gelistiriciSayfasiParola == "*****") {
+    if (gelistiriciSayfasiParola == settings.gelistiriciSayfasiParola) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => DeveloperPage()));
     }

@@ -456,7 +456,7 @@ class _NoteListState extends State<NoteList> {
                     initialValue: category.categoryTitle,
                     decoration: InputDecoration(
                       labelText: texts[
-                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {

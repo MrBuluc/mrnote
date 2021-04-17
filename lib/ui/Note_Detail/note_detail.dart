@@ -147,30 +147,33 @@ class _NoteDetailState extends State<NoteDetail> {
       height: 50,
       width: size.width,
       color: Colors.grey.shade100,
-      child: Row(
-        children: [
-          GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Icon(
-                Icons.close,
-                size: 40,
-                color: Colors.grey.shade400,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            GestureDetector(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Icon(
+                  Icons.close,
+                  size: 40,
+                  color: Colors.grey.shade400,
+                ),
               ),
+              onTap: () {
+                Navigator.pop(context);
+              },
             ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          SizedBox(
-            width: size.width * 0.25,
-          ),
-          dropDown(),
-          SizedBox(
-            width: size.width * 0.05,
-          ),
-          dropDownPriorty(priority)
-        ],
+            SizedBox(
+              width: size.width * 0.25,
+            ),
+            dropDown(),
+            SizedBox(
+              width: size.width * 0.05,
+            ),
+            dropDownPriorty(priority)
+          ],
+        ),
       ),
     );
   }
