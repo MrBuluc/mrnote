@@ -496,7 +496,7 @@ class _NoteListState extends State<NoteList> {
                     color: Colors.orangeAccent,
                     child: Text(
                       texts[
-                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

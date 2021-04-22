@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '18'
+    flutterVersionCode = '19'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = 'NoteDetail appbar kaydırma özelliği eklendi'
+    flutterVersionName = 'BuildNoteList Mr. Note un ekrana sığmama sorunu çözüldü'
 }
 
 apply plugin: 'com.android.application'

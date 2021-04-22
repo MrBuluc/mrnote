@@ -121,10 +121,10 @@ class _BuildNoteListState extends State<BuildNoteList> {
                               Row(
                                 children: <Widget>[
                                   Text(
-                                    allNotes[index].noteTitle.length >= 10
+                                    allNotes[index].noteTitle.length > 10
                                         ? allNotes[index]
                                                 .noteTitle
-                                                .substring(0, 11) +
+                                                .substring(0, 10) +
                                             "..."
                                         : allNotes[index].noteTitle,
                                     style: headerStyle5,
@@ -145,7 +145,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                 height: 3,
                               ),
                               Text(
-                                allNotes[index].noteContent.length >= 50
+                                allNotes[index].noteContent.length > 50
                                     ? allNotes[index]
                                             .noteContent
                                             .substring(0, 50) +
