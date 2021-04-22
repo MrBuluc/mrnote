@@ -80,17 +80,20 @@ class _NoteDetailState extends State<NoteDetail> {
     return SafeArea(
       child: SafeArea(
         child: Scaffold(
-          floatingActionButton: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                save(context);
-              },
-              backgroundColor: Colors.white,
-              elevation: 5,
-              child: Icon(
-                Icons.save,
-                color: Colors.grey.shade700,
+          floatingActionButton: Visibility(
+            visible: MediaQuery.of(context).viewInsets.bottom == 0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FloatingActionButton(
+                onPressed: () {
+                  save(context);
+                },
+                backgroundColor: Colors.white,
+                elevation: 5,
+                child: Icon(
+                  Icons.save,
+                  color: Colors.grey.shade700,
+                ),
               ),
             ),
           ),

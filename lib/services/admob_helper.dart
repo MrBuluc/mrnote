@@ -6,7 +6,7 @@ class AdmobHelper {
   static final String gecis1Canli = "ca-app-pub-2104543393026445/8249430070";
   static final String banner1Canli = "ca-app-pub-2104543393026445/3436743639";
 
-  static final bool test = false;
+  static final bool test = true;
 
   static admobInitialize() {
     FirebaseAdMob.instance.initialize(appId: test ? appIDTest : appIDCanli);

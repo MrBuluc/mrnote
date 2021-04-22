@@ -462,7 +462,7 @@ class _NoteListState extends State<NoteList> {
                     validator: (value) {
                       if (value.length < 3) {
                         return texts[
-                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                       } else
                         return null;
                     },
