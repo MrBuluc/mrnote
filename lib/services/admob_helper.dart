@@ -1,10 +1,11 @@
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:mrnote/models/settings.dart';
 
 class AdmobHelper {
-  static final String appIDCanli = "ca-app-pub-2104543393026445~1095002395";
+  static final String appIDCanli = Settings.appIDCanli;
   static final String appIDTest = FirebaseAdMob.testAppId;
-  static final String gecis1Canli = "ca-app-pub-2104543393026445/8249430070";
-  static final String banner1Canli = "ca-app-pub-2104543393026445/3436743639";
+  static final String gecis1Canli = Settings.gecis1Canli;
+  static final String banner1Canli = Settings.banner1Canli;
 
   static final bool test = false;
 

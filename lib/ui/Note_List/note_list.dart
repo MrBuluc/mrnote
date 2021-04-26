@@ -506,7 +506,7 @@ class _NoteListState extends State<NoteList> {
                         formKey.currentState.save();
                         databaseHelper
                             .updateCategory(Category.withID(category.categoryID,
-                            newCategoryTitle, category.categoryColor))
+                                newCategoryTitle, category.categoryColor))
                             .then((value) {
                           if (value > 0) {
                             _scaffoldKey.currentState.showSnackBar(SnackBar(
