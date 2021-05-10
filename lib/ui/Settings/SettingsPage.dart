@@ -160,11 +160,12 @@ class _SettingsPageState extends State<SettingsPage> {
               SizedBox(
                 height: ekranYuksekligi * 0.11,
               ),
-              BannerAdWidget(
-                bannerAd: _myBannerAd,
-                bannerCompleter: bannerCompleter,
-                currentColor: currentColor,
-              ),
+              if (settings.adOpen)
+                BannerAdWidget(
+                  bannerAd: _myBannerAd,
+                  bannerCompleter: bannerCompleter,
+                  currentColor: currentColor,
+                ),
             ],
           ),
         ),

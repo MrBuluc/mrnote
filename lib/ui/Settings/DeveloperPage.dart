@@ -70,11 +70,12 @@ class _DeveloperPageState extends State<DeveloperPage> {
                 ),
               ],
             ),
-            BannerAdWidget(
-              bannerAd: _bannerAd,
-              bannerCompleter: bannerAdCompleter,
-              currentColor: Color(4293914607),
-            )
+            if (settings.adOpen)
+              BannerAdWidget(
+                bannerAd: _bannerAd,
+                bannerCompleter: bannerAdCompleter,
+                currentColor: Color(4293914607),
+              )
           ],
         ),
       ),
