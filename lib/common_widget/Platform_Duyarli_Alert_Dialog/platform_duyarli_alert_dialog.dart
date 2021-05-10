@@ -74,7 +74,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
       ));
     } else {
       if (iptalButonYazisi != null) {
-        tumButonlar.add(FlatButton(
+        tumButonlar.add(TextButton(
           child: Text(
             iptalButonYazisi,
             style: TextStyle(fontSize: 20),
@@ -84,7 +84,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
           },
         ));
       }
-      tumButonlar.add(FlatButton(
+      tumButonlar.add(TextButton(
         child: Text(
           anaButonYazisi,
           style: TextStyle(fontSize: 20),

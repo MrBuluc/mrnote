@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MerkezWidget extends StatelessWidget {
-  List<Widget> children;
+  final List<Widget> children;
 
   MerkezWidget({@required this.children});
 

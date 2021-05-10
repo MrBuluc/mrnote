@@ -72,7 +72,7 @@ class DatabaseHelper {
 
   Future<List<Category>> getCategoryList() async {
     var categoryMapList = await getCategories();
-    var categoryList = List<Category>();
+    var categoryList = List<Category>.empty(growable: true);
     for (Map map in categoryMapList) {
       categoryList.add(Category.fromMap(map));
     }
@@ -130,7 +130,7 @@ class DatabaseHelper {
 
   Future<List<Note>> getNoteList() async {
     var noteMapList = await getNotes();
-    var noteList = List<Note>();
+    var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
@@ -146,7 +146,7 @@ class DatabaseHelper {
 
   Future<List<Note>> getSearchNoteList(String search) async {
     var noteMapList = await getSearchNotes(search);
-    var noteList = List<Note>();
+    var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
@@ -162,7 +162,7 @@ class DatabaseHelper {
 
   Future<List<Note>> getTodayNoteList(String suan) async {
     var noteMapList = await getTodayNotes(suan);
-    var noteList = List<Note>();
+    var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
@@ -204,7 +204,7 @@ class DatabaseHelper {
 
   Future<List<Note>> getSortNoteList(String suan) async {
     var noteMapList = await getSortNotes(suan);
-    var noteList = List<Note>();
+    var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
@@ -233,7 +233,7 @@ class DatabaseHelper {
 
   Future<List<Note>> getCategoryNotesList(int categoryID) async {
     var noteMapList = await getCategoryNotes(categoryID);
-    var noteList = List<Note>();
+    var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
@@ -242,7 +242,7 @@ class DatabaseHelper {
 
   Future<List<Note>> getNoteTitleNotesList(String noteTitle) async {
     var noteMapList = await getNoteTitleNotes(noteTitle);
-    var noteList = List<Note>();
+    var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
@@ -259,7 +259,7 @@ class DatabaseHelper {
 
   Future<List<Note>> getSettingsNoteTitleList(String noteTitle) async {
     var noteMapList = await getSettingsNoteTitle(noteTitle);
-    var noteList = List<Note>();
+    var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }

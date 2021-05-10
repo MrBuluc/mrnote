@@ -300,7 +300,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(
                   "Iptal",
                   style: TextStyle(fontSize: 20),
@@ -309,7 +309,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   Navigator.of(context).pop(false);
                 },
               ),
-              FlatButton(
+              TextButton(
                 child: Text(
                   "Onayla",
                   style: TextStyle(fontSize: 20),
@@ -378,8 +378,9 @@ class _SettingsPageState extends State<SettingsPage> {
             style: headerStyle7.copyWith(color: Colors.grey.shade900),
           ),
         ),
-        RaisedButton(
-          elevation: 3.0,
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              elevation: 3.0, primary: settings.currentColor),
           onPressed: () {
             showDialog(
               context: context,
@@ -527,8 +528,8 @@ class _SettingsPageState extends State<SettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            RaisedButton(
-              color: Colors.grey.shade800,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.grey.shade800),
               onPressed: () {
                 savePassword();
               },
@@ -537,7 +538,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 style: headerStyle7,
               ),
             ),
-            RaisedButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: settings.currentColor),
               onPressed: () {
                 Navigator.pop(context);
               },

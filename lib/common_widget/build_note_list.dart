@@ -58,7 +58,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    allNotes = List<Note>();
+    allNotes = List<Note>.empty(growable: true);
     category = widget.category;
     isSorted = widget.isSorted;
     search = widget.search;
@@ -230,9 +230,8 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   _delNote(int noteID) {
     databaseHelper.deleteNote(noteID).then((deletedID) {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(texts["_delNote_if"]),
-      ));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(texts["_delNote_if"])));
 
       setState(() {});
     });

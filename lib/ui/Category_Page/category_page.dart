@@ -56,7 +56,7 @@ class _CategoryPageState extends State<CategoryPage> {
         break;
     }
     category = widget.category;
-    allNotes = List<Note>();
+    allNotes = List<Note>.empty(growable: true);
   }
 
   @override

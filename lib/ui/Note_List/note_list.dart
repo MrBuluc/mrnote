@@ -125,7 +125,7 @@ class _NoteListState extends State<NoteList> {
         break;
     }
     if (allCategories == null) {
-      allCategories = List<Category>();
+      allCategories = [];
       updateCategoryList();
     }
     var size = MediaQuery.of(context).size;
@@ -203,7 +203,8 @@ class _NoteListState extends State<NoteList> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(texts["Home"], style: headerStyle),
-          RaisedButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(primary: settings.currentColor),
             child: Text(
               texts["search"],
               style: headerStyle3,
@@ -300,18 +301,19 @@ class _NoteListState extends State<NoteList> {
               changeColorWidget(context),
               ButtonBar(
                 children: <Widget>[
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    color: Colors.orangeAccent,
+                    style:
+                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
                     child: Text(
                       texts[
                           "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () {
                       if (formKey.currentState.validate()) {
                         formKey.currentState.save();
@@ -320,7 +322,7 @@ class _NoteListState extends State<NoteList> {
                                 Category(newCategoryTitle, currentColor.value))
                             .then((value) {
                           if (value > 0) {
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(texts[
                                   "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
@@ -333,7 +335,9 @@ class _NoteListState extends State<NoteList> {
                         });
                       }
                     },
-                    color: Colors.redAccent,
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.redAccent,
+                    ),
                     child: Text(
                       texts[
                           "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
@@ -507,8 +511,8 @@ class _NoteListState extends State<NoteList> {
               ButtonBar(
                 alignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  RaisedButton(
-                    color: Colors.red,
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.red),
                     child: Text(
                       texts["Delete"],
                       style: TextStyle(color: Colors.white),
@@ -517,18 +521,19 @@ class _NoteListState extends State<NoteList> {
                       _sureForDelCategory(context, category.categoryID);
                     },
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    color: Colors.orangeAccent,
+                    style:
+                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
                     child: Text(
                       texts[
                           "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () {
                       if (formKey.currentState.validate()) {
                         formKey.currentState.save();
@@ -537,7 +542,7 @@ class _NoteListState extends State<NoteList> {
                                 newCategoryTitle, category.categoryColor))
                             .then((value) {
                           if (value > 0) {
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(texts["editCategory_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
@@ -550,7 +555,7 @@ class _NoteListState extends State<NoteList> {
                         });
                       }
                     },
-                    color: Colors.green,
+                    style: ElevatedButton.styleFrom(primary: Colors.green),
                     child: Text(
                       texts[
                           "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
@@ -707,7 +712,7 @@ class _NotesState extends State<Notes> {
   @override
   void initState() {
     super.initState();
-    allNotes = List<Note>();
+    allNotes = List<Note>.empty(growable: true);
     databaseHelper = DatabaseHelper();
     readSort();
   }
@@ -832,20 +837,21 @@ class _NotesState extends State<Notes> {
               dropDownOrder(orderList),
               ButtonBar(
                 children: <Widget>[
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () {
                       setState(() {
                         isSorted = false;
                       });
                       Navigator.pop(context);
                     },
-                    color: Colors.orangeAccent,
+                    style:
+                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
                     child: Text(
                       texts["Cancel"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () async {
                       var suan = DateTime.now();
                       String sort =
@@ -857,7 +863,7 @@ class _NotesState extends State<Notes> {
                       });
                       Navigator.pop(context);
                     },
-                    color: Colors.redAccent,
+                    style: ElevatedButton.styleFrom(primary: Colors.redAccent),
                     child: Text(
                       texts["Sort"],
                       style: TextStyle(color: Colors.white),

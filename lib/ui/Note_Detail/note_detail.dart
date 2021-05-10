@@ -46,7 +46,7 @@ class _NoteDetailState extends State<NoteDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    allCategories = List<Category>();
+    allCategories = List<Category>.empty(growable: true);
     databaseHelper = DatabaseHelper();
     databaseHelper.getCategoryList().then((value) {
       allCategories = value;

@@ -56,7 +56,7 @@ class _SearchPageState extends State<SearchPage> {
         texts = turkish;
         break;
     }
-    allNotes = List<Note>();
+    allNotes = List<Note>.empty(growable: true);
   }
 
   @override
@@ -125,7 +125,7 @@ class _SearchPageState extends State<SearchPage> {
                                     Row(
                                       children: <Widget>[
                                         Text(
-                                          allNotes[index].noteTitle.length >= 10
+                                          allNotes[index].noteTitle.length > 10
                                               ? allNotes[index]
                                                       .noteTitle
                                                       .substring(0, 11) +
@@ -227,7 +227,7 @@ class _SearchPageState extends State<SearchPage> {
 
   _delNote(int noteID) {
     databaseHelper.deleteNote(noteID).then((deletedID) {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(texts["_delNote_if"]),
       ));
 
