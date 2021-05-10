@@ -67,7 +67,7 @@ class NotificationHandler {
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
 
-    _fcm.subscribeToTopic("test");
+    _fcm.subscribeToTopic("all");
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint("onMessage: $message");
       await showNotification(message.data);
