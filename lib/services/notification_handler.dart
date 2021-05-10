@@ -27,19 +27,17 @@ class ReceivedNotification {
   });
 }
 
-Future<void> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-  if (message.containsKey('data')) {
-    // Handle data message
-    final dynamic data = message['data'];
-    print("Arka planda gelen data:" + data.toString());
-    NotificationHandler.showNotification(message);
-  }
+Future<void> myBackgroundMessageHandler(RemoteMessage message) async {
+  // Handle data message
+  final dynamic data = message.data;
+  print("Arka planda gelen data:" + data.toString());
+  NotificationHandler.showNotification(data);
 
   return Future<void>.value();
 }
 
 class NotificationHandler {
-  FirebaseMessaging _fcm = FirebaseMessaging();
+  FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   static final NotificationHandler _singleton = NotificationHandler._internal();
 
@@ -65,26 +63,31 @@ class NotificationHandler {
               id: id, title: title, body: body, payload: payload));
         });
     var initializationSettings = InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
 
     _fcm.subscribeToTopic("all");
-    _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        await showNotification(message);
-      },
-      onBackgroundMessage: myBackgroundMessageHandler,
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-        await showNotification(message);
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-        await showNotification(message);
-      },
-    );
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print("onMessage: $message");
+      await showNotification(message.data);
+    });
+    FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
+    // _fcm.configure(
+    //   onMessage: (Map<String, dynamic> message) async {
+    //     print("onMessage: $message");
+    //     await showNotification(message);
+    //   },
+    //   onBackgroundMessage: myBackgroundMessageHandler,
+    //   onLaunch: (Map<String, dynamic> message) async {
+    //     print("onLaunch: $message");
+    //     await showNotification(message);
+    //   },
+    //   onResume: (Map<String, dynamic> message) async {
+    //     print("onResume: $message");
+    //     await showNotification(message);
+    //   },
+    // );
   }
 
   static Future<void> showNotification(Map<String, dynamic> message) async {
@@ -103,14 +106,15 @@ class NotificationHandler {
         'Duyuru Bildirimleri',
         'Bu kanaldan duyuru bildirimlerini paylaşıyoruz.\n' +
             "Duyurulardan haberdar olmak için bu kanalı açık tutun.",
-        importance: Importance.Max,
-        priority: Priority.High,
+        importance: Importance.max,
+        priority: Priority.high,
         ticker: 'ticker',
         styleInformation: bigTextStyleInformation);
 
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(0, message["data"]["title"],
         message["data"]["message"], platformChannelSpecifics,
         payload: jsonEncode(message));
@@ -119,8 +123,8 @@ class NotificationHandler {
   Future onSelectNotification(String payload) async {
     if (payload != null) {
       debugPrint("notification payload: " + payload);
-      Map<String, dynamic> gelenBildirim = await jsonDecode(payload);
-      Map<String, dynamic> data = gelenBildirim["data"];
+      Map<String, dynamic> data = await jsonDecode(payload);
+      //Map<String, dynamic> data = gelenBildirim["data"];
       bool sonuc = await PlatformDuyarliAlertDialog(
         baslik: data["title"],
         icerik: data["body"],

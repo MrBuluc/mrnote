@@ -1,5 +1,5 @@
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mrnote/common_widget/build_note_list.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
@@ -7,18 +7,17 @@ import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
 
 import '../../const.dart';
-import '../../services/admob_helper.dart';
 
-class Category_Page extends StatefulWidget {
-  Category category;
+class CategoryPage extends StatefulWidget {
+  final Category category;
 
-  Category_Page({@required this.category});
+  CategoryPage({@required this.category});
 
   @override
   _CategoryPageState createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<Category_Page> {
+class _CategoryPageState extends State<CategoryPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
   InterstitialAd myInterstitialAd;
@@ -104,12 +103,27 @@ class _CategoryPageState extends State<Category_Page> {
     );
   }
 
-  void adInitialize() {
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
+  void adInitialize() async {
+    myInterstitialAd = InterstitialAd(
+      adUnitId:
+          Settings.test ? InterstitialAd.testAdUnitId : Settings.gecis1Canli,
+      request: AdRequest(),
+      listener: AdListener(
+        onAdLoaded: (ad) {
+          myInterstitialAd.show();
+        },
+        onAdClosed: (Ad ad) {
+          ad.dispose();
+          print("interstitial ad closed");
+        },
+        onAdFailedToLoad: (ad, err) {
+          print("Failed to load a interstitial ad: ${err.message}");
+          ad.dispose();
+        },
+      ),
+    );
+
+    myInterstitialAd.load();
   }
 
   void disposeAd() {

@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
@@ -11,7 +11,6 @@ import 'package:mrnote/services/notification_handler.dart';
 import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 import '../../common_widget/build_note_list.dart';
 import '../../const.dart';
-import '../../services/admob_helper.dart';
 import '../Category_Page/category_page.dart';
 import '../Note_Detail/note_detail.dart';
 import '../Search_Page/search_page.dart';
@@ -153,14 +152,43 @@ class _NoteListState extends State<NoteList> {
     );
   }
 
-  void adInitialize() {
-    AdmobHelper.admobInitialize();
-    myInterstitialAd = AdmobHelper.buildInterstitialAd();
-    myInterstitialAd
-      ..load()
-      ..show();
-    myInterstitialAdExit = AdmobHelper.buildInterstitialAd();
-    myInterstitialAdExit..load();
+  Future<void> adInitialize() async {
+    myInterstitialAd = InterstitialAd(
+      adUnitId:
+          Settings.test ? InterstitialAd.testAdUnitId : Settings.gecis1Canli,
+      request: AdRequest(),
+      listener: AdListener(
+        onAdLoaded: (ad) {
+          myInterstitialAd.show();
+        },
+        onAdClosed: (Ad ad) {
+          ad.dispose();
+          print("interstitial ad closed");
+        },
+        onAdFailedToLoad: (ad, err) {
+          print("Failed to load a interstitial ad: ${err.message}");
+          ad.dispose();
+        },
+      ),
+    );
+    myInterstitialAd.load();
+
+    myInterstitialAdExit = InterstitialAd(
+      adUnitId:
+          Settings.test ? InterstitialAd.testAdUnitId : Settings.gecis1Canli,
+      request: AdRequest(),
+      listener: AdListener(
+        onAdClosed: (Ad ad) {
+          ad.dispose();
+          print("interstitial ad closed");
+        },
+        onAdFailedToLoad: (ad, err) {
+          print("Failed to load a interstitial ad: ${err.message}");
+          ad.dispose();
+        },
+      ),
+    );
+    myInterstitialAdExit.load();
   }
 
   void disposeAd() {
@@ -421,7 +449,7 @@ class _NoteListState extends State<NoteList> {
               ),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => Category_Page(
+                    builder: (context) => CategoryPage(
                           category: allCategories[index],
                         )));
               },
@@ -525,7 +553,7 @@ class _NoteListState extends State<NoteList> {
                     color: Colors.green,
                     child: Text(
                       texts[
-                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -547,9 +575,7 @@ class _NoteListState extends State<NoteList> {
               child: Text(
                 texts['Select_a_color'],
                 style: TextStyle(
-                    color: Theme
-                        .of(context)
-                        .primaryColor, fontSize: 20),
+                    color: Theme.of(context).primaryColor, fontSize: 20),
               ),
             ),
             Padding(
@@ -633,7 +659,7 @@ class _NoteListState extends State<NoteList> {
   }
 
   Future<bool> showAd() async {
-    myInterstitialAdExit..show();
+    myInterstitialAdExit.show();
     return Future.value(true);
   }
 }
@@ -699,9 +725,7 @@ class _NotesState extends State<Notes> {
     var _sortList = texts["SortList"];
     var _orderList = texts["OrderList"];
     fillAllNotes();
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     return Container(
       child: Column(
         children: <Widget>[
@@ -711,21 +735,21 @@ class _NotesState extends State<Notes> {
           ),
           allNotes.length == 0
               ? Center(
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                texts["Padding"],
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          )
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Text(
+                      texts["Padding"],
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                )
               : Container(
-            height: 150.0 * allNotes.length,
-            width: size.width * 0.85,
-            child: BuildNoteList(
-              isSorted: isSorted,
-            ),
-          )
+                  height: 150.0 * allNotes.length,
+                  width: size.width * 0.85,
+                  child: BuildNoteList(
+                    isSorted: isSorted,
+                  ),
+                )
         ],
       ),
     );
@@ -740,8 +764,8 @@ class _NotesState extends State<Notes> {
     });
   }
 
-  Widget buildRecentOnesAndFilterHeader(List<String> sortList,
-      List<String> orderList) {
+  Widget buildRecentOnesAndFilterHeader(
+      List<String> sortList, List<String> orderList) {
     return Container(
       height: 60,
       child: Padding(
@@ -792,17 +816,15 @@ class _NotesState extends State<Notes> {
     );
   }
 
-  sortNotesDialog(BuildContext context, List<String> sortList,
-      List<String> orderList) {
+  sortNotesDialog(
+      BuildContext context, List<String> sortList, List<String> orderList) {
     showDialog(
         context: context,
         builder: (context) {
           return SimpleDialog(
             title: Text(
               texts["Sort_Title"],
-              style: TextStyle(color: Theme
-                  .of(context)
-                  .primaryColor),
+              style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             contentPadding: const EdgeInsets.only(left: 25),
             children: <Widget>[
@@ -851,7 +873,7 @@ class _NotesState extends State<Notes> {
   Future<void> readSort() async {
     try {
       List<Note> sortNoteList =
-      await databaseHelper.getSettingsNoteTitleList("Sort");
+          await databaseHelper.getSettingsNoteTitleList("Sort");
       String sortContent = sortNoteList[0].noteContent;
       List<String> sortList = sortContent.split("/");
       setState(() {
@@ -921,14 +943,13 @@ class _NotesState extends State<Notes> {
 
   List<DropdownMenuItem<int>> createOrderByItem(List<String> orderList) {
     return orderList
-        .map((order) =>
-        DropdownMenuItem<int>(
-          value: orderList.indexOf(order),
-          child: Text(
-            order,
-            style: headerStyle3,
-          ),
-        ))
+        .map((order) => DropdownMenuItem<int>(
+              value: orderList.indexOf(order),
+              child: Text(
+                order,
+                style: headerStyle3,
+              ),
+            ))
         .toList();
   }
 }
