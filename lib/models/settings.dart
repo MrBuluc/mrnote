@@ -4,8 +4,8 @@ class Settings {
   static Settings _settings;
   int lang;
   Color currentColor;
-  bool adOpen = true;
-  static bool test = true;
+  bool adOpen = false;
+  static bool test = false;
   String gelistiriciSayfasiParola = "Hkcblc48";
   static final String appIDCanli = "ca-app-pub-2104543393026445~1095002395";
   static final String gecis1Canli = "ca-app-pub-2104543393026445/8249430070";

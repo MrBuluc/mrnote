@@ -30,7 +30,7 @@ class ReceivedNotification {
 Future<void> myBackgroundMessageHandler(RemoteMessage message) async {
   // Handle data message
   final dynamic data = message.data;
-  print("Arka planda gelen data:" + data.toString());
+  debugPrint("Arka planda gelen data:" + data.toString());
   NotificationHandler.showNotification(data);
 
   return Future<void>.value();
@@ -67,38 +67,22 @@ class NotificationHandler {
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
 
-    _fcm.subscribeToTopic("all");
+    _fcm.subscribeToTopic("test");
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("onMessage: $message");
+      debugPrint("onMessage: $message");
       await showNotification(message.data);
     });
     FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
-    // _fcm.configure(
-    //   onMessage: (Map<String, dynamic> message) async {
-    //     print("onMessage: $message");
-    //     await showNotification(message);
-    //   },
-    //   onBackgroundMessage: myBackgroundMessageHandler,
-    //   onLaunch: (Map<String, dynamic> message) async {
-    //     print("onLaunch: $message");
-    //     await showNotification(message);
-    //   },
-    //   onResume: (Map<String, dynamic> message) async {
-    //     print("onResume: $message");
-    //     await showNotification(message);
-    //   },
-    // );
   }
 
   static Future<void> showNotification(Map<String, dynamic> message) async {
     var bigTextStyleInformation;
 
-    bigTextStyleInformation = BigTextStyleInformation(
-        message["data"]["bigText"],
+    bigTextStyleInformation = BigTextStyleInformation(message["title"],
         htmlFormatBigText: true,
-        contentTitle: message["data"]["title"],
+        contentTitle: message["title"],
         htmlFormatContentTitle: true,
-        summaryText: message["data"]["message"],
+        summaryText: message["message"],
         htmlFormatSummaryText: true);
 
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -115,8 +99,8 @@ class NotificationHandler {
     var platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(0, message["data"]["title"],
-        message["data"]["message"], platformChannelSpecifics,
+    await flutterLocalNotificationsPlugin.show(
+        0, message["title"], message["message"], platformChannelSpecifics,
         payload: jsonEncode(message));
   }
 
@@ -124,7 +108,6 @@ class NotificationHandler {
     if (payload != null) {
       debugPrint("notification payload: " + payload);
       Map<String, dynamic> data = await jsonDecode(payload);
-      //Map<String, dynamic> data = gelenBildirim["data"];
       bool sonuc = await PlatformDuyarliAlertDialog(
         baslik: data["title"],
         icerik: data["body"],
