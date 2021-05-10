@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mrnote/common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
@@ -30,6 +31,10 @@ class _NoteDetailState extends State<NoteDetail> {
     "_priority2": "High",
     "Container_Padding1_hintText": "Enter Mr. Note Title",
     "Container_Padding2_hintText": "Enter Mr. Note Content",
+    "exit_baslik": "Are You Sure?",
+    "exit_icerik": "Save your changes or cancel?",
+    "exit_anaButonYazisi": "SAVE",
+    "exit_iptalButonYazisi": "CANCEL",
   };
 
   Map<String, String> turkish = {
@@ -38,9 +43,16 @@ class _NoteDetailState extends State<NoteDetail> {
     "_priority2": "Yüksek",
     "Container_Padding1_hintText": "Mr. Notun Başlığını Girin",
     "Container_Padding2_hintText": "Mr. Notun İçeriğini Girin",
+    "exit_baslik": "Emin misiniz?",
+    "exit_icerik":
+        "Değişikliklerinizi kaydetmek mi yoksa iptal etmek mi istiyorsunuz?",
+    "exit_anaButonYazisi": "KAYDET",
+    "exit_iptalButonYazisi": "İPTAL",
   };
 
   Settings settings = Settings();
+
+  bool isChanged = false;
 
   @override
   void initState() {
@@ -77,45 +89,63 @@ class _NoteDetailState extends State<NoteDetail> {
       texts["_priority1"],
       texts["_priority2"],
     ];
-    return SafeArea(
+    return WillPopScope(
+      onWillPop: () async {
+        if (isChanged) {
+          final sonuc = await PlatformDuyarliAlertDialog(
+            baslik: texts["exit_baslik"],
+            icerik: texts["exit_icerik"],
+            anaButonYazisi: texts["exit_anaButonYazisi"],
+            iptalButonYazisi: texts["exit_iptalButonYazisi"],
+          ).goster(context);
+
+          if (sonuc) {
+            save(context);
+            return true;
+          }
+        }
+        return true;
+      },
       child: SafeArea(
-        child: Scaffold(
-          floatingActionButton: Visibility(
-            visible: MediaQuery.of(context).viewInsets.bottom == 0,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FloatingActionButton(
-                onPressed: () {
-                  save(context);
-                },
-                backgroundColor: Colors.white,
-                elevation: 5,
-                child: Icon(
-                  Icons.save,
-                  color: Colors.grey.shade700,
+        child: SafeArea(
+          child: Scaffold(
+            floatingActionButton: Visibility(
+              visible: MediaQuery.of(context).viewInsets.bottom == 0,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    save(context);
+                  },
+                  backgroundColor: Colors.white,
+                  elevation: 5,
+                  child: Icon(
+                    Icons.save,
+                    color: Colors.grey.shade700,
+                  ),
                 ),
               ),
             ),
-          ),
-          backgroundColor: settings.currentColor,
-          body: allCategories.length <= 0
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : SingleChildScrollView(
-                  child: Container(
-                    child: Form(
-                      key: formKey,
-                      child: Column(
-                        children: [
-                          buildAppBar(size, _priority),
-                          buildTitleFormField(size),
-                          buildFormField(size),
-                        ],
+            backgroundColor: settings.currentColor,
+            body: allCategories.length <= 0
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SingleChildScrollView(
+                    child: Container(
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          children: [
+                            buildAppBar(size, _priority),
+                            buildTitleFormField(size),
+                            buildFormField(size),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+          ),
         ),
       ),
     );
@@ -163,7 +193,19 @@ class _NoteDetailState extends State<NoteDetail> {
                   color: Colors.grey.shade400,
                 ),
               ),
-              onTap: () {
+              onTap: () async {
+                if (isChanged) {
+                  final sonuc = await PlatformDuyarliAlertDialog(
+                    baslik: texts["exit_baslik"],
+                    icerik: texts["exit_icerik"],
+                    anaButonYazisi: texts["exit_anaButonYazisi"],
+                    iptalButonYazisi: texts["exit_iptalButonYazisi"],
+                  ).goster(context);
+
+                  if (sonuc) {
+                    save(context);
+                  }
+                }
                 Navigator.pop(context);
               },
             ),
@@ -192,6 +234,7 @@ class _NoteDetailState extends State<NoteDetail> {
         color: Colors.transparent,
       ),
       onChanged: (selectedCategoryID) {
+        isChanged = true;
         setState(() {
           categoryID = selectedCategoryID;
         });
@@ -222,6 +265,7 @@ class _NoteDetailState extends State<NoteDetail> {
         color: Colors.transparent,
       ),
       onChanged: (selectedPriorityID) {
+        isChanged = true;
         setState(() {
           selectedPriority = selectedPriorityID;
         });
@@ -259,6 +303,9 @@ class _NoteDetailState extends State<NoteDetail> {
         onSaved: (text) {
           noteTitle = text;
         },
+        onChanged: (String value) {
+          isChanged = true;
+        },
       ),
     );
   }
@@ -285,6 +332,9 @@ class _NoteDetailState extends State<NoteDetail> {
             ),
             onSaved: (text) {
               noteContent = text;
+            },
+            onChanged: (String value) {
+              isChanged = true;
             },
           )
         ],
