@@ -40,10 +40,10 @@ class _NoteListState extends State<NoteList> {
     "Edit_Category": "Edit Category",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Category Name",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-    "Please enter least 3 character",
+        "Please enter least 3 character",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "Cancel ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-    "category successfully added 👌",
+        "category successfully added 👌",
     "editCategory_SnackBar": "category successfully edited 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Save 💾",
     'Select_a_color': 'Select a color',
@@ -69,23 +69,23 @@ class _NoteListState extends State<NoteList> {
     "Edit_Category": "Kategori Düzenle",
     "addCategoryDialog_SimpleDialog_TextFormField_labelText": "Kategori Adı",
     "addCategoryDialog_SimpleDialog_TextFormField_validator":
-    "Lütfen en az 3 karakter giriniz",
+        "Lütfen en az 3 karakter giriniz",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton": "İptal ❌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar":
-    "Kategori başarıyla eklendi 👌",
+        "Kategori başarıyla eklendi 👌",
     "editCategory_SnackBar": "Kategori başarıyla düzenlendi 👌",
     "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1": "Kaydet 💾",
     'Select_a_color': 'Bir Renk Seç',
     "Delete": "Kaldır",
     "_sureForDelCategory_baslik": "Emin misiniz?",
     "_sureForDelCategory_icerik":
-    "Kategoriyi silmek istediğinizden emin misiniz?\n" +
-        "Bu işlem, bu kategorideki tüm notları silecek.",
+        "Kategoriyi silmek istediğinizden emin misiniz?\n" +
+            "Bu işlem, bu kategorideki tüm notları silecek.",
     "_sureForDelCategory_anaButonYazisi": "Evet",
     "_sureForDelCategory_iptalButonYazisi": "Hayır",
     "_areYouSureforDelete_baslik": "Emin misiniz?",
     "_areYouSureforDelete_icerik":
-    "Mr. Not dan çıkmak istediğinizden emin misiniz?",
+        "Mr. Not dan çıkmak istediğinizden emin misiniz?",
     "_areYouSureforDelete_anaButonYazisi": "ÇIK",
     "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
   };
@@ -267,13 +267,13 @@ class _NoteListState extends State<NoteList> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: texts[
-                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value.length < 3) {
                         return texts[
-                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                       } else
                         return null;
                     },
@@ -291,10 +291,10 @@ class _NoteListState extends State<NoteList> {
                       Navigator.pop(context);
                     },
                     style:
-                    ElevatedButton.styleFrom(primary: Colors.orangeAccent),
+                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
                     child: Text(
                       texts[
-                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -304,12 +304,12 @@ class _NoteListState extends State<NoteList> {
                         formKey.currentState.save();
                         databaseHelper
                             .addCategory(
-                            Category(newCategoryTitle, currentColor.value))
+                                Category(newCategoryTitle, currentColor.value))
                             .then((value) {
                           if (value > 0) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(texts[
-                              "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
+                                  "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
                               duration: Duration(seconds: 2),
                             ));
                             Navigator.pop(context);
@@ -325,7 +325,7 @@ class _NoteListState extends State<NoteList> {
                     ),
                     child: Text(
                       texts[
-                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -439,8 +439,8 @@ class _NoteListState extends State<NoteList> {
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => CategoryPage(
-                      category: allCategories[index],
-                    )));
+                          category: allCategories[index],
+                        )));
               },
               onLongPress: () {
                 if (index != 0) {
@@ -473,13 +473,13 @@ class _NoteListState extends State<NoteList> {
                     initialValue: category.categoryTitle,
                     decoration: InputDecoration(
                       labelText: texts[
-                      "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
+                          "addCategoryDialog_SimpleDialog_TextFormField_labelText"],
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value.length < 3) {
                         return texts[
-                        "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                       } else
                         return null;
                     },
@@ -511,10 +511,10 @@ class _NoteListState extends State<NoteList> {
                       Navigator.pop(context);
                     },
                     style:
-                    ElevatedButton.styleFrom(primary: Colors.orangeAccent),
+                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
                     child: Text(
                       texts[
-                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -524,7 +524,7 @@ class _NoteListState extends State<NoteList> {
                         formKey.currentState.save();
                         databaseHelper
                             .updateCategory(Category.withID(category.categoryID,
-                            newCategoryTitle, category.categoryColor))
+                                newCategoryTitle, category.categoryColor))
                             .then((value) {
                           if (value > 0) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -543,7 +543,7 @@ class _NoteListState extends State<NoteList> {
                     style: ElevatedButton.styleFrom(primary: Colors.green),
                     child: Text(
                       texts[
-                      "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -725,21 +725,21 @@ class _NotesState extends State<Notes> {
           ),
           allNotes.length == 0
               ? Center(
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                texts["Padding"],
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          )
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Text(
+                      texts["Padding"],
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                )
               : Container(
-            height: 150.0 * allNotes.length,
-            width: size.width * 0.85,
-            child: BuildNoteList(
-              isSorted: isSorted,
-            ),
-          )
+                  height: 150.0 * allNotes.length,
+                  width: size.width * 0.85,
+                  child: BuildNoteList(
+                    isSorted: isSorted,
+                  ),
+                )
         ],
       ),
     );
@@ -754,7 +754,8 @@ class _NotesState extends State<Notes> {
     });
   }
 
-  Widget buildRecentOnesAndFilterHeader(List<String> sortList, List<String> orderList) {
+  Widget buildRecentOnesAndFilterHeader(
+      List<String> sortList, List<String> orderList) {
     return Container(
       height: 60,
       child: Padding(
@@ -805,7 +806,8 @@ class _NotesState extends State<Notes> {
     );
   }
 
-  sortNotesDialog(BuildContext context, List<String> sortList, List<String> orderList) {
+  sortNotesDialog(
+      BuildContext context, List<String> sortList, List<String> orderList) {
     showDialog(
         context: context,
         builder: (context) {
@@ -828,7 +830,7 @@ class _NotesState extends State<Notes> {
                       Navigator.pop(context);
                     },
                     style:
-                    ElevatedButton.styleFrom(primary: Colors.orangeAccent),
+                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
                     child: Text(
                       texts["Cancel"],
                       style: TextStyle(color: Colors.white),
@@ -862,7 +864,7 @@ class _NotesState extends State<Notes> {
   Future<void> readSort() async {
     try {
       List<Note> sortNoteList =
-      await databaseHelper.getSettingsNoteTitleList("Sort");
+          await databaseHelper.getSettingsNoteTitleList("Sort");
       String sortContent = sortNoteList[0].noteContent;
       List<String> sortList = sortContent.split("/");
       setState(() {
@@ -933,12 +935,12 @@ class _NotesState extends State<Notes> {
   List<DropdownMenuItem<int>> createOrderByItem(List<String> orderList) {
     return orderList
         .map((order) => DropdownMenuItem<int>(
-      value: orderList.indexOf(order),
-      child: Text(
-        order,
-        style: headerStyle3,
-      ),
-    ))
+              value: orderList.indexOf(order),
+              child: Text(
+                order,
+                style: headerStyle3,
+              ),
+            ))
         .toList();
   }
 }

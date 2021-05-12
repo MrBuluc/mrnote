@@ -83,19 +83,19 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
               allNotes.length == 0
                   ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Text(
-                    texts["Padding"],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              )
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(
+                          texts["Padding"],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    )
                   : Container(
-                  height: 150.0 * allNotes.length,
-                  child: BuildNoteList(
-                    category: category,
-                  )),
+                      height: 150.0 * allNotes.length,
+                      child: BuildNoteList(
+                        category: category,
+                      )),
             ],
           ),
         ),
@@ -132,7 +132,7 @@ class _CategoryPageState extends State<CategoryPage> {
       allNotes1 = await databaseHelper.getNoteList();
     } else {
       allNotes1 =
-      await databaseHelper.getCategoryNotesList(category.categoryID);
+          await databaseHelper.getCategoryNotesList(category.categoryID);
     }
     allNotes1.sort();
     setState(() {
