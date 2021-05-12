@@ -1,10 +1,9 @@
 import 'dart:async';
 
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mrnote/common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
-import 'package:mrnote/common_widget/banner_ad_widget.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
 
@@ -18,9 +17,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  InterstitialAd myInterstitialAd;
-  BannerAd _myBannerAd;
-  final Completer<BannerAd> bannerCompleter = Completer<BannerAd>();
+  AdmobInterstitial myInterstitialAd;
 
   Map<String, String> texts;
 
@@ -138,84 +135,59 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: currentColor,
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              buildHeader(size),
-              SizedBox(
-                height: 10,
-              ),
-              dropDownButtonsColumn(),
-              changeColorWidget(),
-              SizedBox(
-                height: 10,
-              ),
-              currentPassword(),
-              SizedBox(
-                height: 10,
-              ),
-              changePassword(bos, texts["Change Your Password"], size),
-              saveButton(),
-              SizedBox(
-                height: ekranYuksekligi * 0.11,
-              ),
-              if (settings.adOpen)
-                BannerAdWidget(
-                  bannerAd: _myBannerAd,
-                  bannerCompleter: bannerCompleter,
-                  currentColor: currentColor,
+        body: Column(
+          children: [
+            buildHeader(size),
+            SizedBox(
+              height: 10,
+            ),
+            dropDownButtonsColumn(),
+            changeColorWidget(),
+            SizedBox(
+              height: 10,
+            ),
+            currentPassword(),
+            SizedBox(
+              height: 10,
+            ),
+            changePassword(bos, texts["Change Your Password"], size),
+            saveButton(),
+            if (settings.adOpen)
+              Container(
+                margin: EdgeInsets.only(top: 10.0),
+                child: AdmobBanner(
+                  adUnitId: Settings.test
+                      ? AdmobBanner.testAdUnitId
+                      : Settings.banner1Canli,
+                  adSize: AdmobBannerSize.BANNER,
                 ),
-            ],
-          ),
+              )
+          ],
         ),
       ),
     );
   }
 
   Future<void> adInitialize() async {
-    myInterstitialAd = InterstitialAd(
+    myInterstitialAd = AdmobInterstitial(
       adUnitId:
-          Settings.test ? InterstitialAd.testAdUnitId : Settings.gecis1Canli,
-      request: AdRequest(),
-      listener: AdListener(
-        onAdLoaded: (ad) {
-          myInterstitialAd.show();
-        },
-        onAdClosed: (Ad ad) {
-          ad.dispose();
-          print("interstitial ad closed");
-        },
-        onAdFailedToLoad: (ad, err) {
-          print("Failed to load a interstitial ad: ${err.message}");
-          ad.dispose();
-        },
-      ),
+          Settings.test ? AdmobInterstitial.testAdUnitId : Settings.gecis1Canli,
+      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+        switch (event) {
+          case AdmobAdEvent.loaded:
+            myInterstitialAd.show();
+            break;
+          default:
+            print("args: " + args.toString());
+            break;
+        }
+      },
     );
     myInterstitialAd.load();
-
-    _myBannerAd = BannerAd(
-      adUnitId: Settings.test ? BannerAd.testAdUnitId : Settings.banner1Canli,
-      request: AdRequest(),
-      size: AdSize.banner,
-      listener: AdListener(
-        onAdLoaded: (Ad ad) {
-          print("$BannerAd loaded.");
-          bannerCompleter.complete(ad as BannerAd);
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError err) {
-          ad.dispose();
-          print("Failed to load a banner ad: ${err.message}");
-          bannerCompleter.completeError(err);
-        },
-      ),
-    );
-    Future<void>.delayed(Duration(seconds: 1), () => _myBannerAd.load());
   }
 
   void disposeAd() {
     myInterstitialAd.dispose();
-    _myBannerAd.dispose();
   }
 
   Future<void> readPassword() async {
@@ -245,7 +217,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget buildHeader(Size size) {
     return GestureDetector(
       child: Container(
-        height: 200,
+        height: 180,
         width: ekranGenisligi,
         color: Colors.grey.shade900,
         child: Column(

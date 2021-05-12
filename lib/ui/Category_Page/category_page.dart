@@ -1,5 +1,5 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mrnote/common_widget/build_note_list.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
@@ -20,7 +20,7 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  InterstitialAd myInterstitialAd;
+  AdmobInterstitial myInterstitialAd;
 
   Map<String, String> texts;
 
@@ -83,19 +83,19 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
               allNotes.length == 0
                   ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text(
-                          texts["Padding"],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    )
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Text(
+                    texts["Padding"],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              )
                   : Container(
-                      height: 150.0 * allNotes.length,
-                      child: BuildNoteList(
-                        category: category,
-                      )),
+                  height: 150.0 * allNotes.length,
+                  child: BuildNoteList(
+                    category: category,
+                  )),
             ],
           ),
         ),
@@ -104,24 +104,20 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   void adInitialize() async {
-    myInterstitialAd = InterstitialAd(
-      adUnitId:
-          Settings.test ? InterstitialAd.testAdUnitId : Settings.gecis1Canli,
-      request: AdRequest(),
-      listener: AdListener(
-        onAdLoaded: (ad) {
-          myInterstitialAd.show();
-        },
-        onAdClosed: (Ad ad) {
-          ad.dispose();
-          print("interstitial ad closed");
-        },
-        onAdFailedToLoad: (ad, err) {
-          print("Failed to load a interstitial ad: ${err.message}");
-          ad.dispose();
-        },
-      ),
-    );
+    myInterstitialAd = AdmobInterstitial(
+        adUnitId: Settings.test
+            ? AdmobInterstitial.testAdUnitId
+            : Settings.gecis1Canli,
+        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+          switch (event) {
+            case AdmobAdEvent.loaded:
+              myInterstitialAd.show();
+              break;
+            default:
+              print("args: " + args.toString());
+              break;
+          }
+        });
 
     myInterstitialAd.load();
   }
@@ -136,7 +132,7 @@ class _CategoryPageState extends State<CategoryPage> {
       allNotes1 = await databaseHelper.getNoteList();
     } else {
       allNotes1 =
-          await databaseHelper.getCategoryNotesList(category.categoryID);
+      await databaseHelper.getCategoryNotesList(category.categoryID);
     }
     allNotes1.sort();
     setState(() {

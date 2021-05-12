@@ -24,7 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite: 2.0.0+3
-  google_mobile_ads: 0.12.0
+  #google_mobile_ads: 0.12.0
+  admob_flutter: 1.0.1
   firebase_core: 1.1.0
   flutter_colorpicker: 0.4.0
   animations: 1.1.2
