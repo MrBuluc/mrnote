@@ -26,7 +26,7 @@ class _NoteListState extends State<NoteList> {
   var _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Category> allCategories;
 
-  AdmobInterstitial myInterstitialAd, myInterstitialAdExit;
+  AdmobInterstitial myInterstitialAdExit;
 
   Map<String, String> texts;
 
@@ -153,22 +153,6 @@ class _NoteListState extends State<NoteList> {
   }
 
   Future<void> adInitialize() async {
-    myInterstitialAd = AdmobInterstitial(
-      adUnitId:
-          Settings.test ? AdmobInterstitial.testAdUnitId : Settings.gecis1Canli,
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        switch (event) {
-          case AdmobAdEvent.loaded:
-            myInterstitialAd.show();
-            break;
-          default:
-            print("args: " + args.toString());
-            break;
-        }
-      },
-    );
-    myInterstitialAd.load();
-
     myInterstitialAdExit = AdmobInterstitial(
       adUnitId:
           Settings.test ? AdmobInterstitial.testAdUnitId : Settings.gecis1Canli,
@@ -177,7 +161,6 @@ class _NoteListState extends State<NoteList> {
   }
 
   void disposeAd() {
-    myInterstitialAd.dispose();
     myInterstitialAdExit.dispose();
   }
 
