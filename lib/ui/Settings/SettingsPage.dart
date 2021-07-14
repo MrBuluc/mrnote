@@ -352,7 +352,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              elevation: 3.0, primary: settings.currentColor),
+              elevation: 3.0, primary: Colors.grey.shade400),
           onPressed: () {
             showDialog(
               context: context,

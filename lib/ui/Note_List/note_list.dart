@@ -396,7 +396,8 @@ class _NoteListState extends State<NoteList> {
                 child: Container(
                   width: 150,
                   decoration: BoxDecoration(
-                      borderRadius: borderRadis1, color: Colors.white),
+                      borderRadius: borderRadis1,
+                      color: switchCategoriesBackgroundColor()),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Column(
@@ -412,7 +413,7 @@ class _NoteListState extends State<NoteList> {
                         ),
                         Text(
                           allCategories[index].categoryTitle,
-                          style: headerStyle4,
+                          style: switchCategoriesTitleStyle(),
                         ),
                       ],
                     ),
@@ -433,6 +434,26 @@ class _NoteListState extends State<NoteList> {
             );
           }),
     );
+  }
+
+  Color switchCategoriesBackgroundColor() {
+    switch (settings.currentColor.hashCode) {
+      //black color
+      case 4278190080:
+        return Colors.grey.shade600;
+      default:
+        return Colors.white;
+    }
+  }
+
+  TextStyle switchCategoriesTitleStyle() {
+    switch (settings.currentColor.hashCode) {
+      //black color
+      case 4278190080:
+        return headerStyle4.copyWith(color: Colors.white);
+      default:
+        return headerStyle4;
+    }
   }
 
   void editCategoryDialog(BuildContext context, Category category) {
@@ -712,7 +733,8 @@ class _NotesState extends State<Notes> {
                     padding: const EdgeInsets.all(15.0),
                     child: Text(
                       texts["Padding"],
-                      style: TextStyle(fontSize: 20),
+                      style:
+                          TextStyle(fontSize: 20, color: Colors.grey.shade800),
                     ),
                   ),
                 )
