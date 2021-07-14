@@ -397,7 +397,7 @@ class _NoteListState extends State<NoteList> {
                   width: 150,
                   decoration: BoxDecoration(
                       borderRadius: borderRadis1,
-                      color: switchCategoriesBackgroundColor()),
+                      color: settings.switchBackgroundColor()),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Column(
@@ -434,16 +434,6 @@ class _NoteListState extends State<NoteList> {
             );
           }),
     );
-  }
-
-  Color switchCategoriesBackgroundColor() {
-    switch (settings.currentColor.hashCode) {
-      //black color
-      case 4278190080:
-        return Colors.grey.shade600;
-      default:
-        return Colors.white;
-    }
   }
 
   TextStyle switchCategoriesTitleStyle() {

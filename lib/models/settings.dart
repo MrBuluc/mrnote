@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings {
@@ -28,9 +29,22 @@ class Settings {
     final SharedPreferences prefs = await _prefs;
     try {
       adOpen = prefs.getBool("adOpen");
+      if (adOpen == null) {
+        throw Exception();
+      }
     } catch (e) {
       prefs.setBool("adOpen", true);
       adOpen = true;
+    }
+  }
+
+  Color switchBackgroundColor() {
+    switch (currentColor.hashCode) {
+      //black color
+      case 4278190080:
+        return Colors.grey.shade600;
+      default:
+        return Colors.white;
     }
   }
 }

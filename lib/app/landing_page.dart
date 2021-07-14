@@ -33,7 +33,9 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     read();
-    if (settings.lang != null && settings.currentColor != null) {
+    if (settings.lang != null &&
+        settings.currentColor != null &&
+        settings.adOpen != null) {
       if (flag) {
         return Login();
       } else {

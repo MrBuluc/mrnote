@@ -108,7 +108,8 @@ class _BuildNoteListState extends State<BuildNoteList> {
                     height: 130,
                     width: size.width,
                     decoration: BoxDecoration(
-                        color: Colors.white, borderRadius: borderRadis1),
+                        color: settings.switchBackgroundColor(),
+                        borderRadius: borderRadis1),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
