@@ -35,6 +35,7 @@ class _NoteDetailState extends State<NoteDetail> {
     "exit_icerik": "Save your changes or cancel?",
     "exit_anaButonYazisi": "SAVE",
     "exit_iptalButonYazisi": "CANCEL",
+    "categories_warning": "Please create a category!",
   };
 
   Map<String, String> turkish = {
@@ -48,6 +49,7 @@ class _NoteDetailState extends State<NoteDetail> {
         "Değişikliklerinizi kaydetmek mi yoksa iptal etmek mi istiyorsunuz?",
     "exit_anaButonYazisi": "KAYDET",
     "exit_iptalButonYazisi": "İPTAL",
+    "categories_warning": "Lütfen önce bir kategori oluşturun!",
   };
 
   Settings settings = Settings();
@@ -66,8 +68,10 @@ class _NoteDetailState extends State<NoteDetail> {
         categoryID = widget.updateNote.categoryID;
         selectedPriority = widget.updateNote.notePriority;
       } else {
-        categoryID = allCategories[0].categoryID;
-        selectedPriority = 0;
+        if (allCategories.isNotEmpty) {
+          categoryID = allCategories[0].categoryID;
+          selectedPriority = 0;
+        }
       }
       setState(() {});
     });
@@ -109,27 +113,32 @@ class _NoteDetailState extends State<NoteDetail> {
       child: SafeArea(
         child: SafeArea(
           child: Scaffold(
-            floatingActionButton: Visibility(
-              visible: MediaQuery.of(context).viewInsets.bottom == 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton(
-                  onPressed: () {
-                    save(context);
-                  },
-                  backgroundColor: Colors.white,
-                  elevation: 5,
-                  child: Icon(
-                    Icons.save,
-                    color: Colors.grey.shade700,
+            floatingActionButton: allCategories.isEmpty
+                ? Container()
+                : Visibility(
+                    visible: MediaQuery.of(context).viewInsets.bottom == 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          save(context);
+                        },
+                        backgroundColor: Colors.white,
+                        elevation: 5,
+                        child: Icon(
+                          Icons.save,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
             backgroundColor: settings.currentColor,
-            body: allCategories.length <= 0
+            body: allCategories.isEmpty
                 ? Center(
-                    child: CircularProgressIndicator(),
+                    child: Text(
+                      texts["categories_warning"],
+                      style: TextStyle(fontSize: 20),
+                    ),
                   )
                 : SingleChildScrollView(
                     child: Container(
