@@ -148,6 +148,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                 allNotes[index].noteContent.length > 50
                                     ? allNotes[index]
                                             .noteContent
+                                            .replaceAll("\n", " ")
                                             .substring(0, 50) +
                                         "..."
                                     : allNotes[index].noteContent,
