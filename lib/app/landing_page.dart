@@ -27,6 +27,7 @@ class _LandingPageState extends State<LandingPage> {
     // TODO: implement initState
     super.initState();
     read1().then((value) => flag = value);
+    settings.getAdOpen();
   }
 
   @override

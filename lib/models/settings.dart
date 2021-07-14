@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings {
   static Settings _settings;
   int lang;
   Color currentColor;
-  bool adOpen = true;
-  static bool test = false;
+  static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  bool adOpen;
+  static bool test = true;
   String gelistiriciSayfasiParola = "Hkcblc48";
   static final String appIDCanli = "ca-app-pub-2104543393026445~1095002395";
   static final String gecis1Canli = "ca-app-pub-2104543393026445/8249430070";
@@ -21,4 +23,14 @@ class Settings {
   }
 
   Settings.internal();
+
+  Future<void> getAdOpen() async {
+    final SharedPreferences prefs = await _prefs;
+    try {
+      adOpen = prefs.getBool("adOpen");
+    } catch (e) {
+      prefs.setBool("adOpen", true);
+      adOpen = true;
+    }
+  }
 }

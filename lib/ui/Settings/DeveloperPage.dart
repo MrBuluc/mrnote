@@ -2,6 +2,7 @@ import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DeveloperPage extends StatefulWidget {
   @override
@@ -12,6 +13,10 @@ class _DeveloperPageState extends State<DeveloperPage> {
   Settings settings = Settings();
 
   AdmobBannerController admobBannerController;
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  //bool adOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +41,14 @@ class _DeveloperPageState extends State<DeveloperPage> {
                   margin: EdgeInsets.all(8),
                   child: Switch(
                     value: settings.adOpen,
-                    onChanged: (value) {
+                    onChanged: (value) async {
                       if (!value) {
                         admobBannerController.dispose();
                       }
+                      final SharedPreferences prefs = await _prefs;
                       setState(() {
                         settings.adOpen = value;
+                        prefs.setBool("adOpen", value);
                       });
                     },
                     activeTrackColor: Colors.lightGreenAccent,
