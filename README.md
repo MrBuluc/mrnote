@@ -46,6 +46,13 @@ Proje'yi çalıştırmak için **Flutter**, **Android Studio** veya **Vs Code** 
   </tr> 
 </table>
 
+## Tanıtım Videosu
+[![Watch the video](https://img.youtube.com/vi/GE3lsG0Vxbw/0.jpg)](https://cutt.ly/KWzqKG4)
+
+
+## Play Store
+[<img src="https://freeiconshop.com/wp-content/uploads/edd/google-play-badge-128x128.png">](https://cutt.ly/Njsig6I)
+
 
 ## :phone: İletişim  
   
