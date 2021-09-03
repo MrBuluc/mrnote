@@ -56,7 +56,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     allNotes = List<Note>.empty(growable: true);
     category = widget.category;

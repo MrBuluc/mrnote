@@ -105,7 +105,7 @@ class _NoteDetailState extends State<NoteDetail> {
 
           if (sonuc) {
             save(context);
-            return true;
+            return false;
           }
         }
         return true;

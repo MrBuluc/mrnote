@@ -16,8 +16,6 @@ class _DeveloperPageState extends State<DeveloperPage> {
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  //bool adOpen;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

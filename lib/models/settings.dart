@@ -8,7 +8,7 @@ class Settings {
   Color currentColor;
   static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   bool adOpen;
-  static bool test = false;
+  static bool test = true;
   String gelistiriciSayfasiParola = "Hkcblc48";
   static final String appIDCanli = "ca-app-pub-2104543393026445~1095002395";
   static final String gecis1Canli = "ca-app-pub-2104543393026445/8249430070";
