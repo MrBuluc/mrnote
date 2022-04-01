@@ -53,6 +53,9 @@ class _NoteListState extends State<NoteList> {
         "This action will delete all notes in this category.",
     "_sureForDelCategory_anaButonYazisi": "Yes",
     "_sureForDelCategory_iptalButonYazisi": "No",
+    "_sureForDelCategory_2Categories_icerik":
+        "Every Mr. Note needs a category. So make sure you have created at least 1 category before "
+            "creating a Mr. Note! ",
     "_areYouSureforDelete_baslik": "Are you Sure?",
     "_areYouSureforDelete_icerik": "Are you sure for exit to Mr. Note?",
     "_areYouSureforDelete_anaButonYazisi": "EXIT",
@@ -83,6 +86,9 @@ class _NoteListState extends State<NoteList> {
             "Bu işlem, bu kategorideki tüm notları silecek.",
     "_sureForDelCategory_anaButonYazisi": "Evet",
     "_sureForDelCategory_iptalButonYazisi": "Hayır",
+    "_sureForDelCategory_2Categories_icerik":
+        "Her Mr. Notun bir kategoriye ihtiyacı vardır. Bundan "
+            "dolayı Mr. Note oluşturmadan önce en az 1 kategori oluşturduğunuzdan emin olun! ",
     "_areYouSureforDelete_baslik": "Emin misiniz?",
     "_areYouSureforDelete_icerik":
         "Mr. Not dan çıkmak istediğinizden emin misiniz?",
@@ -604,7 +610,10 @@ class _NoteListState extends State<NoteList> {
   void _sureForDelCategory(BuildContext context, int categoryID) async {
     final result = await PlatformDuyarliAlertDialog(
       baslik: texts["_sureForDelCategory_baslik"],
-      icerik: texts["_sureForDelCategory_icerik"],
+      icerik: allCategories.length == 2
+          ? texts["_sureForDelCategory_2Categories_icerik"] +
+              texts["_sureForDelCategory_icerik"]
+          : texts["_sureForDelCategory_icerik"],
       anaButonYazisi: texts["_sureForDelCategory_anaButonYazisi"],
       iptalButonYazisi: texts["_sureForDelCategory_iptalButonYazisi"],
     ).goster(context);
