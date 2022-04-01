@@ -32,7 +32,7 @@ Proje'yi çalıştırmak için **Flutter**, **Android Studio** veya **Vs Code** 
   <tr>  
     <td><img src="https://raw.githubusercontent.com/github/explore/cebd63002168a05a6a642f309227eefeccd92950/topics/flutter/flutter.png"/></td>
     <td><img src="https://raw.githubusercontent.com/github/explore/cebd63002168a05a6a642f309227eefeccd92950/topics/sql/sql.png"></td>  
-    <td><img src="https://s8.gifyu.com/images/shared-preferences-square.jpg"/></td>  
+    <td><img src="https://i2.wp.com/webdeyazilim.com/wp-content/uploads/2019/09/sharedpref-android-logo.png"/></td>  
   </tr>  
   <tr>  
     <td><img src="https://styles.redditmedia.com/t5_2v5u6/styles/communityIcon_5nh6vdm6bui51.png?width=256&s=b46a57f6414b3aa222c6303845d4edb35550b1d2"/></td>  
