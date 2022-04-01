@@ -8,7 +8,7 @@ import 'package:mrnote/services/database_helper.dart';
 import '../../const.dart';
 
 class NoteDetail extends StatefulWidget {
-  Note updateNote;
+  final Note updateNote;
 
   NoteDetail({this.updateNote});
 
@@ -18,7 +18,7 @@ class NoteDetail extends StatefulWidget {
 
 class _NoteDetailState extends State<NoteDetail> {
   var formKey = GlobalKey<FormState>();
-  List<Category> allCategories;
+  List<Category> allCategories = [];
   DatabaseHelper databaseHelper;
   int categoryID, selectedPriority;
   String noteTitle, noteContent;
@@ -56,21 +56,27 @@ class _NoteDetailState extends State<NoteDetail> {
 
   bool isChanged = false;
 
+  Color backgroundColor;
+
+  Note updateNote;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    allCategories = List<Category>.empty(growable: true);
     databaseHelper = DatabaseHelper();
+    updateNote = widget.updateNote;
     databaseHelper.getCategoryList().then((value) {
       allCategories = value;
-      if (widget.updateNote != null) {
-        categoryID = widget.updateNote.categoryID;
-        selectedPriority = widget.updateNote.notePriority;
+      if (updateNote != null) {
+        categoryID = updateNote.categoryID;
+        selectedPriority = updateNote.notePriority;
+        backgroundColor = Color(updateNote.categoryColor);
       } else {
         if (allCategories.isNotEmpty) {
           categoryID = allCategories[0].categoryID;
           selectedPriority = 0;
+          backgroundColor = settings.currentColor;
         }
       }
       setState(() {});
@@ -132,7 +138,7 @@ class _NoteDetailState extends State<NoteDetail> {
                       ),
                     ),
                   ),
-            backgroundColor: settings.currentColor,
+            backgroundColor: backgroundColor,
             body: allCategories.isEmpty
                 ? Center(
                     child: Text(
