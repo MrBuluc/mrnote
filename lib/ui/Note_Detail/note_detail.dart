@@ -220,8 +220,8 @@ class _NoteDetailState extends State<NoteDetail> {
                   if (sonuc) {
                     save(context);
                   }
-                }
-                Navigator.pop(context);
+                } else
+                  Navigator.pop(context);
               },
             ),
             SizedBox(
