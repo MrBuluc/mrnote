@@ -199,6 +199,8 @@ class _SettingsPageState extends State<SettingsPage> {
         });
         if (passwordStr != null) {
           prepareShowPassword();
+        } else {
+          passwordStr = "";
         }
       }
     } catch (e) {
@@ -212,6 +214,7 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       showPassword = "*" * (passwordStr.length);
     });
+    print("passwordStr: " + passwordStr);
   }
 
   Widget buildHeader(Size size) {
