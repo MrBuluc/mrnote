@@ -398,7 +398,7 @@ class _SettingsPageState extends State<SettingsPage> {
           show ? passwordStr : showPassword,
           style: TextStyle(fontSize: 20),
         ),
-        passwordStr != null
+        passwordStr != ""
             ? GestureDetector(
                 child: Icon(
                   show ? Icons.visibility_off : Icons.visibility,
@@ -586,10 +586,12 @@ class _SettingsPageState extends State<SettingsPage> {
         if (sonuc) {
           databaseHelper.updateSettingsNote(
               Note.withID(1, 0, "Password", null, suan.toString(), 2));
+          show = true;
         }
       } else {
         databaseHelper.updateSettingsNote(
             Note.withID(1, 0, "Password", newPassword, suan.toString(), 2));
+        show = false;
       }
     } catch (e) {
       PlatformDuyarliAlertDialog(
@@ -605,7 +607,10 @@ class _SettingsPageState extends State<SettingsPage> {
     ).goster(context);
     if (result) {
       Navigator.pop(context);
-      setState(() {});
+      setState(() {
+        passwordStr = newPassword;
+        prepareShowPassword();
+      });
     }
   }
 
