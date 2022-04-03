@@ -1,7 +1,7 @@
 import 'package:admob_flutter/admob_flutter.dart';
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:mrnote/common_widget/new_button.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
@@ -12,7 +12,6 @@ import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert
 import '../../common_widget/build_note_list.dart';
 import '../../const.dart';
 import '../Category_Page/category_page.dart';
-import '../Note_Detail/note_detail.dart';
 import '../Search_Page/search_page.dart';
 import '../Settings/SettingsPage.dart';
 
@@ -104,7 +103,6 @@ class _NoteListState extends State<NoteList> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (settings.adOpen) {
       adInitialize();
@@ -690,8 +688,6 @@ class _NotesState extends State<Notes> {
     "Sort": "Sırala",
   };
 
-  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
-
   int sortBy, orderBy;
   bool isSorted = false;
 
@@ -773,25 +769,9 @@ class _NotesState extends State<Notes> {
             ),
             Row(
               children: [
-                OpenContainer(
-                  onClosed: (result) {
-                    if (result != null) {
-                      setState(() {});
-                    }
-                  },
-                  transitionType: _transitionType,
-                  openBuilder: (BuildContext context, VoidCallback _) {
-                    return NoteDetail();
-                  },
-                  closedElevation: 6.0,
+                NewButton(
+                  lang: settings.lang,
                   closedColor: settings.currentColor,
-                  closedBuilder:
-                      (BuildContext context, VoidCallback openContainer) {
-                    return Text(
-                      texts["FloatingActionButton_tooltip"],
-                      style: headerStyle2,
-                    );
-                  },
                 ),
                 SizedBox(
                   width: 10,

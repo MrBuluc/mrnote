@@ -214,7 +214,6 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       showPassword = "*" * (passwordStr.length);
     });
-    print("passwordStr: " + passwordStr);
   }
 
   Widget buildHeader(Size size) {

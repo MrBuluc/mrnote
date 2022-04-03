@@ -1,6 +1,7 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/build_note_list.dart';
+import 'package:mrnote/common_widget/new_button.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
@@ -42,7 +43,6 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (settings.adOpen) {
       adInitialize();
@@ -174,10 +174,23 @@ class _CategoryPageState extends State<CategoryPage> {
               style: headerStyle6,
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                "${allNotes.length} ${texts["notes"]}",
-                style: headerStyle7,
+              padding: const EdgeInsets.only(bottom: 8.0, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${allNotes.length} ${texts["notes"]}",
+                    style: headerStyle7,
+                  ),
+                  category.categoryID != 0
+                      ? NewButton(
+                          lang: settings.lang,
+                          closedColor: Colors.white,
+                          categoryID: category.categoryID,
+                          categoryColor: category.categoryColor,
+                        )
+                      : Container()
+                ],
               ),
             ),
           ],

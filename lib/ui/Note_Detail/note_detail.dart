@@ -9,8 +9,10 @@ import '../../const.dart';
 
 class NoteDetail extends StatefulWidget {
   final Note updateNote;
+  final int categoryID;
+  final int categoryColor;
 
-  NoteDetail({this.updateNote});
+  NoteDetail({this.updateNote, this.categoryID, this.categoryColor});
 
   @override
   _NoteDetailState createState() => _NoteDetailState();
@@ -62,7 +64,6 @@ class _NoteDetailState extends State<NoteDetail> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     databaseHelper = DatabaseHelper();
     updateNote = widget.updateNote;
@@ -73,9 +74,12 @@ class _NoteDetailState extends State<NoteDetail> {
         selectedPriority = updateNote.notePriority;
         backgroundColor = Color(updateNote.categoryColor);
       } else {
-        if (allCategories.isNotEmpty) {
+        selectedPriority = 0;
+        if (widget.categoryID != null) {
+          categoryID = widget.categoryID;
+          backgroundColor = Color(widget.categoryColor);
+        } else if (allCategories.isNotEmpty) {
           categoryID = allCategories[0].categoryID;
-          selectedPriority = 0;
           backgroundColor = settings.currentColor;
         }
       }
