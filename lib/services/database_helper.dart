@@ -123,7 +123,8 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getNotes() async {
     var db = await _getDatabase();
     var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 order by noteID ASC;");
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE "
+        "note.categoryID != 0 order by noteID ASC;");
 
     return sonuc;
   }
@@ -140,7 +141,9 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getSearchNotes(String search) async {
     var db = await _getDatabase();
     var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND (note.noteTitle LIKE '%$search%' OR note.noteContent LIKE '%$search%') order by noteID Desc;");
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE "
+        "note.categoryID != 0 AND (note.noteTitle LIKE '%$search%' OR note.noteContent LIKE "
+        "'%$search%') order by noteID Desc;");
     return sonuc;
   }
 
@@ -175,10 +178,11 @@ class DatabaseHelper {
     int sortBy = int.parse(sortList[0]);
     int orderBy = int.parse(sortList[1]);
     String query =
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by ";
+        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE "
+        "note.categoryID != 0 AND noteTime LIKE '$suan%' order by ";
     switch (sortBy) {
       case 0:
-        query += "categoryID ";
+        query += "categoryTitle ";
         break;
       case 1:
         query += "noteTitle ";
