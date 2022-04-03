@@ -16,61 +16,63 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  bool flag = false;
-
   String truePassword;
 
   Settings settings = Settings();
 
   int counter = 0;
 
+  bool flag = false;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    read1().then((value) => flag = value);
     settings.getAdOpen();
   }
 
   @override
   Widget build(BuildContext context) {
-    read();
-    if (settings.lang != null &&
-        settings.currentColor != null &&
-        settings.adOpen != null) {
-      if (flag) {
-        return Login();
-      } else {
-        return NoteList();
-      }
-    } else {
-      return Scaffold(
-        backgroundColor: Color(0xff84b7f1),
-        body: MerkezWidget(
-          children: [
-            Image.asset(
-              "assets/icon.png",
-              height: 100,
-              width: 100,
+    return FutureBuilder(
+      future: read1(),
+      builder: (BuildContext context, _) {
+        if (settings.lang != null &&
+            settings.currentColor != null &&
+            settings.adOpen != null) {
+          if (flag) {
+            return Login();
+          } else {
+            return NoteList();
+          }
+        } else {
+          return Scaffold(
+            backgroundColor: Color(0xff84b7f1),
+            body: MerkezWidget(
+              children: [
+                Image.asset(
+                  "assets/icon.png",
+                  height: 100,
+                  width: 100,
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  "",
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff1c984)),
+                )
+              ],
             ),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              "",
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            CircularProgressIndicator(
-              backgroundColor: Colors.white,
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff1c984)),
-            )
-          ],
-        ),
-      );
-    }
+          );
+        }
+      },
+    );
   }
 
   Future<void> read() async {
@@ -126,11 +128,12 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  Future<bool> read1() async {
+  Future<void> read1() async {
     Note password = await databaseHelper.getNoteIDNote(1);
     setState(() {
       truePassword = password.noteContent;
     });
-    return truePassword != null && truePassword.isNotEmpty;
+    read();
+    flag = truePassword != null && truePassword.isNotEmpty;
   }
 }
