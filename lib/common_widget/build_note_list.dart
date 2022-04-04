@@ -10,9 +10,8 @@ import 'Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 class BuildNoteList extends StatefulWidget {
   bool isSorted;
   int categoryID;
-  String search;
 
-  BuildNoteList({this.categoryID, this.isSorted, this.search});
+  BuildNoteList({this.categoryID, this.isSorted});
 
   @override
   _BuildNoteListState createState() => _BuildNoteListState();
@@ -48,8 +47,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   bool isSorted;
 
-  String search;
-
   Settings settings = Settings();
 
   @override
@@ -58,7 +55,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
     allNotes = List<Note>.empty(growable: true);
     categoryID = widget.categoryID;
     isSorted = widget.isSorted;
-    search = widget.search;
   }
 
   @override
@@ -197,9 +193,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
       } else {
         allNotes1 = await databaseHelper.getCategoryNotesList(categoryID);
       }
-      allNotes1.sort();
-    } else if (search != null) {
-      allNotes1 = await databaseHelper.getSearchNoteList(search);
       allNotes1.sort();
     } else if (isSorted != null) {
       String suan = DateTime.now().toString().substring(0, 10);
