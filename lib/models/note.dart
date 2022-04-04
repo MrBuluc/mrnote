@@ -14,19 +14,6 @@ class Note implements Comparable<Note> {
   Note.withID(this.noteID, this.categoryID, this.noteTitle, this.noteContent,
       this.noteTime, this.notePriority); //when read data
 
-  Map<String, dynamic> toMap() {
-    var map = Map<String, dynamic>();
-
-    map["noteID"] = noteID;
-    map["categoryID"] = categoryID;
-    map['noteTitle'] = noteTitle;
-    map['noteContent'] = noteContent;
-    map['noteTime'] = noteTime;
-    map['notePriority'] = notePriority;
-
-    return map;
-  }
-
   Note.fromMap(Map<String, dynamic> map) {
     this.noteID = map["noteID"];
     this.categoryID = map["categoryID"];
@@ -39,9 +26,17 @@ class Note implements Comparable<Note> {
     this.notePriority = map['notePriority'];
   }
 
-  @override
-  String toString() {
-    return 'Note{noteID: $noteID, categoryID: $categoryID, categoryTitle: $categoryTitle, noteTitle: $noteTitle, noteContent: $noteContent, noteTime: $noteTime, notePriority: $notePriority}';
+  Map<String, dynamic> toMap() {
+    var map = Map<String, dynamic>();
+
+    map["noteID"] = noteID;
+    map["categoryID"] = categoryID;
+    map['noteTitle'] = noteTitle;
+    map['noteContent'] = noteContent;
+    map['noteTime'] = noteTime;
+    map['notePriority'] = notePriority;
+
+    return map;
   }
 
   @override
