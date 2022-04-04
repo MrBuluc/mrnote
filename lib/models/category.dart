@@ -9,6 +9,13 @@ class Category {
   Category.withID(this.categoryID, this.categoryTitle,
       this.categoryColor); // when read db, use it.
 
+  Category.fromMap(Map<String, dynamic> map) {
+    this.categoryTitle = map['categoryTitle'];
+    this.categoryID = map['categoryID'];
+    this.categoryColor =
+        map["categoryColor"] != null ? map["categoryColor"] : 4293914607;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -17,17 +24,5 @@ class Category {
     map['categoryColor'] = categoryColor;
 
     return map;
-  }
-
-  Category.fromMap(Map<String, dynamic> map) {
-    this.categoryTitle = map['categoryTitle'];
-    this.categoryID = map['categoryID'];
-    this.categoryColor =
-        map["categoryColor"] != null ? map["categoryColor"] : 4293914607;
-  }
-
-  @override
-  String toString() {
-    return 'Category{categoryID: $categoryID, categoryTitle: $categoryTitle}';
   }
 }
