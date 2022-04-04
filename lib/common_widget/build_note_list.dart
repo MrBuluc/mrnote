@@ -8,8 +8,8 @@ import '../ui/Note_Detail/note_detail.dart';
 import 'Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
-  bool isSorted;
-  int categoryID;
+  final bool isSorted;
+  final int categoryID;
 
   BuildNoteList({this.categoryID, this.isSorted});
 
@@ -18,7 +18,7 @@ class BuildNoteList extends StatefulWidget {
 }
 
 class _BuildNoteListState extends State<BuildNoteList> {
-  List<Note> allNotes;
+  List<Note> allNotes = [];
   int categoryID;
 
   Map<String, dynamic> texts;
@@ -52,7 +52,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
   @override
   void initState() {
     super.initState();
-    allNotes = List<Note>.empty(growable: true);
     categoryID = widget.categoryID;
     isSorted = widget.isSorted;
   }
@@ -60,7 +59,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    fillAllNotes();
     switch (settings.lang) {
       case 0:
         texts = english;
@@ -69,120 +67,123 @@ class _BuildNoteListState extends State<BuildNoteList> {
         texts = turkish;
         break;
     }
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: allNotes.length,
-        itemBuilder: (context, index) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Dismissible(
-                key: Key(allNotes[index].noteID.toString()),
-                onDismissed: (direction) {
-                  int noteID = allNotes[index].noteID;
-                  setState(() {
-                    allNotes.removeAt(index);
-                  });
-                  _areYouSureforDelete(noteID);
-                },
-                background: Container(
-                  color: Colors.red,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 50, left: 100),
-                    child: Text(
-                      texts["Delete"],
-                      style: TextStyle(fontSize: 30),
+    return FutureBuilder(
+      future: fillAllNotes(),
+      builder: (context, _) => ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: allNotes.length,
+          itemBuilder: (context, index) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Dismissible(
+                  key: Key(allNotes[index].noteID.toString()),
+                  onDismissed: (direction) {
+                    int noteID = allNotes[index].noteID;
+                    setState(() {
+                      allNotes.removeAt(index);
+                    });
+                    _areYouSureforDelete(noteID);
+                  },
+                  background: Container(
+                    color: Colors.red,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 50, left: 100),
+                      child: Text(
+                        texts["Delete"],
+                        style: TextStyle(fontSize: 30),
+                      ),
                     ),
                   ),
-                ),
-                child: GestureDetector(
-                  child: Container(
-                    height: 130,
-                    width: size.width,
-                    decoration: BoxDecoration(
-                        color: settings.switchBackgroundColor(),
-                        borderRadius: borderRadis1),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          height: 110,
-                          width: size.width * 0.7,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    allNotes[index].noteTitle.length > 10
-                                        ? allNotes[index]
-                                                .noteTitle
-                                                .substring(0, 10) +
-                                            "..."
-                                        : allNotes[index].noteTitle,
-                                    style: headerStyle5,
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    databaseHelper.dateFormat(
-                                        DateTime.parse(
-                                            allNotes[index].noteTime),
-                                        settings.lang),
-                                    style: headerStyle3_2,
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                allNotes[index].noteContent.length > 50
-                                    ? allNotes[index]
-                                            .noteContent
-                                            .replaceAll("\n", " ")
-                                            .substring(0, 50) +
-                                        "..."
-                                    : allNotes[index].noteContent,
-                                style: headerStyle4,
+                  child: GestureDetector(
+                    child: Container(
+                      height: 130,
+                      width: size.width,
+                      decoration: BoxDecoration(
+                          color: settings.switchBackgroundColor(),
+                          borderRadius: borderRadis1),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            height: 110,
+                            width: size.width * 0.7,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      allNotes[index].noteTitle.length > 10
+                                          ? allNotes[index]
+                                                  .noteTitle
+                                                  .substring(0, 10) +
+                                              "..."
+                                          : allNotes[index].noteTitle,
+                                      style: headerStyle5,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      databaseHelper.dateFormat(
+                                          DateTime.parse(
+                                              allNotes[index].noteTime),
+                                          settings.lang),
+                                      style: headerStyle3_2,
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Text(
+                                  allNotes[index].noteContent.length > 50
+                                      ? allNotes[index]
+                                              .noteContent
+                                              .replaceAll("\n", " ")
+                                              .substring(0, 50) +
+                                          "..."
+                                      : allNotes[index].noteContent,
+                                  style: headerStyle4,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              _setPriorityIcon(allNotes[index].notePriority),
+                              Container(
+                                height: 15,
+                                width: 15,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(allNotes[index].categoryColor),
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            _setPriorityIcon(allNotes[index].notePriority),
-                            Container(
-                              height: 15,
-                              width: 15,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(allNotes[index].categoryColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    onTap: () async {
+                      var result =
+                          await _goToDetailPage(context, allNotes[index]);
+                      if (result != null) {
+                        setState(() {});
+                      }
+                    },
                   ),
-                  onTap: () async {
-                    var result =
-                        await _goToDetailPage(context, allNotes[index]);
-                    if (result != null) {
-                      setState(() {});
-                    }
-                  },
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-            ],
-          );
-        });
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            );
+          }),
+    );
   }
 
   Future<void> fillAllNotes() async {
