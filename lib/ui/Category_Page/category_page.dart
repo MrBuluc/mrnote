@@ -94,7 +94,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   : Container(
                       height: 150.0 * allNotes.length,
                       child: BuildNoteList(
-                        category: category,
+                        categoryID: category.categoryID,
                       )),
             ],
           ),

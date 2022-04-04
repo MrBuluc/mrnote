@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
@@ -9,12 +8,11 @@ import '../ui/Note_Detail/note_detail.dart';
 import 'Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
-  int sortBy, orderBy;
   bool isSorted;
-  Category category;
+  int categoryID;
   String search;
 
-  BuildNoteList({this.category, this.isSorted, this.search});
+  BuildNoteList({this.categoryID, this.isSorted, this.search});
 
   @override
   _BuildNoteListState createState() => _BuildNoteListState();
@@ -22,7 +20,7 @@ class BuildNoteList extends StatefulWidget {
 
 class _BuildNoteListState extends State<BuildNoteList> {
   List<Note> allNotes;
-  Category category;
+  int categoryID;
 
   Map<String, dynamic> texts;
 
@@ -58,7 +56,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
   void initState() {
     super.initState();
     allNotes = List<Note>.empty(growable: true);
-    category = widget.category;
+    categoryID = widget.categoryID;
     isSorted = widget.isSorted;
     search = widget.search;
   }
@@ -193,12 +191,11 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   Future<void> fillAllNotes() async {
     List<Note> allNotes1;
-    if (category != null) {
-      if (category.categoryID == 0) {
+    if (categoryID != null) {
+      if (categoryID == 0) {
         allNotes1 = await databaseHelper.getNoteList();
       } else {
-        allNotes1 =
-            await databaseHelper.getCategoryNotesList(category.categoryID);
+        allNotes1 = await databaseHelper.getCategoryNotesList(categoryID);
       }
       allNotes1.sort();
     } else if (search != null) {
