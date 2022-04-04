@@ -75,6 +75,15 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
+  Future<void> read1() async {
+    Note password = await databaseHelper.getNoteIDNote(1);
+    setState(() {
+      truePassword = password.noteContent;
+    });
+    read();
+    flag = truePassword != null && truePassword.isNotEmpty;
+  }
+
   Future<void> read() async {
     if (counter == 0) {
       try {
@@ -126,14 +135,5 @@ class _LandingPageState extends State<LandingPage> {
       counter++;
       setState(() {});
     }
-  }
-
-  Future<void> read1() async {
-    Note password = await databaseHelper.getNoteIDNote(1);
-    setState(() {
-      truePassword = password.noteContent;
-    });
-    read();
-    flag = truePassword != null && truePassword.isNotEmpty;
   }
 }

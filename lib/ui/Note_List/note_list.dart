@@ -661,7 +661,6 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
-  List<Note> allNotes;
   DatabaseHelper databaseHelper;
 
   Map<String, dynamic> texts;
@@ -688,7 +687,7 @@ class _NotesState extends State<Notes> {
     "Sort": "Sırala",
   };
 
-  int sortBy, orderBy;
+  int sortBy, orderBy, length = 0;
   bool isSorted = false;
 
   Settings settings = Settings();
@@ -696,7 +695,6 @@ class _NotesState extends State<Notes> {
   @override
   void initState() {
     super.initState();
-    allNotes = List<Note>.empty(growable: true);
     databaseHelper = DatabaseHelper();
     readSort();
   }
@@ -713,7 +711,7 @@ class _NotesState extends State<Notes> {
     }
     var _sortList = texts["SortList"];
     var _orderList = texts["OrderList"];
-    fillAllNotes();
+    getTodayNotesLenght();
     Size size = MediaQuery.of(context).size;
     return Container(
       child: Column(
@@ -722,7 +720,7 @@ class _NotesState extends State<Notes> {
           SizedBox(
             height: 10,
           ),
-          allNotes.length == 0
+          length == 0
               ? Center(
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -734,7 +732,7 @@ class _NotesState extends State<Notes> {
                   ),
                 )
               : Container(
-                  height: 150.0 * allNotes.length,
+            height: 150.0 * length,
                   width: size.width * 0.85,
                   child: BuildNoteList(
                     isSorted: isSorted,
@@ -745,12 +743,11 @@ class _NotesState extends State<Notes> {
     );
   }
 
-  Future<void> fillAllNotes() async {
-    List<Note> allNotes1;
+  Future<void> getTodayNotesLenght() async {
     String suan = DateTime.now().toString().substring(0, 10);
-    allNotes1 = await databaseHelper.getTodayNoteList(suan);
+    int lenghtLocal = await databaseHelper.isThereAnyTodayNotes(suan);
     setState(() {
-      allNotes = allNotes1;
+      length = lenghtLocal;
     });
   }
 

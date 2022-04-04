@@ -67,12 +67,18 @@ class DatabaseHelper {
     var db = await _getDatabase();
     var sonuc = await db.query("category", where: "categoryID != 0");
 
-    return sonuc;
+  Future<int> isThereAnyTodayNotes(String suan) async {
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> sonuc = await db
+        .rawQuery("SELECT COUNT() FROM note WHERE noteTime LIKE '$suan%';");
+    return sonuc[0]["COUNT()"];
   }
 
   Future<List<Category>> getCategoryList() async {
-    var categoryMapList = await getCategories();
-    var categoryList = List<Category>.empty(growable: true);
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> categoryMapList =
+        await db.query("category", where: "categoryID != 0");
+    List<Category> categoryList = [];
     for (Map map in categoryMapList) {
       categoryList.add(Category.fromMap(map));
     }
@@ -120,52 +126,25 @@ class DatabaseHelper {
     return sonuc;
   }
 
-  Future<List<Map<String, dynamic>>> getNotes() async {
-    var db = await _getDatabase();
-    var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE "
-        "note.categoryID != 0 order by noteID ASC;");
-
-    return sonuc;
-  }
-
   Future<List<Note>> getNoteList() async {
-    var noteMapList = await getNotes();
-    var noteList = List<Note>.empty(growable: true);
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(
+        "Select * From Note Inner Join category on "
+        "category.categoryID = note.categoryID Where note.categoryID != 0 Order By noteID Asc;");
+    List<Note> noteList = [];
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
-  }
-
-  Future<List<Map<String, dynamic>>> getSearchNotes(String search) async {
-    var db = await _getDatabase();
-    var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE "
-        "note.categoryID != 0 AND (note.noteTitle LIKE '%$search%' OR note.noteContent LIKE "
-        "'%$search%') order by noteID Desc;");
-    return sonuc;
   }
 
   Future<List<Note>> getSearchNoteList(String search) async {
-    var noteMapList = await getSearchNotes(search);
-    var noteList = List<Note>.empty(growable: true);
-    for (Map map in noteMapList) {
-      noteList.add(Note.fromMap(map));
-    }
-    return noteList;
-  }
-
-  Future<List<Map<String, dynamic>>> getTodayNotes(String suan) async {
-    var db = await _getDatabase();
-    var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID != 0 AND noteTime LIKE '$suan%' order by noteID Desc;");
-    return sonuc;
-  }
-
-  Future<List<Note>> getTodayNoteList(String suan) async {
-    var noteMapList = await getTodayNotes(suan);
-    var noteList = List<Note>.empty(growable: true);
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(
+        "Select * From note Inner Join category on "
+        "category.categoryID = note.categoryID Where note.categoryID != 0 And (note.noteTitle Like '%$search%' Or "
+        "note.noteContent Like '%$search%') Order By noteID Desc;");
+    List<Note> noteList = [];
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
