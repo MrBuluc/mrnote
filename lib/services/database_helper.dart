@@ -213,9 +213,8 @@ class DatabaseHelper {
 
   Future<List<Note>> getNoteTitleNotesList(String noteTitle) async {
     Database db = await _getDatabase();
-    List<Map<String, dynamic>> noteMapList = await db.rawQuery(
-        "Select * From note Inner Join category on category.categoryID = note.categoryID Where note.noteTitle == '$noteTitle' Order By noteID "
-        "Desc;");
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
+        " Where note.noteTitle == '$noteTitle' Order By noteID Desc;");
     List<Note> noteList = [];
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
@@ -224,20 +223,14 @@ class DatabaseHelper {
   }
 
   Future<List<Note>> getSettingsNoteTitleList(String noteTitle) async {
-    var noteMapList = await getSettingsNoteTitle(noteTitle);
-    var noteList = List<Note>.empty(growable: true);
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
+        " Where note.noteTitle == '$noteTitle' And note.categoryID = 0 Order by noteID Desc;");
+    List<Note> noteList = [];
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
-  }
-
-  Future<List<Map<String, dynamic>>> getSettingsNoteTitle(
-      String noteTitle) async {
-    var db = await _getDatabase();
-    var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.noteTitle == '$noteTitle' AND note.categoryID = 0 ORDER by noteID DESC;");
-    return sonuc;
   }
 
   Future<Note> getNoteIDNote(int noteID) async {
