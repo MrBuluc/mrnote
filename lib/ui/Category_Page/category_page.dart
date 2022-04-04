@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/build_note_list.dart';
 import 'package:mrnote/common_widget/new_button.dart';
 import 'package:mrnote/models/category.dart';
-import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
 
@@ -37,9 +36,9 @@ class _CategoryPageState extends State<CategoryPage> {
 
   Category category;
 
-  List<Note> allNotes;
-
   Settings settings = Settings();
+
+  int length = 0;
 
   @override
   void initState() {
@@ -56,7 +55,6 @@ class _CategoryPageState extends State<CategoryPage> {
         break;
     }
     category = widget.category;
-    allNotes = List<Note>.empty(growable: true);
   }
 
   @override
@@ -70,7 +68,7 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    fillAllNotes();
+    getLengthNotes();
     return SafeArea(
       child: Scaffold(
         backgroundColor: scaffoldColor,
@@ -81,7 +79,7 @@ class _CategoryPageState extends State<CategoryPage> {
               SizedBox(
                 height: 20,
               ),
-              allNotes.length == 0
+              length == 0
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
@@ -92,7 +90,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                     )
                   : Container(
-                      height: 150.0 * allNotes.length,
+                  height: 150.0 * length,
                       child: BuildNoteList(
                         categoryID: category.categoryID,
                       )),
@@ -126,17 +124,15 @@ class _CategoryPageState extends State<CategoryPage> {
     myInterstitialAd.dispose();
   }
 
-  Future<void> fillAllNotes() async {
-    List<Note> allNotes1;
-    if (category.categoryID == 0) {
-      allNotes1 = await databaseHelper.getNoteList();
+  Future<void> getLengthNotes() async {
+    int lengthLocal, categoryID = category.categoryID;
+    if (categoryID == 0) {
+      lengthLocal = await databaseHelper.lenghtAllNotes();
     } else {
-      allNotes1 =
-          await databaseHelper.getCategoryNotesList(category.categoryID);
+      lengthLocal = await databaseHelper.lenghtCategoryNotes(categoryID);
     }
-    allNotes1.sort();
     setState(() {
-      allNotes = allNotes1;
+      length = lengthLocal;
     });
   }
 
@@ -179,7 +175,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "${allNotes.length} ${texts["notes"]}",
+                    "$length ${texts["notes"]}",
                     style: headerStyle7,
                   ),
                   category.categoryID != 0

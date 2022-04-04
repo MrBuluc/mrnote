@@ -66,14 +66,24 @@ class DatabaseHelper {
     return await openDatabase(path, readOnly: false);
   }
 
-  Future<List<Map<String, dynamic>>> getCategories() async {
-    var db = await _getDatabase();
-    var sonuc = await db.query("category", where: "categoryID != 0");
+  Future<int> lenghtAllNotes() async {
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> sonuc = await db.rawQuery(
+        "SELECT COUNT() FROM note Inner Join category on category.categoryID = note.categoryID Where categoryID != 0;");
+    return sonuc[0]["COUNT()"];
+  }
 
   Future<int> isThereAnyTodayNotes(String suan) async {
     Database db = await _getDatabase();
     List<Map<String, dynamic>> sonuc = await db
         .rawQuery("SELECT COUNT() FROM note WHERE noteTime LIKE '$suan%';");
+    return sonuc[0]["COUNT()"];
+  }
+
+  Future<int> lenghtCategoryNotes(int categoryID) async {
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> sonuc = await db
+        .rawQuery("SELECT COUNT() FROM note WHERE categoryID == $categoryID;");
     return sonuc[0]["COUNT()"];
   }
 
