@@ -13,6 +13,9 @@ class DatabaseHelper {
 
   static int counter = 0;
 
+  String selectNoteSql =
+      "Select * From note Inner Join category on category.categoryID = note.categoryID";
+
   factory DatabaseHelper() {
     if (_database == null) {
       _databaseHelper = DatabaseHelper.internal();
@@ -129,8 +132,7 @@ class DatabaseHelper {
   Future<List<Note>> getNoteList() async {
     Database db = await _getDatabase();
     List<Map<String, dynamic>> noteMapList = await db.rawQuery(
-        "Select * From Note Inner Join category on "
-        "category.categoryID = note.categoryID Where note.categoryID != 0 Order By noteID Asc;");
+        selectNoteSql + " Where note.categoryID != 0 Order By noteID Asc;");
     List<Note> noteList = [];
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
@@ -140,10 +142,9 @@ class DatabaseHelper {
 
   Future<List<Note>> getSearchNoteList(String search) async {
     Database db = await _getDatabase();
-    List<Map<String, dynamic>> noteMapList = await db.rawQuery(
-        "Select * From note Inner Join category on "
-        "category.categoryID = note.categoryID Where note.categoryID != 0 And (note.noteTitle Like '%$search%' Or "
-        "note.noteContent Like '%$search%') Order By noteID Desc;");
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
+        " Where note.categoryID != 0 And (note.noteTitle Like '%$search%' Or "
+            "note.noteContent Like '%$search%') Order By noteID Desc;");
     List<Note> noteList = [];
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
@@ -156,9 +157,8 @@ class DatabaseHelper {
     List<String> sortList = await readSort();
     int sortBy = int.parse(sortList[0]);
     int orderBy = int.parse(sortList[1]);
-    String query =
-        "Select * From note Inner Join category on category.categoryID = note.categoryID Where note.categoryID != 0 And noteTime Like "
-        "'$suan%' Order By ";
+    String query = selectNoteSql +
+        " Where note.categoryID != 0 And noteTime Like '$suan%' Order By ";
     switch (sortBy) {
       case 0:
         query += "categoryTitle ";
@@ -200,17 +200,11 @@ class DatabaseHelper {
     return sortList;
   }
 
-  Future<List<Map<String, dynamic>>> getCategoryNotes(int categoryID) async {
-    var db = await _getDatabase();
-    var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.categoryID == $categoryID ORDER by noteID DESC;");
-
-    return sonuc;
-  }
-
   Future<List<Note>> getCategoryNotesList(int categoryID) async {
-    var noteMapList = await getCategoryNotes(categoryID);
-    var noteList = List<Note>.empty(growable: true);
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
+        " Where note.categoryID == $categoryID Order By noteID Desc;");
+    List<Note> noteList = [];
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
