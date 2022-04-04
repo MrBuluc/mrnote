@@ -234,15 +234,10 @@ class DatabaseHelper {
   }
 
   Future<Note> getNoteIDNote(int noteID) async {
-    var noteMapList = await getNoteIDNotes(noteID);
+    Database db = await _getDatabase();
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
+        " Where note.noteID == '$noteID' Order By noteID Desc;");
     return Note.fromMap(noteMapList.first);
-  }
-
-  Future<List<Map<String, dynamic>>> getNoteIDNotes(int noteID) async {
-    var db = await _getDatabase();
-    var sonuc = await db.rawQuery(
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE note.noteID == '$noteID' ORDER by noteID DESC;");
-    return sonuc;
   }
 
   Future<int> updateNote(Note note) async {

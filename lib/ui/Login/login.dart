@@ -190,7 +190,6 @@ class _LoginState extends State<Login> {
 
   Future<void> enter() async {
     password = await databaseHelper.getNoteIDNote(1);
-    debugPrint("password: " + password.toString());
     truePassword = password.noteContent;
     if (truePassword == null) {
       truePassword = "";
