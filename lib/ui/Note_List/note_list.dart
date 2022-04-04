@@ -732,7 +732,7 @@ class _NotesState extends State<Notes> {
                   ),
                 )
               : Container(
-            height: 150.0 * length,
+                  height: 150.0 * length,
                   width: size.width * 0.85,
                   child: BuildNoteList(
                     isSorted: isSorted,

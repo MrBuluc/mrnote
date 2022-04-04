@@ -151,14 +151,14 @@ class DatabaseHelper {
     return noteList;
   }
 
-  Future<List<Map<String, dynamic>>> getSortNotes(String suan) async {
-    var db = await _getDatabase();
+  Future<List<Note>> getSortNoteList(String suan) async {
+    Database db = await _getDatabase();
     List<String> sortList = await readSort();
     int sortBy = int.parse(sortList[0]);
     int orderBy = int.parse(sortList[1]);
     String query =
-        "SELECT * FROM Note INNER JOIN category on category.categoryID = note.categoryID WHERE "
-        "note.categoryID != 0 AND noteTime LIKE '$suan%' order by ";
+        "Select * From note Inner Join category on category.categoryID = note.categoryID Where note.categoryID != 0 And noteTime Like "
+        "'$suan%' Order By ";
     switch (sortBy) {
       case 0:
         query += "categoryTitle ";
@@ -176,17 +176,11 @@ class DatabaseHelper {
         query += "notePriority ";
         break;
     }
-    if (orderBy == 0) {
-      query += "ASC;";
-    } else {
-      query += "DESC;";
-    }
-    var sonuc = await db.rawQuery(query);
-    return sonuc;
-  }
-
-  Future<List<Note>> getSortNoteList(String suan) async {
-    var noteMapList = await getSortNotes(suan);
+    if (orderBy == 0)
+      query += "Asc;";
+    else
+      query += "Desc;";
+    List<Map<String, dynamic>> noteMapList = await db.rawQuery(query);
     var noteList = List<Note>.empty(growable: true);
     for (Map map in noteMapList) {
       noteList.add(Note.fromMap(map));
