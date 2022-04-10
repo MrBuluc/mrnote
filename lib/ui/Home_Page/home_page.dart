@@ -1,6 +1,7 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:mrnote/common_widget/merkez_widget.dart';
 import 'package:mrnote/common_widget/new_button.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
@@ -663,7 +664,6 @@ class _NotesState extends State<Notes> {
   DatabaseHelper databaseHelper;
 
   Map<String, dynamic> texts;
-
   Map<String, dynamic> english = {
     "Padding": "Welcome again 🥳\n" + "You didn't edit any notes today 😉",
     "Recent_Notes": "Recent Mr. Notes",
@@ -674,7 +674,6 @@ class _NotesState extends State<Notes> {
     "Cancel": "Cancel",
     "Sort": "Sort",
   };
-
   Map<String, dynamic> turkish = {
     "Padding": "Tekrar hoşgeldin 🥳\n" + "Bugün hiçbir not düzenlemedin 😉",
     "Recent_Notes": "Son Mr. Notlar",
@@ -687,9 +686,12 @@ class _NotesState extends State<Notes> {
   };
 
   int sortBy, orderBy, length = 0;
-  bool isSorted = false;
+
+  bool isSorted = false, readed = false;
 
   Settings settings = Settings();
+
+  List<String> sortList, orderList;
 
   @override
   void initState() {
@@ -708,19 +710,23 @@ class _NotesState extends State<Notes> {
         texts = turkish;
         break;
     }
-    var _sortList = texts["SortList"];
-    var _orderList = texts["OrderList"];
-    getTodayNotesLenght();
+    sortList = texts["SortList"];
+    orderList = texts["OrderList"];
     Size size = MediaQuery.of(context).size;
     return Container(
       child: Column(
         children: <Widget>[
-          buildRecentOnesAndFilterHeader(_sortList, _orderList),
+          buildRecentOnesAndFilterHeader(),
           SizedBox(
             height: 10,
           ),
-          length == 0
-              ? Center(
+          FutureBuilder(
+            future: getTodayNotesLenght(),
+            builder: (context, _) {
+              if (!readed)
+                return MerkezWidget(children: [CircularProgressIndicator()]);
+              else if (length == 0)
+                return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: Text(
@@ -729,14 +735,16 @@ class _NotesState extends State<Notes> {
                           TextStyle(fontSize: 20, color: Colors.grey.shade800),
                     ),
                   ),
-                )
-              : Container(
-                  height: 150.0 * length,
-                  width: size.width * 0.85,
-                  child: BuildNoteList(
-                    isSorted: isSorted,
-                  ),
-                )
+                );
+              return Container(
+                height: 150.0 * length,
+                width: size.width * 0.85,
+                child: BuildNoteList(
+                  isSorted: isSorted,
+                ),
+              );
+            },
+          )
         ],
       ),
     );
@@ -747,11 +755,11 @@ class _NotesState extends State<Notes> {
     int lenghtLocal = await databaseHelper.isThereAnyTodayNotes(suan);
     setState(() {
       length = lenghtLocal;
+      readed = true;
     });
   }
 
-  Widget buildRecentOnesAndFilterHeader(
-      List<String> sortList, List<String> orderList) {
+  Widget buildRecentOnesAndFilterHeader() {
     return Container(
       height: 60,
       child: Padding(
@@ -775,7 +783,7 @@ class _NotesState extends State<Notes> {
                 GestureDetector(
                   child: Icon(Icons.sort),
                   onTap: () {
-                    sortNotesDialog(context, sortList, orderList);
+                    sortNotesDialog(context);
                   },
                 )
               ],
@@ -786,8 +794,7 @@ class _NotesState extends State<Notes> {
     );
   }
 
-  sortNotesDialog(
-      BuildContext context, List<String> sortList, List<String> orderList) {
+  sortNotesDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (context) {
@@ -798,8 +805,8 @@ class _NotesState extends State<Notes> {
             ),
             contentPadding: const EdgeInsets.only(left: 25),
             children: <Widget>[
-              dropDown(sortList),
-              dropDownOrder(orderList),
+              dropDown(),
+              dropDownOrder(),
               ButtonBar(
                 children: <Widget>[
                   ElevatedButton(
@@ -859,7 +866,7 @@ class _NotesState extends State<Notes> {
     }
   }
 
-  Widget dropDown(List<String> sortList) {
+  Widget dropDown() {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter dropDownState) {
         return DropdownButton(
@@ -890,7 +897,7 @@ class _NotesState extends State<Notes> {
     );
   }
 
-  Widget dropDownOrder(List<String> orderList) {
+  Widget dropDownOrder() {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter dropDownOrderState) {
         return DropdownButton<int>(
@@ -906,13 +913,13 @@ class _NotesState extends State<Notes> {
               orderBy = selectedOrderBy;
             });
           },
-          items: createOrderByItem(orderList),
+          items: createOrderByItem(),
         );
       },
     );
   }
 
-  List<DropdownMenuItem<int>> createOrderByItem(List<String> orderList) {
+  List<DropdownMenuItem<int>> createOrderByItem() {
     return orderList
         .map((order) => DropdownMenuItem<int>(
               value: orderList.indexOf(order),
