@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   var _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Category> allCategories;
+  List<Category> allCategories = [];
 
   AdmobInterstitial myInterstitialAdExit;
 
@@ -128,8 +128,7 @@ class _HomePageState extends State<HomePage> {
         texts = turkish;
         break;
     }
-    if (allCategories == null) {
-      allCategories = [];
+    if (allCategories.isEmpty) {
       updateCategoryList();
     }
     var size = MediaQuery.of(context).size;
