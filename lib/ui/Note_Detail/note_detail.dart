@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
+import 'package:mrnote/common_widget/merkez_widget.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
@@ -19,14 +20,18 @@ class NoteDetail extends StatefulWidget {
 }
 
 class _NoteDetailState extends State<NoteDetail> {
-  var formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   List<Category> allCategories = [];
-  DatabaseHelper databaseHelper;
-  int categoryID, selectedPriority;
+  List<String> priority;
+
+  DatabaseHelper databaseHelper = DatabaseHelper();
+
+  int categoryID, selectedPriority, counter = 0;
+
   String noteTitle, noteContent;
 
   Map<String, String> texts;
-
   Map<String, String> english = {
     "_priority0": "Low",
     "_priority1": "Medium",
@@ -39,7 +44,6 @@ class _NoteDetailState extends State<NoteDetail> {
     "exit_iptalButonYazisi": "CANCEL",
     "categories_warning": "Please create a category!",
   };
-
   Map<String, String> turkish = {
     "_priority0": "Düşük",
     "_priority1": "Orta",
@@ -56,35 +60,19 @@ class _NoteDetailState extends State<NoteDetail> {
 
   Settings settings = Settings();
 
-  bool isChanged = false;
+  bool isChanged = false, readed = false;
 
   Color backgroundColor;
 
   Note updateNote;
 
+  PlatformDuyarliAlertDialog exitDialog;
+
+  Size size;
+
   @override
   void initState() {
     super.initState();
-    databaseHelper = DatabaseHelper();
-    updateNote = widget.updateNote;
-    databaseHelper.getCategoryList().then((value) {
-      allCategories = value;
-      if (updateNote != null) {
-        categoryID = updateNote.categoryID;
-        selectedPriority = updateNote.notePriority;
-        backgroundColor = Color(updateNote.categoryColor);
-      } else {
-        selectedPriority = 0;
-        if (widget.categoryID != null) {
-          categoryID = widget.categoryID;
-          backgroundColor = Color(widget.categoryColor);
-        } else if (allCategories.isNotEmpty) {
-          categoryID = allCategories[0].categoryID;
-          backgroundColor = settings.currentColor;
-        }
-      }
-      setState(() {});
-    });
     switch (settings.lang) {
       case 0:
         texts = english;
@@ -93,12 +81,18 @@ class _NoteDetailState extends State<NoteDetail> {
         texts = turkish;
         break;
     }
+    exitDialog = PlatformDuyarliAlertDialog(
+      baslik: texts["exit_baslik"],
+      icerik: texts["exit_icerik"],
+      anaButonYazisi: texts["exit_anaButonYazisi"],
+      iptalButonYazisi: texts["exit_iptalButonYazisi"],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    var _priority = [
+    size = MediaQuery.of(context).size;
+    priority = [
       texts["_priority0"],
       texts["_priority1"],
       texts["_priority2"],
@@ -106,12 +100,7 @@ class _NoteDetailState extends State<NoteDetail> {
     return WillPopScope(
       onWillPop: () async {
         if (isChanged) {
-          final sonuc = await PlatformDuyarliAlertDialog(
-            baslik: texts["exit_baslik"],
-            icerik: texts["exit_icerik"],
-            anaButonYazisi: texts["exit_anaButonYazisi"],
-            iptalButonYazisi: texts["exit_iptalButonYazisi"],
-          ).goster(context);
+          final sonuc = await exitDialog.goster(context);
 
           if (sonuc) {
             save(context);
@@ -122,50 +111,33 @@ class _NoteDetailState extends State<NoteDetail> {
       },
       child: SafeArea(
         child: SafeArea(
-          child: Scaffold(
-            floatingActionButton: allCategories.isEmpty
-                ? Container()
-                : Visibility(
-                    visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          save(context);
-                        },
-                        backgroundColor: Colors.white,
-                        elevation: 5,
-                        child: Icon(
-                          Icons.save,
-                          color: Colors.grey.shade700,
+            child: FutureBuilder(
+          future: readCategories(),
+          builder: (context, _) {
+            return Scaffold(
+                floatingActionButton: allCategories.isEmpty
+                    ? Container()
+                    : Visibility(
+                        visible: MediaQuery.of(context).viewInsets.bottom == 0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              save(context);
+                            },
+                            backgroundColor: Colors.white,
+                            elevation: 5,
+                            child: Icon(
+                              Icons.save,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-            backgroundColor: backgroundColor,
-            body: allCategories.isEmpty
-                ? Center(
-                    child: Text(
-                      texts["categories_warning"],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    child: Container(
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          children: [
-                            buildAppBar(size, _priority),
-                            buildTitleFormField(size),
-                            buildFormField(size),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-          ),
-        ),
+                backgroundColor: backgroundColor,
+                body: getBody());
+          },
+        )),
       ),
     );
   }
@@ -173,7 +145,7 @@ class _NoteDetailState extends State<NoteDetail> {
   void save(BuildContext context) {
     formKey.currentState.save();
     var suan = DateTime.now();
-    if (widget.updateNote == null) {
+    if (updateNote == null) {
       databaseHelper
           .addNote(Note(categoryID, noteTitle, noteContent, suan.toString(),
               selectedPriority))
@@ -194,7 +166,58 @@ class _NoteDetailState extends State<NoteDetail> {
     }
   }
 
-  Widget buildAppBar(Size size, List<String> priority) {
+  Future readCategories() async {
+    if (counter == 0) {
+      allCategories = await databaseHelper.getCategoryList();
+      if (widget.updateNote != null) {
+        updateNote = widget.updateNote;
+        categoryID = updateNote.categoryID;
+        selectedPriority = updateNote.notePriority;
+        backgroundColor = Color(updateNote.categoryColor);
+      } else {
+        selectedPriority = 0;
+        if (widget.categoryID != null) {
+          categoryID = widget.categoryID;
+          backgroundColor = Color(widget.categoryColor);
+        } else if (allCategories.isNotEmpty) {
+          backgroundColor = settings.currentColor;
+          categoryID = allCategories[0].categoryID;
+        }
+      }
+      readed = true;
+      counter++;
+    }
+  }
+
+  Widget getBody() {
+    if (!readed)
+      return MerkezWidget(children: [CircularProgressIndicator()]);
+    else {
+      if (allCategories.isEmpty)
+        return Center(
+          child: Text(
+            texts["categories_warning"],
+            style: TextStyle(fontSize: 20),
+          ),
+        );
+      return SingleChildScrollView(
+        child: Container(
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                buildAppBar(),
+                buildTitleFormField(),
+                buildFormField(),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget buildAppBar() {
     return Container(
       height: 50,
       width: size.width,
@@ -214,12 +237,7 @@ class _NoteDetailState extends State<NoteDetail> {
               ),
               onTap: () async {
                 if (isChanged) {
-                  final sonuc = await PlatformDuyarliAlertDialog(
-                    baslik: texts["exit_baslik"],
-                    icerik: texts["exit_icerik"],
-                    anaButonYazisi: texts["exit_anaButonYazisi"],
-                    iptalButonYazisi: texts["exit_iptalButonYazisi"],
-                  ).goster(context);
+                  final sonuc = await exitDialog.goster(context);
 
                   if (sonuc) {
                     save(context);
@@ -235,7 +253,7 @@ class _NoteDetailState extends State<NoteDetail> {
             SizedBox(
               width: size.width * 0.05,
             ),
-            dropDownPriorty(priority)
+            dropDownPriorty()
           ],
         ),
       ),
@@ -274,7 +292,7 @@ class _NoteDetailState extends State<NoteDetail> {
         .toList();
   }
 
-  Widget dropDownPriorty(List<String> priority) {
+  Widget dropDownPriorty() {
     return DropdownButton<int>(
       value: selectedPriority,
       icon: Icon(Icons.keyboard_arrow_down),
@@ -301,16 +319,15 @@ class _NoteDetailState extends State<NoteDetail> {
     );
   }
 
-  Widget buildTitleFormField(Size size) {
+  Widget buildTitleFormField() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, top: 5),
       child: TextFormField(
-        initialValue:
-            widget.updateNote != null ? widget.updateNote.noteTitle : "",
+        initialValue: updateNote != null ? updateNote.noteTitle : "",
         maxLines: null,
         style: headerStyle5,
         cursorColor: Colors.grey.shade600,
-        decoration: new InputDecoration(
+        decoration: InputDecoration(
           hintText: texts["Container_Padding1_hintText"],
           hintStyle: headerStyle5,
           border: InputBorder.none,
@@ -329,14 +346,13 @@ class _NoteDetailState extends State<NoteDetail> {
     );
   }
 
-  buildFormField(Size size) {
+  buildFormField() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
       child: Column(
         children: [
           TextFormField(
-            initialValue:
-                widget.updateNote != null ? widget.updateNote.noteContent : "",
+            initialValue: updateNote != null ? updateNote.noteContent : "",
             maxLines: null,
             style: headerStyle10,
             cursorColor: Colors.grey.shade800,
