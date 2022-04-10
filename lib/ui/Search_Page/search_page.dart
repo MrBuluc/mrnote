@@ -39,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
     "Priority": ["Düşük", "Orta", "Yüksek"],
   };
 
-  List<Note> allNotes;
+  List<Note> allNotes = [];
 
   String search;
 
@@ -56,7 +56,6 @@ class _SearchPageState extends State<SearchPage> {
         texts = turkish;
         break;
     }
-    allNotes = List<Note>.empty(growable: true);
   }
 
   @override
@@ -78,7 +77,9 @@ class _SearchPageState extends State<SearchPage> {
         },
       )),
       body: SingleChildScrollView(
-        child: Container(
+          child: FutureBuilder(
+        future: fillAllNotes(),
+        builder: (context, _) => Container(
           height: 150.0 * allNotes.length,
           child: ListView.builder(
               physics: NeverScrollableScrollPhysics(),
@@ -196,20 +197,16 @@ class _SearchPageState extends State<SearchPage> {
                 );
               }),
         ),
-      ),
+      )),
     );
   }
 
   Future<void> fillAllNotes() async {
-    List<Note> allNotes1;
-    if (search == null) {
-      allNotes1 = await databaseHelper.getNoteList();
+    if (search == null || search == "") {
+      allNotes = await databaseHelper.getNoteList();
     } else {
-      allNotes1 = await databaseHelper.getSearchNoteList(search);
+      allNotes = await databaseHelper.getSearchNoteList(search);
     }
-    setState(() {
-      allNotes = allNotes1;
-    });
   }
 
   Future<void> _areYouSureforDelete(int noteID) async {
