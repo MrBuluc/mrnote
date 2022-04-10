@@ -68,7 +68,6 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    getLengthNotes();
     return SafeArea(
       child: Scaffold(
         backgroundColor: scaffoldColor,
@@ -79,8 +78,11 @@ class _CategoryPageState extends State<CategoryPage> {
               SizedBox(
                 height: 20,
               ),
-              length == 0
-                  ? Center(
+              FutureBuilder(
+                future: getLengthNotes(),
+                builder: (context, _) {
+                  if (length == 0)
+                    return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Text(
@@ -88,12 +90,15 @@ class _CategoryPageState extends State<CategoryPage> {
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
-                    )
-                  : Container(
-                      height: 150.0 * length,
-                      child: BuildNoteList(
-                        categoryID: category.categoryID,
-                      )),
+                    );
+                  else
+                    return Container(
+                        height: 150.0 * length,
+                        child: BuildNoteList(
+                          categoryID: category.categoryID,
+                        ));
+                },
+              )
             ],
           ),
         ),
@@ -122,18 +127,6 @@ class _CategoryPageState extends State<CategoryPage> {
 
   void disposeAd() {
     myInterstitialAd.dispose();
-  }
-
-  Future<void> getLengthNotes() async {
-    int lengthLocal, categoryID = category.categoryID;
-    if (categoryID == 0) {
-      lengthLocal = await databaseHelper.lenghtAllNotes();
-    } else {
-      lengthLocal = await databaseHelper.lenghtCategoryNotes(categoryID);
-    }
-    setState(() {
-      length = lengthLocal;
-    });
   }
 
   Widget buildHeader(Size size) {
@@ -193,5 +186,17 @@ class _CategoryPageState extends State<CategoryPage> {
         ),
       ),
     );
+  }
+
+  Future<void> getLengthNotes() async {
+    int lengthLocal, categoryID = category.categoryID;
+    if (categoryID == 0) {
+      lengthLocal = await databaseHelper.lenghtAllNotes();
+    } else {
+      lengthLocal = await databaseHelper.lenghtCategoryNotes(categoryID);
+    }
+    setState(() {
+      length = lengthLocal;
+    });
   }
 }
