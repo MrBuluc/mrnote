@@ -3,10 +3,10 @@ import 'package:mrnote/common_widget/merkez_widget.dart';
 import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
+import 'package:mrnote/ui/Home_Page/home_page.dart';
 import 'package:mrnote/ui/Login/login.dart';
 
 import '../services/database_helper.dart';
-import '../ui/Note_List/note_list.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -41,7 +41,7 @@ class _LandingPageState extends State<LandingPage> {
           if (flag) {
             return Login();
           } else {
-            return NoteList();
+            return HomePage();
           }
         } else {
           return Scaffold(

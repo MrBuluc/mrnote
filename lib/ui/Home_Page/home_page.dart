@@ -15,12 +15,12 @@ import '../Category_Page/category_page.dart';
 import '../Search_Page/search_page.dart';
 import '../Settings/SettingsPage.dart';
 
-class NoteList extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _NoteListState createState() => _NoteListState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _NoteListState extends State<NoteList> {
+class _HomePageState extends State<HomePage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   var _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Category> allCategories;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
+import 'package:mrnote/ui/Home_Page/home_page.dart';
 
 import '../../const.dart';
 import '../../services/database_helper.dart';
-import '../Note_List/note_list.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -202,10 +202,10 @@ class _LoginState extends State<Login> {
 
     if (passwordStr == truePassword) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => NoteList()));
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else if (truePassword == "") {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => NoteList()));
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       setState(() {
         result = texts["result_enterFalse"];
