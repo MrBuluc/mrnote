@@ -68,15 +68,15 @@ class DatabaseHelper {
 
   Future<int> lenghtAllNotes() async {
     Database db = await _getDatabase();
-    List<Map<String, dynamic>> sonuc = await db.rawQuery(
-        "SELECT COUNT() FROM note Inner Join category on category.categoryID = note.categoryID Where categoryID != 0;");
+    List<Map<String, dynamic>> sonuc =
+        await db.rawQuery("SELECT COUNT() FROM note Where categoryID != 0;");
     return sonuc[0]["COUNT()"];
   }
 
   Future<int> isThereAnyTodayNotes(String suan) async {
     Database db = await _getDatabase();
-    List<Map<String, dynamic>> sonuc = await db
-        .rawQuery("SELECT COUNT() FROM note WHERE noteTime LIKE '$suan%';");
+    List<Map<String, dynamic>> sonuc = await db.rawQuery(
+        "SELECT COUNT() FROM note WHERE noteTime LIKE '$suan%' And categoryID != 0;");
     return sonuc[0]["COUNT()"];
   }
 
@@ -136,7 +136,20 @@ class DatabaseHelper {
     var db = await _getDatabase();
     var sonuc = await db
         .delete("category", where: 'categoryID = ?', whereArgs: [categoryID]);
+    if (sonuc == 1) return await deleteNoteCategory(categoryID);
     return sonuc;
+  }
+
+  Future<int> deleteNote(int noteID) async {
+    var db = await _getDatabase();
+    var sonuc =
+        await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
+    return sonuc;
+  }
+
+  Future<int> deleteNoteCategory(int categoryID) async {
+    Database db = await _getDatabase();
+    return await db.delete("note", where: "categoryID = $categoryID");
   }
 
   Future<List<Note>> getNoteList() async {
@@ -270,13 +283,6 @@ class DatabaseHelper {
           note.noteTitle,
           0
         ]);
-  }
-
-  Future<int> deleteNote(int noteID) async {
-    var db = await _getDatabase();
-    var sonuc =
-        await db.delete("note", where: 'noteID = ?', whereArgs: [noteID]);
-    return sonuc;
   }
 
   Future<int> addNote(Note note) async {
