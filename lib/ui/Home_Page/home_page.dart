@@ -23,13 +23,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
-  var _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   List<Category> allCategories = [];
 
   AdmobInterstitial myInterstitialAdExit;
 
   Map<String, String> texts;
-
   Map<String, String> english = {
     "Home": "Home",
     "search": "Search",
@@ -61,7 +62,6 @@ class _HomePageState extends State<HomePage> {
     "_areYouSureforDelete_anaButonYazisi": "EXIT",
     "_areYouSureforDelete_iptalButonYazisi": "CANCEL",
   };
-
   Map<String, String> turkish = {
     "Home": "Ana Sayfa",
     "search": "Ara",
@@ -102,6 +102,8 @@ class _HomePageState extends State<HomePage> {
 
   Settings settings = Settings();
 
+  Size size;
+
   @override
   void initState() {
     super.initState();
@@ -132,7 +134,7 @@ class _HomePageState extends State<HomePage> {
     if (allCategories.isEmpty) {
       updateCategoryList();
     }
-    var size = MediaQuery.of(context).size;
+    size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
         return _areYouSureforExit();
@@ -146,9 +148,9 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 25,
                 ),
-                header(size),
+                header(),
                 categoriesAndNew(),
-                buildCategories(size),
+                buildCategories(),
                 Notes()
               ],
             )),
@@ -168,7 +170,7 @@ class _HomePageState extends State<HomePage> {
     myInterstitialAdExit.dispose();
   }
 
-  Widget header(Size size) {
+  Widget header() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 25),
       child: Row(
@@ -386,7 +388,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget buildCategories(Size size) {
+  Widget buildCategories() {
     return Container(
       height: 130,
       width: size.width,
