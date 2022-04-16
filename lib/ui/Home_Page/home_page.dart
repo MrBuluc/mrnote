@@ -376,16 +376,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void updateCategoryList() {
-    databaseHelper.getCategoryList().then((categoryList) {
-      categoryList.insert(
-          0,
-          Category.withID(
-              0, texts["PopupMenuItem1"], settings.currentColor.value));
-      setState(() {
-        allCategories = categoryList;
-      });
-    });
+  Future updateCategoryList() async {
+    allCategories = await databaseHelper.getCategoryList();
+    allCategories.insert(
+        0,
+        Category.withID(
+            0, texts["PopupMenuItem1"], settings.currentColor.value));
+    setState(() {});
   }
 
   Widget buildCategories() {
@@ -623,15 +620,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _delCategory(BuildContext context, int categoryID) {
-    databaseHelper.deleteCategory(categoryID).then((deletedCategory) {
-      if (deletedCategory != 0) {
-        setState(() {
-          updateCategoryList();
-        });
-        Navigator.pop(context);
-      }
-    });
+  Future _delCategory(BuildContext context, int categoryID) async {
+    int deletedCategory = await databaseHelper.deleteCategory(categoryID);
+    if (deletedCategory != 0) {
+      updateCategoryList();
+      Navigator.pop(context);
+    }
   }
 
   Future<bool> _areYouSureforExit() async {

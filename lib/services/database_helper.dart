@@ -136,7 +136,11 @@ class DatabaseHelper {
     var db = await _getDatabase();
     var sonuc = await db
         .delete("category", where: 'categoryID = ?', whereArgs: [categoryID]);
-    if (sonuc == 1) return await deleteNoteCategory(categoryID);
+    if (sonuc == 1) {
+      int lenght = await lenghtCategoryNotes(categoryID);
+      if (lenght > 0) return await deleteNoteCategory(categoryID);
+      return 1;
+    }
     return sonuc;
   }
 
