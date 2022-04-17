@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '24'
+    flutterVersionCode = '25'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '24'
+    flutterVersionName = '25'
 }
 
 apply plugin: 'com.android.application'
@@ -80,5 +80,6 @@ dependencies {
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation 'com.google.firebase:firebase-messaging:23.0.2'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.work:work-runtime:2.7.1'
 }
 apply plugin: 'com.google.gms.google-services'

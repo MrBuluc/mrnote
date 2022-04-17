@@ -1,0 +1,15 @@
+Mr. Not düzenleme sayfasında arka plan rengi dinamik bir şekilde değişiyor.
+Kategori kaldırma dialog mesajı güncellendi.
+Mr. Not düzenleme sayfasındaki çarpı ikonu sorunu düzeltildi.
+Ana sayfada isteğe bağlı olarak kategori başlığına göre Mr. Notlar sıralanıyor.
+Ayarlar sayfasında şifre güncellenince ekran güncelleniyor.
+Kategori sayfasına yeni Mr. Not oluşturma butonu eklendi.
+Sayfalarda performans iyileştirmeleri yapıldı.
+
+The background color changes dynamically on the Mr. Note edit page.
+The category removal dialog has been updated.
+Fixed the cross icon issue on the Mr. Note edit page.
+Mr. Notes are optionally sorted by category title on the home page.
+When you update the password on the settings page, the screen is updated.
+A new Mr. Note creation button has been added to the category page.
+Performance improvements have been made to pages.
