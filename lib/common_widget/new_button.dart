@@ -6,12 +6,12 @@ import 'package:mrnote/ui/Note_Detail/note_detail.dart';
 class NewButton extends StatefulWidget {
   final Color closedColor;
   final int lang;
-  final int categoryID;
-  final int categoryColor;
+  final int? categoryID;
+  final int? categoryColor;
 
   NewButton(
-      {@required this.lang,
-      this.closedColor,
+      {required this.lang,
+      required this.closedColor,
       this.categoryID,
       this.categoryColor});
 
@@ -20,7 +20,7 @@ class NewButton extends StatefulWidget {
 }
 
 class _NewButtonState extends State<NewButton> {
-  String text;
+  late String text;
 
   @override
   Widget build(BuildContext context) {

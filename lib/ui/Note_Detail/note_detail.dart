@@ -9,9 +9,9 @@ import 'package:mrnote/services/database_helper.dart';
 import '../../const.dart';
 
 class NoteDetail extends StatefulWidget {
-  final Note updateNote;
-  final int categoryID;
-  final int categoryColor;
+  final Note? updateNote;
+  final int? categoryID;
+  final int? categoryColor;
 
   NoteDetail({this.updateNote, this.categoryID, this.categoryColor});
 
@@ -23,15 +23,15 @@ class _NoteDetailState extends State<NoteDetail> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   List<Category> allCategories = [];
-  List<String> priority;
+  late List<String> priority;
 
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  int categoryID, selectedPriority, counter = 0;
+  late int categoryID, selectedPriority, counter = 0;
 
-  String noteTitle, noteContent;
+  late String noteTitle, noteContent;
 
-  Map<String, String> texts;
+  late Map<String, String> texts;
   Map<String, String> english = {
     "_priority0": "Low",
     "_priority1": "Medium",
@@ -62,13 +62,13 @@ class _NoteDetailState extends State<NoteDetail> {
 
   bool isChanged = false, readed = false;
 
-  Color backgroundColor;
+  late Color backgroundColor;
 
-  Note updateNote;
+  Note? updateNote;
 
-  PlatformDuyarliAlertDialog exitDialog;
+  late PlatformDuyarliAlertDialog exitDialog;
 
-  Size size;
+  late Size size;
 
   @override
   void initState() {
@@ -82,9 +82,9 @@ class _NoteDetailState extends State<NoteDetail> {
         break;
     }
     exitDialog = PlatformDuyarliAlertDialog(
-      baslik: texts["exit_baslik"],
-      icerik: texts["exit_icerik"],
-      anaButonYazisi: texts["exit_anaButonYazisi"],
+      baslik: texts["exit_baslik"]!,
+      icerik: texts["exit_icerik"]!,
+      anaButonYazisi: texts["exit_anaButonYazisi"]!,
       iptalButonYazisi: texts["exit_iptalButonYazisi"],
     );
   }
@@ -93,21 +93,22 @@ class _NoteDetailState extends State<NoteDetail> {
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     priority = [
-      texts["_priority0"],
-      texts["_priority1"],
-      texts["_priority2"],
+      texts["_priority0"]!,
+      texts["_priority1"]!,
+      texts["_priority2"]!,
     ];
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      // ToDo Test
+      onPopInvoked: (bool degisken) async {
         if (isChanged) {
           final sonuc = await exitDialog.goster(context);
 
           if (sonuc) {
             save(context);
-            return false;
+            Navigator.pop(context, false);
           }
         }
-        return true;
+        Navigator.pop(context, true);
       },
       child: SafeArea(
         child: SafeArea(
@@ -143,7 +144,7 @@ class _NoteDetailState extends State<NoteDetail> {
   }
 
   void save(BuildContext context) {
-    formKey.currentState.save();
+    formKey.currentState!.save();
     var suan = DateTime.now();
     if (updateNote == null) {
       databaseHelper
@@ -156,7 +157,7 @@ class _NoteDetailState extends State<NoteDetail> {
       });
     } else {
       databaseHelper
-          .updateNote(Note.withID(widget.updateNote.noteID, categoryID,
+          .updateNote(Note.withID(widget.updateNote!.noteID, categoryID,
               noteTitle, noteContent, suan.toString(), selectedPriority))
           .then((updatedID) {
         if (updatedID != 0) {
@@ -171,17 +172,17 @@ class _NoteDetailState extends State<NoteDetail> {
       allCategories = await databaseHelper.getCategoryList();
       if (widget.updateNote != null) {
         updateNote = widget.updateNote;
-        categoryID = updateNote.categoryID;
-        selectedPriority = updateNote.notePriority;
-        backgroundColor = Color(updateNote.categoryColor);
+        categoryID = updateNote!.categoryID;
+        selectedPriority = updateNote!.notePriority;
+        backgroundColor = Color(updateNote!.categoryColor!);
       } else {
         selectedPriority = 0;
         if (widget.categoryID != null) {
-          categoryID = widget.categoryID;
-          backgroundColor = Color(widget.categoryColor);
+          categoryID = widget.categoryID!;
+          backgroundColor = Color(widget.categoryColor!);
         } else if (allCategories.isNotEmpty) {
-          backgroundColor = settings.currentColor;
-          categoryID = allCategories[0].categoryID;
+          backgroundColor = settings.currentColor!;
+          categoryID = allCategories[0].categoryID!;
         }
       }
       readed = true;
@@ -196,7 +197,7 @@ class _NoteDetailState extends State<NoteDetail> {
       if (allCategories.isEmpty)
         return Center(
           child: Text(
-            texts["categories_warning"],
+            texts["categories_warning"]!,
             style: TextStyle(fontSize: 20),
           ),
         );
@@ -253,7 +254,7 @@ class _NoteDetailState extends State<NoteDetail> {
             SizedBox(
               width: size.width * 0.05,
             ),
-            dropDownPriorty()
+            dropDownPriority()
           ],
         ),
       ),
@@ -273,7 +274,7 @@ class _NoteDetailState extends State<NoteDetail> {
       onChanged: (selectedCategoryID) {
         isChanged = true;
         setState(() {
-          categoryID = selectedCategoryID;
+          categoryID = selectedCategoryID!;
         });
       },
       items: createCategoryItem(),
@@ -292,7 +293,7 @@ class _NoteDetailState extends State<NoteDetail> {
         .toList();
   }
 
-  Widget dropDownPriorty() {
+  Widget dropDownPriority() {
     return DropdownButton<int>(
       value: selectedPriority,
       icon: Icon(Icons.keyboard_arrow_down),
@@ -304,7 +305,7 @@ class _NoteDetailState extends State<NoteDetail> {
       onChanged: (selectedPriorityID) {
         isChanged = true;
         setState(() {
-          selectedPriority = selectedPriorityID;
+          selectedPriority = selectedPriorityID!;
         });
       },
       items: priority.map((e) {
@@ -323,7 +324,7 @@ class _NoteDetailState extends State<NoteDetail> {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, top: 5),
       child: TextFormField(
-        initialValue: updateNote != null ? updateNote.noteTitle : "",
+        initialValue: updateNote != null ? updateNote!.noteTitle : "",
         maxLines: null,
         style: headerStyle5,
         cursorColor: Colors.grey.shade600,
@@ -337,7 +338,7 @@ class _NoteDetailState extends State<NoteDetail> {
           disabledBorder: InputBorder.none,
         ),
         onSaved: (text) {
-          noteTitle = text;
+          noteTitle = text!;
         },
         onChanged: (String value) {
           isChanged = true;
@@ -352,7 +353,7 @@ class _NoteDetailState extends State<NoteDetail> {
       child: Column(
         children: [
           TextFormField(
-            initialValue: updateNote != null ? updateNote.noteContent : "",
+            initialValue: updateNote != null ? updateNote!.noteContent : "",
             maxLines: null,
             style: headerStyle10,
             cursorColor: Colors.grey.shade800,
@@ -366,7 +367,7 @@ class _NoteDetailState extends State<NoteDetail> {
               disabledBorder: InputBorder.none,
             ),
             onSaved: (text) {
-              noteContent = text;
+              noteContent = text!;
             },
             onChanged: (String value) {
               isChanged = true;

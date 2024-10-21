@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
 import 'platform_duyarli_widget.dart';
 
 class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
-  final String baslik, icerik, anaButonYazisi, iptalButonYazisi;
+  final String baslik, icerik, anaButonYazisi;
+  final String? iptalButonYazisi;
 
   PlatformDuyarliAlertDialog(
-      {@required this.baslik,
-      @required this.icerik,
-      @required this.anaButonYazisi,
+      {required this.baslik,
+      required this.icerik,
+      required this.anaButonYazisi,
       this.iptalButonYazisi});
 
   Future<bool> goster(BuildContext context) async {
@@ -55,7 +56,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
       if (iptalButonYazisi != null) {
         tumButonlar.add(CupertinoDialogAction(
           child: Text(
-            iptalButonYazisi,
+            iptalButonYazisi!,
             style: TextStyle(fontSize: 20),
           ),
           onPressed: () {
@@ -76,7 +77,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
       if (iptalButonYazisi != null) {
         tumButonlar.add(TextButton(
           child: Text(
-            iptalButonYazisi,
+            iptalButonYazisi!,
             style: TextStyle(fontSize: 20),
           ),
           onPressed: () {

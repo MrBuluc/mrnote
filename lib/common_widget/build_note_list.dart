@@ -8,8 +8,8 @@ import '../ui/Note_Detail/note_detail.dart';
 import 'Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 
 class BuildNoteList extends StatefulWidget {
-  final bool isSorted;
-  final int categoryID;
+  final bool? isSorted;
+  final int? categoryID;
 
   BuildNoteList({this.categoryID, this.isSorted});
 
@@ -19,9 +19,9 @@ class BuildNoteList extends StatefulWidget {
 
 class _BuildNoteListState extends State<BuildNoteList> {
   List<Note> allNotes = [];
-  int categoryID;
+  int? categoryID;
 
-  Map<String, dynamic> texts;
+  late Map<String, dynamic> texts;
 
   Map<String, dynamic> english = {
     "Delete": "Delete",
@@ -45,7 +45,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
 
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  bool isSorted;
+  bool? isSorted;
 
   Settings settings = Settings();
 
@@ -80,7 +80,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                 Dismissible(
                   key: Key(allNotes[index].noteID.toString()),
                   onDismissed: (direction) {
-                    int noteID = allNotes[index].noteID;
+                    int noteID = allNotes[index].noteID!;
                     setState(() {
                       allNotes.removeAt(index);
                     });
@@ -130,7 +130,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                       databaseHelper.dateFormat(
                                           DateTime.parse(
                                               allNotes[index].noteTime),
-                                          settings.lang),
+                                          settings.lang!),
                                       style: headerStyle3_2,
                                     )
                                   ],
@@ -139,13 +139,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                   height: 3,
                                 ),
                                 Text(
-                                  allNotes[index].noteContent.length > 50
-                                      ? allNotes[index]
-                                              .noteContent
-                                              .replaceAll("\n", " ")
-                                              .substring(0, 50) +
-                                          "..."
-                                      : allNotes[index].noteContent,
+                                  wrapNoteContent(index),
                                   style: headerStyle4,
                                 ),
                               ],
@@ -160,7 +154,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
                                 width: 15,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Color(allNotes[index].categoryColor),
+                                  color: Color(allNotes[index].categoryColor!),
                                 ),
                               ),
                             ],
@@ -192,7 +186,7 @@ class _BuildNoteListState extends State<BuildNoteList> {
       if (categoryID == 0) {
         allNotes1 = await databaseHelper.getNoteList();
       } else {
-        allNotes1 = await databaseHelper.getCategoryNotesList(categoryID);
+        allNotes1 = await databaseHelper.getCategoryNotesList(categoryID!);
       }
       allNotes1.sort();
     } else if (isSorted != null) {
@@ -229,6 +223,19 @@ class _BuildNoteListState extends State<BuildNoteList> {
     });
   }
 
+  String wrapNoteContent(int index) {
+    if (allNotes[index].noteContent != null) {
+      return allNotes[index].noteContent!.length > 50
+          ? allNotes[index]
+                  .noteContent!
+                  .replaceAll("\n", " ")
+                  .substring(0, 50) +
+              "..."
+          : allNotes[index].noteContent!;
+    }
+    return "";
+  }
+
   _setPriorityIcon(int notePriority) {
     switch (notePriority) {
       case 0:
@@ -239,7 +246,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
           ),
           backgroundColor: Colors.green,
         );
-        break;
       case 1:
         return CircleAvatar(
           child: Text(
@@ -248,7 +254,6 @@ class _BuildNoteListState extends State<BuildNoteList> {
           ),
           backgroundColor: Colors.yellow,
         );
-        break;
       case 2:
         return CircleAvatar(
             child: Text(
@@ -256,11 +261,10 @@ class _BuildNoteListState extends State<BuildNoteList> {
               style: TextStyle(color: Colors.white, fontSize: 12),
             ),
             backgroundColor: Color(0xFFff0000));
-        break;
     }
   }
 
-  Future<String> _goToDetailPage(BuildContext context, Note note) async {
+  Future<String?> _goToDetailPage(BuildContext context, Note note) async {
     final result = await Navigator.push(
         context,
         MaterialPageRoute(

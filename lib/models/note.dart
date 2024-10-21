@@ -1,12 +1,12 @@
 class Note implements Comparable<Note> {
-  int noteID;
-  int categoryID;
-  String categoryTitle;
-  int categoryColor;
-  String noteTitle;
-  String noteContent;
-  String noteTime;
-  int notePriority;
+  int? noteID;
+  late int categoryID;
+  String? categoryTitle;
+  int? categoryColor;
+  late String noteTitle;
+  late String? noteContent;
+  late String noteTime;
+  late int notePriority;
 
   Note(this.categoryID, this.noteTitle, this.noteContent, this.noteTime,
       this.notePriority); // when write data
@@ -15,15 +15,15 @@ class Note implements Comparable<Note> {
       this.noteTime, this.notePriority); //when read data
 
   Note.fromMap(Map<String, dynamic> map) {
-    this.noteID = map["noteID"];
-    this.categoryID = map["categoryID"];
-    this.categoryTitle = map["categoryTitle"];
-    this.categoryColor =
+    noteID = map["noteID"];
+    categoryID = map["categoryID"];
+    categoryTitle = map["categoryTitle"];
+    categoryColor =
         map["categoryColor"] != null ? map["categoryColor"] : 4293914607;
-    this.noteTitle = map['noteTitle'];
-    this.noteContent = map['noteContent'];
-    this.noteTime = map['noteTime'];
-    this.notePriority = map['notePriority'];
+    noteTitle = map['noteTitle'];
+    noteContent = map['noteContent'];
+    noteTime = map['noteTime'];
+    notePriority = map['notePriority'];
   }
 
   Map<String, dynamic> toMap() {

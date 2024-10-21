@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
@@ -9,7 +8,6 @@ import 'package:mrnote/models/settings.dart';
 
 import '../../const.dart';
 import '../../services/database_helper.dart';
-import 'DeveloperPage.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -17,9 +15,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  AdmobInterstitial myInterstitialAd;
-
-  Map<String, String> texts;
+  late Map<String, String> texts;
 
   Map<String, String> english = {
     "AppBar_title": "Settings",
@@ -77,50 +73,56 @@ class _SettingsPageState extends State<SettingsPage> {
 
   bool show = false;
 
-  double ekranYuksekligi, ekranGenisligi;
-
-  String gelistiriciSayfasiParola,
-      passwordStr = "",
-      newPassword,
-      showPassword = "";
+  String showPassword = "";
+  String? newPassword, passwordStr;
 
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  List<String> bos = [""];
-
   final myController = TextEditingController();
-
-  static GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   Settings settings = Settings();
 
-  int lang;
-
-  Color currentColor;
+  late Size size;
 
   @override
   void initState() {
     super.initState();
-    if (settings.adOpen) {
-      adInitialize();
-    }
     readPassword();
-    lang = settings.lang;
-    currentColor = settings.currentColor;
+  }
+
+  Future<void> readPassword() async {
+    try {
+      Note password = await databaseHelper.getNoteIDNote(1);
+      setState(() {
+        passwordStr = password.noteContent;
+      });
+      if (passwordStr != null) {
+        prepareShowPassword();
+      } else {
+        passwordStr = "";
+      }
+    } catch (e) {
+      setState(() {
+        passwordStr = null;
+      });
+    }
+  }
+
+  void prepareShowPassword() {
+    setState(() {
+      showPassword = "*" * (passwordStr != null ? passwordStr!.length : 0);
+    });
   }
 
   @override
   void dispose() {
-    if (settings.adOpen) {
-      disposeAd();
-    }
     myController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    switch (lang) {
+    switch (settings.lang) {
       case 0:
         texts = english;
         break;
@@ -128,16 +130,14 @@ class _SettingsPageState extends State<SettingsPage> {
         texts = turkish;
         break;
     }
-    Size size = MediaQuery.of(context).size;
-    ekranGenisligi = size.width;
-    ekranYuksekligi = size.height;
+    size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: currentColor,
+        backgroundColor: settings.currentColor,
         body: Column(
           children: [
-            buildHeader(size),
+            buildHeader(),
             SizedBox(
               height: 10,
             ),
@@ -150,151 +150,33 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(
               height: 10,
             ),
-            changePassword(bos, texts["Change Your Password"], size),
+            changePassword(texts["Change Your Password"]!),
             saveButton(),
-            if (settings.adOpen)
-              Container(
-                margin: EdgeInsets.only(top: 10.0),
-                child: AdmobBanner(
-                  adUnitId: Settings.test
-                      ? AdmobBanner.testAdUnitId
-                      : Settings.banner1Canli,
-                  adSize: AdmobBannerSize.BANNER,
-                ),
-              )
           ],
         ),
       ),
     );
   }
 
-  Future<void> adInitialize() async {
-    myInterstitialAd = AdmobInterstitial(
-      adUnitId:
-          Settings.test ? AdmobInterstitial.testAdUnitId : Settings.gecis1Canli,
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        switch (event) {
-          case AdmobAdEvent.loaded:
-            myInterstitialAd.show();
-            break;
-          default:
-            print("args: " + args.toString());
-            break;
-        }
-      },
-    );
-    myInterstitialAd.load();
-  }
-
-  void disposeAd() {
-    myInterstitialAd.dispose();
-  }
-
-  Future<void> readPassword() async {
-    try {
-      Note password = await databaseHelper.getNoteIDNote(1);
-      if (password != null) {
-        setState(() {
-          passwordStr = password.noteContent;
-        });
-        if (passwordStr != null) {
-          prepareShowPassword();
-        } else {
-          passwordStr = "";
-        }
-      }
-    } catch (e) {
-      setState(() {
-        passwordStr = null;
-      });
-    }
-  }
-
-  void prepareShowPassword() {
-    setState(() {
-      showPassword = "*" * (passwordStr.length);
-    });
-  }
-
-  Widget buildHeader(Size size) {
-    return GestureDetector(
-      child: Container(
-        height: 180,
-        width: ekranGenisligi,
-        color: Colors.grey.shade900,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(
-                texts["AppBar_title"],
-                style: headerStyle6,
-              ),
+  Widget buildHeader() {
+    return Container(
+      height: 180,
+      width: size.width,
+      color: Colors.grey.shade900,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text(
+              texts["AppBar_title"]!,
+              style: headerStyle6,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      onLongPress: () async {
-        final sonuc = await _showMyDialog();
-        if (sonuc) {
-          gelistiriciSayfasiGiris();
-        }
-      },
     );
-  }
-
-  Future<void> gelistiriciSayfasiGiris() async {
-    formKey.currentState.save();
-    if (gelistiriciSayfasiParola == settings.gelistiriciSayfasiParola) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => DeveloperPage()));
-    }
-  }
-
-  Future<bool> _showMyDialog() async {
-    return showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Geliştirici Sayfası Giriş"),
-            content: Form(
-              key: formKey,
-              child: TextFormField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Parola",
-                  prefixIcon: Icon(
-                    Icons.lock,
-                  ),
-                ),
-                onSaved: (String value) => gelistiriciSayfasiParola = value,
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text(
-                  "Iptal",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-              TextButton(
-                child: Text(
-                  "Onayla",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              )
-            ],
-          );
-        });
   }
 
   Widget dropDownButtonsColumn() {
@@ -302,7 +184,7 @@ class _SettingsPageState extends State<SettingsPage> {
       padding: const EdgeInsets.only(left: 40, right: 40, bottom: 10, top: 12),
       child: Container(
         height: 55,
-        width: ekranGenisligi - 50,
+        width: size.width - 50,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(3)),
             color: Colors.grey),
@@ -316,10 +198,10 @@ class _SettingsPageState extends State<SettingsPage> {
               child: DropdownButton(
                 iconEnabledColor: Colors.grey.shade400,
                 items: createLangItem(),
-                value: lang,
+                value: settings.lang,
                 onChanged: (selectedLang) {
                   setState(() {
-                    lang = selectedLang;
+                    settings.lang = selectedLang;
                   });
                 },
               ),
@@ -329,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   List<DropdownMenuItem<int>> createLangItem() {
-    List<String> langList = [texts["langList0"], texts["langList1"]];
+    List<String> langList = [texts["langList0"]!, texts["langList1"]!];
     return langList
         .map((lang) => DropdownMenuItem<int>(
               value: langList.indexOf(lang),
@@ -348,25 +230,25 @@ class _SettingsPageState extends State<SettingsPage> {
         Padding(
           padding: const EdgeInsets.only(left: 20),
           child: Text(
-            texts["Theme_Color"],
+            texts["Theme_Color"]!,
             style: headerStyle7.copyWith(color: Colors.grey.shade900),
           ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              elevation: 3.0, primary: Colors.grey.shade400),
+              elevation: 3.0, backgroundColor: Colors.grey.shade400),
           onPressed: () {
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text(texts["AlertDialog"]),
+                  title: Text(texts["AlertDialog"]!),
                   content: SingleChildScrollView(
                     child: BlockPicker(
-                      pickerColor: settings.currentColor,
+                      pickerColor: settings.currentColor!,
                       onColorChanged: (Color color) {
                         setState(() {
-                          currentColor = color;
+                          settings.currentColor = color;
                         });
                         Navigator.pop(context);
                       },
@@ -377,7 +259,7 @@ class _SettingsPageState extends State<SettingsPage> {
             );
           },
           child: Text(
-            texts["RaisedButtonText"],
+            texts["RaisedButtonText"]!,
             style: TextStyle(color: Colors.black),
           ),
         ),
@@ -392,12 +274,12 @@ class _SettingsPageState extends State<SettingsPage> {
         Padding(
           padding: const EdgeInsets.only(left: 35),
           child: Text(
-            texts["Currently_Password"],
+            texts["Currently_Password"]!,
             style: headerStyle7.copyWith(color: Colors.grey.shade900),
           ),
         ),
         Text(
-          show ? passwordStr : showPassword,
+          show ? passwordStr! : showPassword,
           style: TextStyle(fontSize: 20),
         ),
         passwordStr != ""
@@ -419,13 +301,13 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget changePassword(List<String> list, String hint, Size size) {
+  Widget changePassword(String hint) {
     var bankSelected;
     return Padding(
       padding: const EdgeInsets.only(left: 40, right: 40, bottom: 24, top: 12),
       child: Container(
         height: 55,
-        width: ekranGenisligi,
+        width: size.width,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(3)),
             color: Colors.grey.shade400),
@@ -438,17 +320,17 @@ class _SettingsPageState extends State<SettingsPage> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 iconEnabledColor: Colors.grey.shade400,
-                items: list.map((String value) {
+                items: [""].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Container(
                       height: 200,
-                      width: ekranGenisligi - 125,
+                      width: size.width - 125,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            texts["Change Password"],
+                            texts["Change Password"]!,
                             style: headerStyle3,
                           ),
                           SizedBox(
@@ -464,7 +346,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   hint,
                   style: headerStyle7,
                 ),
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     bankSelected = value;
                   });
@@ -503,22 +385,24 @@ class _SettingsPageState extends State<SettingsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(
-              style: ElevatedButton.styleFrom(primary: Colors.grey.shade800),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade800),
               onPressed: () {
                 savePassword();
               },
               child: Text(
-                texts["AppBar_FlatButton"],
+                texts["AppBar_FlatButton"]!,
                 style: headerStyle7,
               ),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(primary: settings.currentColor),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: settings.currentColor),
               onPressed: () {
                 Navigator.pop(context);
               },
               child: Text(
-                texts["password_save_iptalButonYazisi"],
+                texts["password_save_iptalButonYazisi"]!,
                 style: headerStyle4,
               ),
             )
@@ -526,6 +410,48 @@ class _SettingsPageState extends State<SettingsPage> {
         )
       ],
     );
+  }
+
+  Future<void> savePassword() async {
+    try {
+      var suan = DateTime.now();
+      newPassword = myController.text;
+      if (newPassword == "") {
+        bool sonuc = await PlatformDuyarliAlertDialog(
+          baslik: texts["password_save_baslik"]!,
+          icerik: texts["password_save_icerik"]!,
+          anaButonYazisi: texts["password_save_anaButonYazisi"]!,
+          iptalButonYazisi: texts["password_save_iptalButonYazisi"],
+        ).goster(context);
+        if (sonuc) {
+          databaseHelper.updateSettingsNote(
+              Note.withID(1, 0, "Password", null, suan.toString(), 2));
+          show = true;
+        }
+      } else {
+        databaseHelper.updateSettingsNote(
+            Note.withID(1, 0, "Password", newPassword, suan.toString(), 2));
+        show = false;
+      }
+    } catch (e) {
+      PlatformDuyarliAlertDialog(
+        baslik: texts["save_catch_baslik"]!,
+        icerik: texts["save_catch_icerik"]! + e.toString(),
+        anaButonYazisi: texts["save_catch_anaButonYazisi"]!,
+      ).goster(context);
+    }
+    final result = await PlatformDuyarliAlertDialog(
+      baslik: texts["save_baslik"]!,
+      icerik: texts["save_icerik"]!,
+      anaButonYazisi: texts["save_anaButonYazisi"]!,
+    ).goster(context);
+    if (result) {
+      Navigator.pop(context);
+      setState(() {
+        passwordStr = newPassword;
+        prepareShowPassword();
+      });
+    }
   }
 
   Widget saveButton() {
@@ -574,73 +500,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Future<void> savePassword() async {
-    try {
-      var suan = DateTime.now();
-      newPassword = myController.text;
-      if (newPassword == "") {
-        bool sonuc = await PlatformDuyarliAlertDialog(
-          baslik: texts["password_save_baslik"],
-          icerik: texts["password_save_icerik"],
-          anaButonYazisi: texts["password_save_anaButonYazisi"],
-          iptalButonYazisi: texts["password_save_iptalButonYazisi"],
-        ).goster(context);
-        if (sonuc) {
-          databaseHelper.updateSettingsNote(
-              Note.withID(1, 0, "Password", null, suan.toString(), 2));
-          show = true;
-        }
-      } else {
-        databaseHelper.updateSettingsNote(
-            Note.withID(1, 0, "Password", newPassword, suan.toString(), 2));
-        show = false;
-      }
-    } catch (e) {
-      PlatformDuyarliAlertDialog(
-        baslik: texts["save_catch_baslik"],
-        icerik: texts["save_catch_icerik"] + e.toString(),
-        anaButonYazisi: texts["save_catch_anaButonYazisi"],
-      ).goster(context);
-    }
-    final result = await PlatformDuyarliAlertDialog(
-      baslik: texts["save_baslik"],
-      icerik: texts["save_icerik"],
-      anaButonYazisi: texts["save_anaButonYazisi"],
-    ).goster(context);
-    if (result) {
-      Navigator.pop(context);
-      setState(() {
-        passwordStr = newPassword;
-        prepareShowPassword();
-      });
-    }
-  }
-
-  Future<void> save() async {
-    try {
-      settings.lang = lang;
-      var suan = DateTime.now();
-      databaseHelper.updateSettingsNote(
-          Note(0, "Language", lang.toString(), suan.toString(), 2));
-
-      settings.currentColor = currentColor;
-      databaseHelper.updateSettingsNote(
-          Note(0, "Theme", currentColor.value.toString(), suan.toString(), 2));
-    } catch (e) {
-      PlatformDuyarliAlertDialog(
-        baslik: texts["save_catch_baslik"],
-        icerik: texts["save_catch_icerik"] + e.toString(),
-        anaButonYazisi: texts["save_catch_anaButonYazisi"],
-      ).goster(context);
-    }
-    await PlatformDuyarliAlertDialog(
-      baslik: texts["save_baslik"],
-      icerik: texts["save_icerik"],
-      anaButonYazisi: texts["save_anaButonYazisi"],
-    ).goster(context);
-    Navigator.pop(context, "saved");
-  }
-
   Future<void> refreshLangTheme() async {
     try {
       var suan = DateTime.now();
@@ -653,16 +512,39 @@ class _SettingsPageState extends State<SettingsPage> {
       settings.currentColor = Color(4293914607);
     } catch (e) {
       PlatformDuyarliAlertDialog(
-        baslik: texts["refresh_catch_baslik"],
-        icerik: texts["save_catch_icerik"] + e.toString(),
-        anaButonYazisi: texts["save_catch_anaButonYazisi"],
+        baslik: texts["refresh_catch_baslik"]!,
+        icerik: texts["save_catch_icerik"]! + e.toString(),
+        anaButonYazisi: texts["save_catch_anaButonYazisi"]!,
       ).goster(context);
     }
     await PlatformDuyarliAlertDialog(
-      baslik: texts["refresh_baslik"],
-      icerik: texts["save_icerik"],
-      anaButonYazisi: texts["save_anaButonYazisi"],
+      baslik: texts["refresh_baslik"]!,
+      icerik: texts["save_icerik"]!,
+      anaButonYazisi: texts["save_anaButonYazisi"]!,
     ).goster(context);
     Navigator.pop(context, "refreshed");
+  }
+
+  Future<void> save() async {
+    try {
+      var suan = DateTime.now();
+      databaseHelper.updateSettingsNote(
+          Note(0, "Language", settings.lang.toString(), suan.toString(), 2));
+
+      databaseHelper.updateSettingsNote(Note(0, "Theme",
+          settings.currentColor!.value.toString(), suan.toString(), 2));
+    } catch (e) {
+      PlatformDuyarliAlertDialog(
+        baslik: texts["save_catch_baslik"]!,
+        icerik: texts["save_catch_icerik"]! + e.toString(),
+        anaButonYazisi: texts["save_catch_anaButonYazisi"]!,
+      ).goster(context);
+    }
+    await PlatformDuyarliAlertDialog(
+      baslik: texts["save_baslik"]!,
+      icerik: texts["save_icerik"]!,
+      anaButonYazisi: texts["save_anaButonYazisi"]!,
+    ).goster(context);
+    Navigator.pop(context, "saved");
   }
 }

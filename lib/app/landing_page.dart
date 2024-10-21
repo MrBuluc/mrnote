@@ -16,7 +16,7 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  String truePassword;
+  late String? truePassword;
 
   Settings settings = Settings();
 
@@ -25,19 +25,11 @@ class _LandingPageState extends State<LandingPage> {
   bool flag = false;
 
   @override
-  void initState() {
-    super.initState();
-    settings.getAdOpen();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: read1(),
       builder: (BuildContext context, _) {
-        if (settings.lang != null &&
-            settings.currentColor != null &&
-            settings.adOpen != null) {
+        if (settings.lang != null && settings.currentColor != null) {
           if (flag) {
             return Login();
           } else {
@@ -81,14 +73,14 @@ class _LandingPageState extends State<LandingPage> {
       truePassword = password.noteContent;
     });
     read();
-    flag = truePassword != null && truePassword.isNotEmpty;
+    flag = truePassword != null;
   }
 
   Future<void> read() async {
     if (counter == 0) {
       try {
         Note password = await databaseHelper.getNoteIDNote(1);
-        if (password != null && password.categoryID == 1) {
+        if (password.categoryID == 1) {
           var suan = DateTime.now();
           await databaseHelper.addColumn(
               "category", "categoryColor", "INTEGER");
@@ -102,7 +94,7 @@ class _LandingPageState extends State<LandingPage> {
               .addNote(Note(0, "Version", "2.0.0", suan.toString(), 2));
           await databaseHelper.deleteNote(1);
           await databaseHelper
-              .addNote(Note.withID(1, 0, "Password", null, suan.toString(), 2));
+              .addNote(Note.withID(1, 0, "Password", "", suan.toString(), 2));
           await databaseHelper
               .updateCategory(Category.withID(1, "General", 4289760505));
           await databaseHelper
@@ -120,14 +112,14 @@ class _LandingPageState extends State<LandingPage> {
       try {
         List<Note> languageNoteList =
             await databaseHelper.getSettingsNoteTitleList("Language");
-        settings.lang = int.parse(languageNoteList[0].noteContent);
+        settings.lang = int.parse(languageNoteList[0].noteContent!);
       } catch (e) {
         settings.lang = 0;
       }
       try {
         List<Note> themeNoteList =
             await databaseHelper.getSettingsNoteTitleList("Theme");
-        int color = int.parse(themeNoteList[0].noteContent);
+        int color = int.parse(themeNoteList[0].noteContent!);
         settings.currentColor = Color(color);
       } catch (e) {
         settings.currentColor = Color(4293914607);

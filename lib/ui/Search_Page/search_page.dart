@@ -15,7 +15,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  Map<String, dynamic> texts;
+  late Map<String, dynamic> texts;
 
   Map<String, dynamic> english = {
     "search": "Search",
@@ -41,9 +41,11 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Note> allNotes = [];
 
-  String search;
+  String? search;
 
   Settings settings = Settings();
+
+  late Size size;
 
   @override
   void initState() {
@@ -61,7 +63,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     fillAllNotes();
-    Size size = MediaQuery.of(context).size;
+    size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: settings.currentColor,
       appBar: AppBar(
@@ -92,7 +94,7 @@ class _SearchPageState extends State<SearchPage> {
                     Dismissible(
                       key: Key(allNotes[index].noteID.toString()),
                       onDismissed: (direction) {
-                        int noteID = allNotes[index].noteID;
+                        int noteID = allNotes[index].noteID!;
                         setState(() {
                           allNotes.removeAt(index);
                         });
@@ -141,7 +143,7 @@ class _SearchPageState extends State<SearchPage> {
                                           databaseHelper.dateFormat(
                                               DateTime.parse(
                                                   allNotes[index].noteTime),
-                                              settings.lang),
+                                              settings.lang!),
                                           style: headerStyle3_2,
                                         )
                                       ],
@@ -150,12 +152,7 @@ class _SearchPageState extends State<SearchPage> {
                                       height: 3,
                                     ),
                                     Text(
-                                      allNotes[index].noteContent.length >= 50
-                                          ? allNotes[index]
-                                                  .noteContent
-                                                  .substring(0, 50) +
-                                              "..."
-                                          : allNotes[index].noteContent,
+                                      wrapNoteContent(index),
                                       style: headerStyle4,
                                     ),
                                   ],
@@ -173,7 +170,7 @@ class _SearchPageState extends State<SearchPage> {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color:
-                                          Color(allNotes[index].categoryColor),
+                                          Color(allNotes[index].categoryColor!),
                                     ),
                                   ),
                                 ],
@@ -205,7 +202,7 @@ class _SearchPageState extends State<SearchPage> {
     if (search == null || search == "") {
       allNotes = await databaseHelper.getNoteList();
     } else {
-      allNotes = await databaseHelper.getSearchNoteList(search);
+      allNotes = await databaseHelper.getSearchNoteList(search!);
     }
   }
 
@@ -232,6 +229,15 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  String wrapNoteContent(int index) {
+    if (allNotes[index].noteContent != null) {
+      return allNotes[index].noteContent!.length >= 50
+          ? allNotes[index].noteContent!.substring(0, 50) + "..."
+          : allNotes[index].noteContent!;
+    }
+    return "";
+  }
+
   _setPriorityIcon(int notePriority) {
     switch (notePriority) {
       case 0:
@@ -242,7 +248,6 @@ class _SearchPageState extends State<SearchPage> {
           ),
           backgroundColor: Colors.green,
         );
-        break;
       case 1:
         return CircleAvatar(
           child: Text(
@@ -251,7 +256,6 @@ class _SearchPageState extends State<SearchPage> {
           ),
           backgroundColor: Colors.yellow,
         );
-        break;
       case 2:
         return CircleAvatar(
             child: Text(
@@ -259,11 +263,10 @@ class _SearchPageState extends State<SearchPage> {
               style: TextStyle(color: Colors.white, fontSize: 12),
             ),
             backgroundColor: Color(0xFFff0000));
-        break;
     }
   }
 
-  Future<String> _goToDetailPage(BuildContext context, Note note) async {
+  Future<String?> _goToDetailPage(BuildContext context, Note note) async {
     final result = await Navigator.push(
         context,
         MaterialPageRoute(

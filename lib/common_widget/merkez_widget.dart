@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MerkezWidget extends StatelessWidget {
   final List<Widget> children;
 
-  MerkezWidget({@required this.children});
+  MerkezWidget({required this.children});
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,3 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mrnote/common_widget/build_note_list.dart';
 import 'package:mrnote/common_widget/new_button.dart';
@@ -11,7 +10,7 @@ import '../../const.dart';
 class CategoryPage extends StatefulWidget {
   final Category category;
 
-  CategoryPage({@required this.category});
+  CategoryPage({required this.category});
 
   @override
   _CategoryPageState createState() => _CategoryPageState();
@@ -20,9 +19,7 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
-  AdmobInterstitial myInterstitialAd;
-
-  Map<String, String> texts;
+  late Map<String, String> texts;
 
   Map<String, String> english = {
     "notes": "Mr. Notes",
@@ -34,7 +31,7 @@ class _CategoryPageState extends State<CategoryPage> {
     "Padding": "Buralar soğuk gözüküyor 🥶\n" + "Hadi biraz ısıtalım 🥳",
   };
 
-  Category category;
+  late Category category;
 
   Settings settings = Settings();
 
@@ -43,9 +40,6 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   void initState() {
     super.initState();
-    if (settings.adOpen) {
-      adInitialize();
-    }
     switch (settings.lang) {
       case 0:
         texts = english;
@@ -55,14 +49,6 @@ class _CategoryPageState extends State<CategoryPage> {
         break;
     }
     category = widget.category;
-  }
-
-  @override
-  void dispose() {
-    if (settings.adOpen) {
-      disposeAd();
-    }
-    super.dispose();
   }
 
   @override
@@ -86,7 +72,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Text(
-                          texts["Padding"],
+                          texts["Padding"]!,
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
@@ -104,29 +90,6 @@ class _CategoryPageState extends State<CategoryPage> {
         ),
       ),
     );
-  }
-
-  void adInitialize() async {
-    myInterstitialAd = AdmobInterstitial(
-        adUnitId: Settings.test
-            ? AdmobInterstitial.testAdUnitId
-            : Settings.gecis1Canli,
-        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-          switch (event) {
-            case AdmobAdEvent.loaded:
-              myInterstitialAd.show();
-              break;
-            default:
-              print("args: " + args.toString());
-              break;
-          }
-        });
-
-    myInterstitialAd.load();
-  }
-
-  void disposeAd() {
-    myInterstitialAd.dispose();
   }
 
   Widget buildHeader(Size size) {
@@ -173,7 +136,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                   category.categoryID != 0
                       ? NewButton(
-                          lang: settings.lang,
+                          lang: settings.lang!,
                           closedColor: Colors.white,
                           categoryID: category.categoryID,
                           categoryColor: category.categoryColor,
@@ -189,7 +152,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Future<void> getLengthNotes() async {
-    int lengthLocal, categoryID = category.categoryID;
+    int lengthLocal, categoryID = category.categoryID!;
     if (categoryID == 0) {
       lengthLocal = await databaseHelper.lenghtAllNotes();
     } else {

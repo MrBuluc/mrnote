@@ -1,7 +1,7 @@
 class Category {
-  int categoryID;
-  String categoryTitle;
-  int categoryColor;
+  int? categoryID;
+  late String categoryTitle;
+  late int categoryColor;
 
   Category(this.categoryTitle,
       this.categoryColor); // Use when add category, because db creates id.
@@ -10,9 +10,9 @@ class Category {
       this.categoryColor); // when read db, use it.
 
   Category.fromMap(Map<String, dynamic> map) {
-    this.categoryTitle = map['categoryTitle'];
-    this.categoryID = map['categoryID'];
-    this.categoryColor =
+    categoryTitle = map['categoryTitle'];
+    categoryID = map['categoryID'];
+    categoryColor =
         map["categoryColor"] != null ? map["categoryColor"] : 4293914607;
   }
 

@@ -8,8 +8,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static DatabaseHelper _databaseHelper;
-  static Database _database;
+  static DatabaseHelper? _databaseHelper;
+  static Database? _database;
 
   static int counter = 0;
 
@@ -19,9 +19,9 @@ class DatabaseHelper {
   factory DatabaseHelper() {
     if (_database == null) {
       _databaseHelper = DatabaseHelper.internal();
-      return _databaseHelper;
+      return _databaseHelper!;
     } else {
-      return _databaseHelper;
+      return _databaseHelper!;
     }
   }
 
@@ -30,9 +30,9 @@ class DatabaseHelper {
   Future<Database> _getDatabase() async {
     if (_database == null) {
       _database = await _initializeDatabase();
-      return _database;
+      return _database!;
     } else {
-      return _database;
+      return _database!;
     }
   }
 
@@ -92,7 +92,7 @@ class DatabaseHelper {
     List<Map<String, dynamic>> categoryMapList =
         await db.query("category", where: "categoryID != 0");
     List<Category> categoryList = [];
-    for (Map map in categoryMapList) {
+    for (Map<String, dynamic> map in categoryMapList) {
       categoryList.add(Category.fromMap(map));
     }
     return categoryList;
@@ -161,7 +161,7 @@ class DatabaseHelper {
     List<Map<String, dynamic>> noteMapList = await db.rawQuery(
         selectNoteSql + " Where note.categoryID != 0 Order By noteID Asc;");
     List<Note> noteList = [];
-    for (Map map in noteMapList) {
+    for (Map<String, dynamic> map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
@@ -173,7 +173,7 @@ class DatabaseHelper {
         " Where note.categoryID != 0 And (note.noteTitle Like '%$search%' Or "
             "note.noteContent Like '%$search%') Order By noteID Desc;");
     List<Note> noteList = [];
-    for (Map map in noteMapList) {
+    for (Map<String, dynamic> map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
@@ -209,7 +209,7 @@ class DatabaseHelper {
       query += "Desc;";
     List<Map<String, dynamic>> noteMapList = await db.rawQuery(query);
     var noteList = List<Note>.empty(growable: true);
-    for (Map map in noteMapList) {
+    for (Map<String, dynamic> map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
@@ -219,7 +219,7 @@ class DatabaseHelper {
     List<String> sortList;
     try {
       List<Note> sortNoteList = await getNoteTitleNotesList("Sort");
-      String sortContent = sortNoteList[0].noteContent;
+      String sortContent = sortNoteList[0].noteContent!;
       sortList = sortContent.split("/");
     } catch (e) {
       sortList = ["3", "1"];
@@ -232,7 +232,7 @@ class DatabaseHelper {
     List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
         " Where note.categoryID == $categoryID Order By noteID Desc;");
     List<Note> noteList = [];
-    for (Map map in noteMapList) {
+    for (Map<String, dynamic> map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
@@ -243,7 +243,7 @@ class DatabaseHelper {
     List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
         " Where note.noteTitle == '$noteTitle' Order By noteID Desc;");
     List<Note> noteList = [];
-    for (Map map in noteMapList) {
+    for (Map<String, dynamic> map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
@@ -254,7 +254,7 @@ class DatabaseHelper {
     List<Map<String, dynamic>> noteMapList = await db.rawQuery(selectNoteSql +
         " Where note.noteTitle == '$noteTitle' And note.categoryID = 0 Order by noteID Desc;");
     List<Note> noteList = [];
-    for (Map map in noteMapList) {
+    for (Map<String, dynamic> map in noteMapList) {
       noteList.add(Note.fromMap(map));
     }
     return noteList;
@@ -296,7 +296,7 @@ class DatabaseHelper {
   }
 
   String dateFormat(DateTime dt, int lang) {
-    String month;
+    String month = "";
     if (lang == 0) {
       switch (dt.month) {
         case 1:
@@ -332,9 +332,8 @@ class DatabaseHelper {
         case 11:
           month = "November";
           break;
-        case 12:
+        default:
           month = "December";
-          break;
       }
     } else if (lang == 1) {
       switch (dt.month) {
@@ -371,9 +370,8 @@ class DatabaseHelper {
         case 11:
           month = "Kasım";
           break;
-        case 12:
+        default:
           month = "Aralık";
-          break;
       }
     }
 

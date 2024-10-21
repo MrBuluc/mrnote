@@ -1,4 +1,3 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mrnote/common_widget/merkez_widget.dart';
@@ -7,7 +6,6 @@ import 'package:mrnote/models/category.dart';
 import 'package:mrnote/models/note.dart';
 import 'package:mrnote/models/settings.dart';
 import 'package:mrnote/services/database_helper.dart';
-import 'package:mrnote/services/notification_handler.dart';
 
 import '../../common_widget/Platform_Duyarli_Alert_Dialog/platform_duyarli_alert_dialog.dart';
 import '../../common_widget/build_note_list.dart';
@@ -28,9 +26,7 @@ class _HomePageState extends State<HomePage> {
 
   List<Category> allCategories = [];
 
-  AdmobInterstitial myInterstitialAdExit;
-
-  Map<String, String> texts;
+  late Map<String, String> texts;
   Map<String, String> english = {
     "Home": "Home",
     "search": "Search",
@@ -96,30 +92,13 @@ class _HomePageState extends State<HomePage> {
     "_areYouSureforDelete_iptalButonYazisi": "İPTAL",
   };
 
-  String newCategoryTitle;
+  String? newCategoryTitle;
 
   Color currentColor = Colors.red;
 
   Settings settings = Settings();
 
-  Size size;
-
-  @override
-  void initState() {
-    super.initState();
-    if (settings.adOpen) {
-      adInitialize();
-    }
-    NotificationHandler().initializeFCMNotification(context);
-  }
-
-  @override
-  void dispose() {
-    if (settings.adOpen) {
-      disposeAd();
-    }
-    super.dispose();
-  }
+  late Size size;
 
   @override
   Widget build(BuildContext context) {
@@ -135,39 +114,31 @@ class _HomePageState extends State<HomePage> {
       updateCategoryList();
     }
     size = MediaQuery.of(context).size;
-    return WillPopScope(
-      onWillPop: () {
-        return _areYouSureforExit();
-      },
-      child: SafeArea(
-        child: Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: settings.currentColor,
-            body: ListView(
-              children: <Widget>[
-                SizedBox(
-                  height: 25,
-                ),
-                header(),
-                categoriesAndNew(),
-                buildCategories(),
-                Notes()
-              ],
-            )),
-      ),
+    return SafeArea(
+      child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: settings.currentColor,
+          body: ListView(
+            children: <Widget>[
+              SizedBox(
+                height: 25,
+              ),
+              header(),
+              categoriesAndNew(),
+              buildCategories(),
+              Notes()
+            ],
+          )),
     );
   }
 
-  Future<void> adInitialize() async {
-    myInterstitialAdExit = AdmobInterstitial(
-      adUnitId:
-          Settings.test ? AdmobInterstitial.testAdUnitId : Settings.gecis1Canli,
-    );
-    myInterstitialAdExit.load();
-  }
-
-  void disposeAd() {
-    myInterstitialAdExit.dispose();
+  Future updateCategoryList() async {
+    allCategories = await databaseHelper.getCategoryList();
+    allCategories.insert(
+        0,
+        Category.withID(
+            0, texts["PopupMenuItem1"]!, settings.currentColor!.value));
+    setState(() {});
   }
 
   Widget header() {
@@ -176,11 +147,12 @@ class _HomePageState extends State<HomePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(texts["Home"], style: headerStyle),
+          Text(texts["Home"]!, style: headerStyle),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(primary: settings.currentColor),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: settings.currentColor),
             child: Text(
-              texts["search"],
+              texts["search"]!,
               style: headerStyle3,
             ),
             onPressed: () {
@@ -195,7 +167,7 @@ class _HomePageState extends State<HomePage> {
               size: 30,
             ),
             onTap: () async {
-              String result = await Navigator.of(context).push(
+              String? result = await Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => SettingsPage()));
               if (result != null) {
                 updateCategoryList();
@@ -218,12 +190,12 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              texts["PopupMenuItem"],
+              texts["PopupMenuItem"]!,
               style: headerStyle2,
             ),
             GestureDetector(
               child: Text(
-                texts["FloatingActionButton_tooltip"],
+                texts["FloatingActionButton_tooltip"]!,
                 style: headerStyle3,
               ),
               onTap: () {
@@ -245,7 +217,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context) {
           return SimpleDialog(
             title: Text(
-              texts["addCategoryDialog_SimpleDialog_title"],
+              texts["addCategoryDialog_SimpleDialog_title"]!,
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             children: <Widget>[
@@ -260,11 +232,15 @@ class _HomePageState extends State<HomePage> {
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
-                      if (value.length < 3) {
-                        return texts[
-                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
-                      } else
-                        return null;
+                      if (value != null) {
+                        if (value.length < 3) {
+                          return texts[
+                              "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                        } else
+                          return null;
+                      }
+                      return texts[
+                          "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                     },
                     onSaved: (value) {
                       newCategoryTitle = value;
@@ -279,26 +255,26 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    style:
-                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orangeAccent),
                     child: Text(
                       texts[
-                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"]!,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (formKey.currentState.validate()) {
-                        formKey.currentState.save();
+                      if (formKey.currentState!.validate()) {
+                        formKey.currentState!.save();
                         databaseHelper
                             .addCategory(
-                                Category(newCategoryTitle, currentColor.value))
+                                Category(newCategoryTitle!, currentColor.value))
                             .then((value) {
                           if (value > 0) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(texts[
-                                  "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]),
+                                  "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1_SnackBar"]!),
                               duration: Duration(seconds: 2),
                             ));
                             Navigator.pop(context);
@@ -310,11 +286,11 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.redAccent,
+                      backgroundColor: Colors.redAccent,
                     ),
                     child: Text(
                       texts[
-                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"]!,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -333,7 +309,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.only(left: 26),
               child: Text(
-                texts['Select_a_color'],
+                texts['Select_a_color']!,
                 style: TextStyle(
                     color: Theme.of(context).primaryColor, fontSize: 20),
               ),
@@ -352,7 +328,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text(texts['Select_a_color']),
+                        title: Text(texts['Select_a_color']!),
                         content: SingleChildScrollView(
                           child: BlockPicker(
                             pickerColor: currentColor,
@@ -374,15 +350,6 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-  }
-
-  Future updateCategoryList() async {
-    allCategories = await databaseHelper.getCategoryList();
-    allCategories.insert(
-        0,
-        Category.withID(
-            0, texts["PopupMenuItem1"], settings.currentColor.value));
-    setState(() {});
   }
 
   Widget buildCategories() {
@@ -458,7 +425,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context) {
           return SimpleDialog(
             title: Text(
-              texts["Edit_Category"],
+              texts["Edit_Category"]!,
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             children: <Widget>[
@@ -474,11 +441,15 @@ class _HomePageState extends State<HomePage> {
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
-                      if (value.length < 3) {
-                        return texts[
-                            "addCategoryDialog_SimpleDialog_TextFormField_validator"];
-                      } else
-                        return null;
+                      if (value != null) {
+                        if (value.length < 3) {
+                          return texts[
+                              "addCategoryDialog_SimpleDialog_TextFormField_validator"];
+                        } else
+                          return null;
+                      }
+                      return texts[
+                          "addCategoryDialog_SimpleDialog_TextFormField_validator"];
                     },
                     onSaved: (value) {
                       newCategoryTitle = value;
@@ -494,38 +465,39 @@ class _HomePageState extends State<HomePage> {
                 alignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.red),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     child: Text(
-                      texts["Delete"],
+                      texts["Delete"]!,
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: () {
-                      _sureForDelCategory(context, category.categoryID);
+                      _sureForDelCategory(context, category.categoryID!);
                     },
                   ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    style:
-                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orangeAccent),
                     child: Text(
                       texts[
-                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton"]!,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (formKey.currentState.validate()) {
-                        formKey.currentState.save();
+                      if (formKey.currentState!.validate()) {
+                        formKey.currentState!.save();
                         databaseHelper
                             .updateCategory(Category.withID(category.categoryID,
-                                newCategoryTitle, category.categoryColor))
+                                newCategoryTitle!, category.categoryColor))
                             .then((value) {
                           if (value > 0) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(texts["editCategory_SnackBar"]),
+                              content: Text(texts["editCategory_SnackBar"]!),
                               duration: Duration(seconds: 2),
                             ));
                             newCategoryTitle = null;
@@ -537,10 +509,11 @@ class _HomePageState extends State<HomePage> {
                         });
                       }
                     },
-                    style: ElevatedButton.styleFrom(primary: Colors.green),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     child: Text(
                       texts[
-                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"],
+                          "addCategoryDialog_SimpleDialog_ButtonBar_RaisedButton1"]!,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -560,7 +533,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.only(left: 26),
               child: Text(
-                texts['Select_a_color'],
+                texts['Select_a_color']!,
                 style: TextStyle(
                     color: Theme.of(context).primaryColor, fontSize: 20),
               ),
@@ -579,7 +552,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text(texts['Select_a_color']),
+                        title: Text(texts['Select_a_color']!),
                         content: SingleChildScrollView(
                           child: BlockPicker(
                             pickerColor: categoryColor,
@@ -606,12 +579,12 @@ class _HomePageState extends State<HomePage> {
 
   void _sureForDelCategory(BuildContext context, int categoryID) async {
     final result = await PlatformDuyarliAlertDialog(
-      baslik: texts["_sureForDelCategory_baslik"],
+      baslik: texts["_sureForDelCategory_baslik"]!,
       icerik: allCategories.length == 2
-          ? texts["_sureForDelCategory_2Categories_icerik"] +
-              texts["_sureForDelCategory_icerik"]
-          : texts["_sureForDelCategory_icerik"],
-      anaButonYazisi: texts["_sureForDelCategory_anaButonYazisi"],
+          ? texts["_sureForDelCategory_2Categories_icerik"]! +
+              texts["_sureForDelCategory_icerik"]!
+          : texts["_sureForDelCategory_icerik"]!,
+      anaButonYazisi: texts["_sureForDelCategory_anaButonYazisi"]!,
       iptalButonYazisi: texts["_sureForDelCategory_iptalButonYazisi"],
     ).goster(context);
 
@@ -627,28 +600,6 @@ class _HomePageState extends State<HomePage> {
       Navigator.pop(context);
     }
   }
-
-  Future<bool> _areYouSureforExit() async {
-    final sonuc = await PlatformDuyarliAlertDialog(
-      baslik: texts["_areYouSureforDelete_baslik"],
-      icerik: texts["_areYouSureforDelete_icerik"],
-      anaButonYazisi: texts["_areYouSureforDelete_anaButonYazisi"],
-      iptalButonYazisi: texts["_areYouSureforDelete_iptalButonYazisi"],
-    ).goster(context);
-
-    if (sonuc) {
-      if (settings.adOpen) {
-        return showAd();
-      }
-      return Future.value(true);
-    }
-    return Future.value(false);
-  }
-
-  Future<bool> showAd() async {
-    myInterstitialAdExit.show();
-    return Future.value(true);
-  }
 }
 
 class Notes extends StatefulWidget {
@@ -657,9 +608,9 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
-  DatabaseHelper databaseHelper;
+  late DatabaseHelper databaseHelper;
 
-  Map<String, dynamic> texts;
+  late Map<String, dynamic> texts;
   Map<String, dynamic> english = {
     "Padding": "Welcome again 🥳\n" + "You didn't edit any notes today 😉",
     "Recent_Notes": "Recent Mr. Notes",
@@ -681,19 +632,37 @@ class _NotesState extends State<Notes> {
     "Sort": "Sırala",
   };
 
-  int sortBy, orderBy, length = 0;
+  int? sortBy, orderBy, length = 0;
 
-  bool isSorted = false, readed = false;
+  bool isSorted = false, read = false;
 
   Settings settings = Settings();
 
-  List<String> sortList, orderList;
+  late List<String> sortList, orderList;
 
   @override
   void initState() {
     super.initState();
     databaseHelper = DatabaseHelper();
     readSort();
+  }
+
+  Future<void> readSort() async {
+    try {
+      List<Note> sortNoteList =
+          await databaseHelper.getSettingsNoteTitleList("Sort");
+      String sortContent = sortNoteList[0].noteContent!;
+      List<String> sortList = sortContent.split("/");
+      setState(() {
+        sortBy = int.parse(sortList[0]);
+        orderBy = int.parse(sortList[1]);
+      });
+    } catch (e) {
+      setState(() {
+        sortBy = 3;
+        orderBy = 1;
+      });
+    }
   }
 
   @override
@@ -719,7 +688,7 @@ class _NotesState extends State<Notes> {
           FutureBuilder(
             future: getTodayNotesLenght(),
             builder: (context, _) {
-              if (!readed)
+              if (!read)
                 return MerkezWidget(children: [CircularProgressIndicator()]);
               else if (length == 0)
                 return Center(
@@ -733,7 +702,7 @@ class _NotesState extends State<Notes> {
                   ),
                 );
               return Container(
-                height: 150.0 * length,
+                height: 150.0 * length!,
                 width: size.width * 0.85,
                 child: BuildNoteList(
                   isSorted: isSorted,
@@ -744,15 +713,6 @@ class _NotesState extends State<Notes> {
         ],
       ),
     );
-  }
-
-  Future<void> getTodayNotesLenght() async {
-    String suan = DateTime.now().toString().substring(0, 10);
-    int lenghtLocal = await databaseHelper.isThereAnyTodayNotes(suan);
-    setState(() {
-      length = lenghtLocal;
-      readed = true;
-    });
   }
 
   Widget buildRecentOnesAndFilterHeader() {
@@ -770,8 +730,8 @@ class _NotesState extends State<Notes> {
             Row(
               children: [
                 NewButton(
-                  lang: settings.lang,
-                  closedColor: settings.currentColor,
+                  lang: settings.lang!,
+                  closedColor: settings.currentColor!,
                 ),
                 SizedBox(
                   width: 10,
@@ -812,8 +772,8 @@ class _NotesState extends State<Notes> {
                       });
                       Navigator.pop(context);
                     },
-                    style:
-                        ElevatedButton.styleFrom(primary: Colors.orangeAccent),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orangeAccent),
                     child: Text(
                       texts["Cancel"],
                       style: TextStyle(color: Colors.white),
@@ -831,7 +791,8 @@ class _NotesState extends State<Notes> {
                       });
                       Navigator.pop(context);
                     },
-                    style: ElevatedButton.styleFrom(primary: Colors.redAccent),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent),
                     child: Text(
                       texts["Sort"],
                       style: TextStyle(color: Colors.white),
@@ -842,24 +803,6 @@ class _NotesState extends State<Notes> {
             ],
           );
         });
-  }
-
-  Future<void> readSort() async {
-    try {
-      List<Note> sortNoteList =
-          await databaseHelper.getSettingsNoteTitleList("Sort");
-      String sortContent = sortNoteList[0].noteContent;
-      List<String> sortList = sortContent.split("/");
-      setState(() {
-        sortBy = int.parse(sortList[0]);
-        orderBy = int.parse(sortList[1]);
-      });
-    } catch (e) {
-      setState(() {
-        sortBy = 3;
-        orderBy = 1;
-      });
-    }
   }
 
   Widget dropDown() {
@@ -925,5 +868,14 @@ class _NotesState extends State<Notes> {
               ),
             ))
         .toList();
+  }
+
+  Future<void> getTodayNotesLenght() async {
+    String suan = DateTime.now().toString().substring(0, 10);
+    int lenghtLocal = await databaseHelper.isThereAnyTodayNotes(suan);
+    setState(() {
+      length = lenghtLocal;
+      read = true;
+    });
   }
 }
